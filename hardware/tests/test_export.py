@@ -1,5 +1,6 @@
 import csv
 import os
+import re
 
 import pytest
 from skidl import Circuit, Net
@@ -52,3 +53,10 @@ def test_svg_diagram(tmp_path):
         pytest.skip(str(e))
     svg = export.svg_diagram(small(), tmp_path / "d.svg").read_text()
     assert svg.lstrip().startswith("<?xml") and "61.9Ω" in svg
+
+
+def test_kicad_netlist_tags_are_the_refs(tmp_path):
+    # stable tags: no "Missing tag" warnings and a reproducible netlist
+    text = export.kicad_netlist(small(), tmp_path / "block.net").read_text()
+    comps = re.findall(r'\(ref "([^"]+)"\).*?\(name "SKiDL Tag"\) "([^"]+)"', text, re.S)
+    assert len(comps) == 3 and all(ref == tag for ref, tag in comps)

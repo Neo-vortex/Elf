@@ -58,3 +58,13 @@ def test_relay_rejects_unknown_state():
 def test_non_positive_value_rejected():
     with pytest.raises(ValueError):
         parts.resistor("0")
+
+
+def test_resistor_and_capacitor_follow_variation():
+    ckt = Circuit()
+    with ckt:
+        r = parts.resistor("1k")
+        c = parts.capacitor("100p")
+    assert r.spice_lines({"1": "a", "2": "b"}, 1.1)[0].endswith(" 1100")
+    assert c.spice_lines({"1": "a", "2": "b"}, 0.98)[0].endswith(" 9.8e-11")
+    assert (r.tol, c.tol) == (0.01, 0.02)

@@ -47,7 +47,16 @@ class Op:
         return "op"
 
 
+def _canonical(net):
+    """One net for a merged group (`a += b` leaves pins on both objects): GND if present,
+    otherwise the alphabetically first name."""
+    group = list(getattr(net, "nets", None) or [net])
+    grounds = [n for n in group if n.name.upper() == "GND"]
+    return grounds[0] if grounds else min(group, key=lambda n: n.name)
+
+
 def node_name(net) -> str:
+    net = _canonical(net)
     if net.name.upper() == "GND":
         return "0"
     return re.sub(r"[^a-z0-9_]", "_", net.name.lower())
@@ -55,14 +64,15 @@ def node_name(net) -> str:
 
 def _check_nets(circuit, ports: list[Port]) -> None:
     """Reject what KiCad and SPICE would read differently, or a part cut out of the circuit."""
-    port_nets = {id(p.net) for p in ports}
+    port_nets = {id(_canonical(p.net)) for p in ports}
     pins_on: dict[int, int] = {}
     nets: dict[int, object] = {}
     for part in circuit.parts:
         for pin in part.pins:
             if pin.net is not None and not pin.name.upper().startswith("COIL"):
-                pins_on[id(pin.net)] = pins_on.get(id(pin.net), 0) + 1
-                nets[id(pin.net)] = pin.net
+                net = _canonical(pin.net)
+                pins_on[id(net)] = pins_on.get(id(net), 0) + 1
+                nets[id(net)] = net
     by_node: dict[str, str] = {}
     for key, net in nets.items():
         node = node_name(net)
@@ -73,7 +83,10 @@ def _check_nets(circuit, ports: list[Port]) -> None:
             raise SpiceError(f"net {net.name!r} has a single connection (dangling part?)")
 
 
-def to_deck(circuit, title: str, ports: list[Port], analyses: list, extra_lines=()) -> tuple[str, list[str]]:
+def to_deck(circuit, title: str, ports: list[Port], analyses: list, extra_lines=(),
+            variation: dict[str, float] | None = None) -> tuple[str, list[str]]:
+    """`variation` maps a part ref to a value multiplier (Monte Carlo); missing refs use 1."""
+    variation = variation or {}
     lines = [title]
     for part in circuit.parts:
         if not hasattr(part, "spice_lines"):
@@ -85,7 +98,7 @@ def to_deck(circuit, title: str, ports: list[Port], analyses: list, extra_lines=
                     continue
                 raise SpiceError(f"{part.ref} pin {pin.name} is unconnected")
             nodes[pin.name] = node_name(pin.net)
-        lines.extend(part.spice_lines(nodes))
+        lines.extend(part.spice_lines(nodes, variation.get(part.ref, 1.0)))
     _check_nets(circuit, ports)
     for port in ports:
         drive = 1 if port.number == 1 else 0

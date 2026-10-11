@@ -94,3 +94,25 @@ def test_ground_name_is_case_insensitive():
     ckt = Circuit()
     with ckt:
         assert node_name(Net("gnd")) == "0"
+
+
+def test_variation_scales_named_parts_only():
+    ckt, a, mid = divider()
+    r1, r2 = sorted(ckt.parts, key=lambda p: p.ref)
+    deck, _ = to_deck(ckt, "x", [Port(a, 1), Port(mid, 2)], [Op()], variation={r1.ref: 1.1})
+    assert f"R{r1.ref} rf_in mid 1100" in deck and f"R{r2.ref} mid 0 2000" in deck
+
+
+def test_merged_nets_share_one_spice_node():
+    ckt = Circuit()
+    with ckt:
+        a, b, gnd = Net("a"), Net("b"), Net("GND")
+        r1 = parts.resistor("1k"); r1[1] += a; r1[2] += gnd
+        r2 = parts.resistor("1k"); r2[1] += b; r2[2] += gnd
+        a += b
+    deck, _ = to_deck(ckt, "x", [Port(a, 1)], [Op()])
+    assert f"R{r1.ref} a 0 1000" in deck and f"R{r2.ref} a 0 1000" in deck
+
+
+def test_sp_decade_sweep_command():
+    assert Sp(0.05e6, 200e6, 50, "dec").command() == "sp dec 50 50000 2e+08"
