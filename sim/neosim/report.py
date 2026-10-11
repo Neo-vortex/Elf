@@ -12,7 +12,7 @@ import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt  # noqa: E402
 
-from neosim.sweep import SweepPoint, implementation_loss_db  # noqa: E402
+from neosim.sweep import SweepPoint, implementation_loss_db, wilson_interval  # noqa: E402
 from neosim.twin import ScenarioResult  # noqa: E402
 
 _STYLE = """
@@ -64,10 +64,19 @@ def _sweep_html(points: list[SweepPoint]) -> str:
     ax.grid(alpha=0.3)
     ax.legend()
     loss = implementation_loss_db(points)
-    loss_txt = "not determined (a curve never crosses 50 %)" if loss is None else f"{loss:+.1f} dB"
-    rows = "".join(f"<tr><td>{p.snr_db:+.1f}</td><td>{p.reference_rate:.2f}</td><td>{p.twin_rate:.2f}</td></tr>"
-                   for p in points)
+    loss_txt = ("not determined (a curve does not cross 50 % inside the swept range)" if loss is None
+                else f"{loss:+.1f} dB (50 % decode points, linearly interpolated)")
+
+    def cell(rate: float, trials: int) -> str:
+        lo, hi = wilson_interval(round(rate * trials), trials)
+        return f"{rate:.2f} <small>[{lo:.2f}–{hi:.2f}]</small>"
+
+    trials = points[0].trials
+    rows = "".join(f"<tr><td>{p.snr_db:+.1f}</td><td>{cell(p.reference_rate, p.trials)}</td>"
+                   f"<td>{cell(p.twin_rate, p.trials)}</td></tr>" for p in points)
     return (f"<h2>FT8 sensitivity sweep</h2><p><b>Implementation loss:</b> {loss_txt}</p>"
+            f"<p>{trials} trials per point; brackets show the 95 % Wilson confidence interval of each decode rate. "
+            f"Treat loss differences smaller than the SNR step as noise.</p>"
             f"<table><tr><th>SNR (dB)</th><th>reference</th><th>twin</th></tr>{rows}</table>"
             f'<img alt="sweep" src="{_png(fig)}">')
 

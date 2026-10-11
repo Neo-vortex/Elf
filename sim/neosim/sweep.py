@@ -1,6 +1,7 @@
 """FT8 decode rate vs SNR: audio-only reference vs full digital twin."""
 from __future__ import annotations
 
+import shutil
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -22,6 +23,18 @@ class SweepPoint:
     snr_db: float
     reference_rate: float
     twin_rate: float
+    trials: int = 1
+
+
+def wilson_interval(successes: int, trials: int, z: float = 1.96) -> tuple[float, float]:
+    """95 % Wilson score interval for a binomial decode rate."""
+    if trials <= 0:
+        return 0.0, 1.0
+    p = successes / trials
+    denom = 1 + z * z / trials
+    centre = (p + z * z / (2 * trials)) / denom
+    half = z * ((p * (1 - p) / trials + z * z / (4 * trials * trials)) ** 0.5) / denom
+    return max(0.0, centre - half), min(1.0, centre + half)
 
 
 def _reference_trial(audio: np.ndarray, snr_db: float, rng: np.random.Generator, wav: Path) -> bool:
@@ -43,7 +56,10 @@ def _twin_trial(snr_db: float, seed: int, workdir: Path) -> bool:
         "receive": [{"id": "rx", "mode": "usb", "dial_hz": DIAL_HZ, "decoder": "ft8",
                      "expect": {"contains": [MESSAGE]}}],
     })
-    return run_scenario(scenario, workdir).passed
+    try:
+        return run_scenario(scenario, workdir).passed
+    finally:
+        shutil.rmtree(workdir, ignore_errors=True)  # an 11.5 MB capture per trial adds up fast
 
 
 def sweep_ft8(snrs: list[float], trials: int, workdir: Path, seed: int = 1) -> list[SweepPoint]:
@@ -57,7 +73,7 @@ def sweep_ft8(snrs: list[float], trials: int, workdir: Path, seed: int = 1) -> l
         for trial in range(trials):
             ref_ok += _reference_trial(audio, snr, rng, workdir / "reference.wav")
             twin_ok += _twin_trial(snr, seed * 1000 + trial, workdir / f"twin_{snr:+.1f}_{trial}")
-        points.append(SweepPoint(float(snr), ref_ok / trials, twin_ok / trials))
+        points.append(SweepPoint(float(snr), ref_ok / trials, twin_ok / trials, trials))
     return points
 
 
@@ -66,9 +82,7 @@ def threshold_snr(snrs: list[float], rates: list[float], level: float = 0.5) -> 
     for (s_hi, r_hi), (s_lo, r_lo) in zip(pairs, pairs[1:]):
         if r_hi >= level > r_lo:
             return s_hi + (r_hi - level) / (r_hi - r_lo) * (s_lo - s_hi)
-    if pairs and all(r >= level for _, r in pairs):
-        return pairs[-1][0]
-    return None
+    return None  # never crosses inside the swept range: the threshold is unknown
 
 
 def implementation_loss_db(points: list[SweepPoint]) -> float | None:

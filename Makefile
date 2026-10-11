@@ -20,7 +20,7 @@ test: tools
 	cd sim && $(PYTHON) -m pytest -q
 
 sim: tools
-	cd sim && $(PYTHON) -m neosim run scenarios/*.yaml --workdir ../build/sim --report ../build/sim/report.html --sweep-ft8 -8 -24 2 --trials 4
+	cd sim && $(PYTHON) -m neosim run scenarios/*.yaml --workdir ../build/sim --report ../build/sim/report.html --sweep-ft8 -14 -22 1 --trials 20
 
 clean:
 	rm -rf build
