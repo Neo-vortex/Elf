@@ -12,7 +12,7 @@ Build the best HF receiver we can, from parts buyable in the Iranian market, con
 
 **Success means:**
 
-1. The digital twin (§9, layer L4) decodes a −20 dB SNR FT8 signal on 20 m with a +60 dB stronger broadcast station 1.3 MHz away, using the *same* Pi DSP code that ships.
+1. The digital twin (§9, layer L4), running the *same* Pi DSP code that ships, shows an FT8 **implementation loss ≤ 1 dB** against an audio-only reference that feeds the same decoder directly — including with a +60 dB stronger broadcast station 1.3 MHz away. (Measured 2026-10-12: the open-source ft8_lib decoder's own limit is ≈ −18…−19 dB in 2500 Hz, so absolute −20 dB tests require WSJT-X `jt9`, added in a later phase.)
 2. All block-level targets in §5–§7 pass in simulation, including Monte Carlo and supply/temperature corners.
 3. Every BOM line is available from at least one Iranian shop (single-source lines are flagged and bought early).
 4. After Rev A is built, raw I/Q recordings from the real board match the twin's predictions closely enough to recalibrate models (§9, L6).
