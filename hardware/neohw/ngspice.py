@@ -1,9 +1,11 @@
 """Run ngspice in batch mode and collect rawfiles."""
 from __future__ import annotations
 
+import os
 import shutil
 import subprocess
 import tempfile
+from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
 from neohw.rawfile import Plot, RawfileError, parse_ascii
@@ -56,3 +58,9 @@ def run_deck(deck: str, rawfiles: list[str], keep_dir: Path | None = None) -> di
     if tmp is not None:
         shutil.rmtree(tmp, ignore_errors=True)
     return results
+
+
+def run_decks(decks: list[str], rawfiles: list[str], workers: int | None = None) -> list[dict[str, list[Plot]]]:
+    """Run independent decks in parallel (each is its own ngspice process); results in input order."""
+    with ThreadPoolExecutor(max_workers=workers or os.cpu_count()) as pool:
+        return list(pool.map(lambda deck: run_deck(deck, rawfiles), decks))

@@ -82,3 +82,17 @@ def test_unknown_value_model_is_error(tmp_path):
     _need_ngspice()
     with pytest.raises(NgspiceError, match="find model"):
         run_deck(RC.replace("159.155n", "1x"), ["ac.raw"], keep_dir=tmp_path)
+
+
+@pytest.mark.integration
+def test_run_decks_returns_results_in_input_order():
+    _need_ngspice()
+    from neohw.ngspice import run_decks
+    decks = [RC.replace("R1 in out 1k", f"R1 in out {r}") for r in ("1k", "2k", "4k")]
+    results = run_decks(decks, ["ac.raw"], workers=3)
+    corners = []
+    for res in results:
+        ac = res["ac.raw"][0]
+        f, g = ac.data["frequency"].real, np.abs(ac.data["v(out)"])
+        corners.append(f[np.argmin(np.abs(g - 2 ** -0.5))])
+    assert corners[0] > corners[1] > corners[2]
