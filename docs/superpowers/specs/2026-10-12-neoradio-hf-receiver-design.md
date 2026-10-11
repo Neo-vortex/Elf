@@ -33,6 +33,7 @@ Build the best HF receiver we can, from parts buyable in the Iranian market, con
 | Assembly | By a provider; any package (incl. QFN) allowed |
 | Complexity | Keep the circuit as simple as the performance targets allow |
 | Sourcing | All parts from Iranian shops; checked on Torob (raw data: `2026-10-12-parts-availability-torob.json`) |
+| Pi software | **C# on .NET 10 (LTS)**, linux-arm64 |
 | Verification | Heavy simulation before building (§9) |
 
 **User test equipment:** multimeter, bench power supply, RTL-SDR (weak on HF), no oscilloscope. A NanoVNA purchase is recommended for Rev 0.
@@ -139,7 +140,18 @@ Build the best HF receiver we can, from parts buyable in the Iranian market, con
 
 ## 8. Raspberry Pi software
 
-**Language:** Python 3 (numpy/scipy). The same DSP package is imported by the simulation (L4), so what is simulated is what ships.
+**Language:** **C# on .NET 10 (LTS)**, self-contained linux-arm64 deployment.
+
+**Solution layout:**
+
+| Project | Type | Content |
+|---|---|---|
+| `NeoRadio.Dsp` | class library | All DSP: FFT, demodulators, filters, AGC, noise reduction, I/Q calibration, S-meter. No I/O, no ASP.NET dependency. SIMD via `System.Numerics.Tensors`; FFTW via P/Invoke only if profiling requires it |
+| `NeoRadio.Dsp.Cli` | console app (`neoradio-dsp`) | Runs `NeoRadio.Dsp` on a SigMF/WAV I/Q file or stdin stream and writes demodulated audio + JSON metrics. **This is how the simulation (L4) executes the shipping DSP.** Runs on the PC (linux-x64) and the Pi |
+| `NeoRadio.Daemon` | ASP.NET Core service (`neoradiod`) | The components below |
+| `NeoRadio.*.Tests` | xUnit | Unit tests per project |
+
+**Audio I/O:** PipeWire via `pw-record` / `pw-play` child processes (raw PCM over stdin/stdout), behind an `IAudioSource` / `IAudioSink` interface so a native binding can replace it later. **Serial:** `System.IO.Ports`. **Firmware update:** `esptool` invoked as a child process.
 
 **`neoradiod`** (systemd service), components:
 
@@ -150,7 +162,7 @@ Build the best HF receiver we can, from parts buyable in the Iranian market, con
 | `control` | Talks to the firmware; owns the serial port |
 | `rigctl` | Hamlib `rigctld`-compatible TCP server (port 4532) for WSJT-X, fldigi and SDR++ Rigctl Client |
 | `audio_out` | Demodulated audio to the Pi speaker and to a virtual sink for WSJT-X |
-| `web` | HTTP + WebSocket UI: spectrum, waterfall, click-to-tune, bands, filter width, preamp/attenuator/bias-T, S-meter, power/temperature |
+| `web` | ASP.NET Core HTTP + WebSocket UI (static HTML/JS front end): spectrum, waterfall, click-to-tune, bands, filter width, preamp/attenuator/bias-T, S-meter, power/temperature |
 | `diagnostics` | Raw view (below) |
 | `recorder` | Raw I/Q recording (WAV and SigMF) and replay as a virtual source |
 | `updater` | Firmware flashing via `esptool`, self-test report |
@@ -163,14 +175,16 @@ Build the best HF receiver we can, from parts buyable in the Iranian market, con
 
 ## 9. Simulation and verification framework
 
-**Tools:** KiCad (with ngspice), ngspice, Qucs-S, openEMS, scikit-rf, Python (numpy/scipy), ft8_lib / jt9.
+**Tools:** KiCad (with ngspice), ngspice, Qucs-S, openEMS, scikit-rf, Python (numpy/scipy), .NET 10 SDK (for `neoradio-dsp`), ft8_lib / jt9.
+
+**Language split:** the simulation framework (models, scenario generation, RF/mixer/ADC models, orchestration, reports) is **Python**. The receiver DSP is **C#**; the twin calls the shipping `neoradio-dsp` CLI on generated I/Q files, so the code under simulation is the code that ships.
 
 | Layer | Content | Output |
 |---|---|---|
 | **L1 Models** | Vendor SPICE models (LM4562, BFR92A …); inductors with Q and SRF; FST3253 R_on/C from datasheet; behavioural Si5351 (phase noise) and CS5361 (noise, FS, digital filter) | `sim/models/` |
 | **L2 Blocks** | AC, noise, short transient, Monte Carlo, corners (temp, 4.75–5.25 V) for filters, preamp, mixer+baseband, bias-T, power | pass/fail vs §4, §5, §7 targets |
 | **L3 EM** | openEMS on the real KiCad layout: filters in place; coupling boost→front end, ESP32→front end, Si5351→antenna; S-params fed back into L2 | post-layout results |
-| **L4 Digital twin** | YAML scenarios (stations, ITU-R P.372 band noise, blockers, impulse noise, fading) → front-end (L2/L3 data) → mixer model (3f/5f response, phase noise, DC offset, I/Q imbalance) → ADC (quantisation, clipping) → **shipping Pi DSP code** → real decoders | FT8 decode vs SNR, CW CER, MDS, BDR, IMD3 DR, image rejection |
+| **L4 Digital twin** | YAML scenarios (stations, ITU-R P.372 band noise, blockers, impulse noise, fading) → front-end (L2/L3 data) → mixer model (3f/5f response, phase noise, DC offset, I/Q imbalance) → ADC (quantisation, clipping) → I/Q file (SigMF) → **shipping C# DSP (`neoradio-dsp`)** → real decoders | FT8 decode vs SNR, CW CER, MDS, BDR, IMD3 DR, image rejection |
 | **L5 Software-in-the-loop** | Firmware (host build) + L4 model = virtual board on a pty + ALSA loopback; `neoradiod`, web UI, SDR++, WSJT-X run against it | end-to-end system test without hardware |
 | **L6 Hardware validation** | Rev 0 coupon and Rev A board: Si5351 cal tone as generator, NanoVNA on filters, RTL-SDR for spurs >24 MHz, real antenna vs WebSDR; raw I/Q recordings fed back into L4 | calibrated models |
 
@@ -220,7 +234,7 @@ expect: {ft8_decoded: ">= 2", cw_cer: "< 5%"}
 hardware/      KiCad project(s): rev0-coupon/, revA/
 sim/           models/, blocks/ (L2), em/ (L3), twin/ (L4), scenarios/, report/
 firmware/      ESP-IDF project; components/{audio,cat,radio,hal,supervisor,calib}; host/ (Linux build + tests)
-pi/            neoradiod Python package (device, dsp, control, rigctl, audio_out, web, diagnostics, recorder, updater); udev/, systemd/
+pi/            NeoRadio.sln: NeoRadio.Dsp, NeoRadio.Dsp.Cli, NeoRadio.Daemon (device, control, rigctl, audio_out, web, diagnostics, recorder, updater), tests; udev/, systemd/
 docs/          specs, plans, measurement logs
 ```
 
