@@ -6,13 +6,14 @@ import sys
 from pathlib import Path
 
 from neohw.checks import attenuator as attenuator_check
+from neohw.checks import bpf as bpf_check
 from neohw.checks import BlockResult, CheckResult
 from neohw.ngspice import NgspiceError
 from neohw.report import write_report
 from neohw.spice import SpiceError
 from neohw.tools import ToolNotFoundError
 
-CHECKS = {"attenuator": attenuator_check.run}
+CHECKS = {"attenuator": attenuator_check.run, "bpf_bank": bpf_check.run}
 
 
 def main(argv: list[str]) -> int:

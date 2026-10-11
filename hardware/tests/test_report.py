@@ -18,3 +18,9 @@ def test_report_contains_checks_and_plot(tmp_path):
     assert "attenuator" in html and "FAIL" in html and "PASS" in html
     assert "attenuation_min_db" in html and "19.9" in html
     assert "data:image/png;base64," in html and "<svg" in html and "unknown" in html
+
+
+def test_report_with_log_axis(tmp_path):
+    res = BlockResult("bpf_bank", [CheckResult("x", 1.0, "≤ 2", True)],
+                      plots={"1": (np.array([1e5, 1e6, 1e7]), np.array([-60.0, -1.0, -60.0]))}, logx=True)
+    assert "data:image/png;base64," in write_report([res], tmp_path / "r.html").read_text()

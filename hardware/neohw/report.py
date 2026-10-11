@@ -26,10 +26,12 @@ def _badge(ok: bool) -> str:
     return '<span class="pass">PASS</span>' if ok else '<span class="fail">FAIL</span>'
 
 
-def _plot_png(plots: dict) -> str:
+def _plot_png(plots: dict, logx: bool = False) -> str:
     fig, ax = plt.subplots(figsize=(9, 3.2))
     for label, (x, y) in plots.items():
         ax.plot(x / 1e6, y, label=label)
+    if logx:
+        ax.set_xscale("log")
     ax.set_xlabel("frequency (MHz)")
     ax.grid(alpha=0.3)
     ax.legend(fontsize=8)
@@ -46,7 +48,7 @@ def _block_html(r: BlockResult) -> str:
     out = [f"<h2>{e(r.block)} {_badge(r.passed)}</h2>",
            f"<table><tr><th>check</th><th>value</th><th>limit</th><th>result</th></tr>{rows}</table>"]
     if r.plots:
-        out.append(f'<img alt="plots" src="{_plot_png(r.plots)}">')
+        out.append(f'<img alt="plots" src="{_plot_png(r.plots, r.logx)}">')
     svg = r.artefacts.get("svg")
     if svg and Path(svg).exists():
         text = Path(svg).read_text()

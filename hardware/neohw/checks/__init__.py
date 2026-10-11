@@ -22,6 +22,7 @@ class BlockResult:
     checks: list[CheckResult]
     plots: dict[str, tuple[np.ndarray, np.ndarray]] = field(default_factory=dict)
     artefacts: dict[str, Path] = field(default_factory=dict)
+    logx: bool = False
 
     @property
     def passed(self) -> bool:
