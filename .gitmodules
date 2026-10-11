@@ -1,0 +1,4 @@
+[submodule "third_party/ft8_lib"]
+	path = third_party/ft8_lib
+	url = https://github.com/kgoba/ft8_lib.git
+	ignore = untracked

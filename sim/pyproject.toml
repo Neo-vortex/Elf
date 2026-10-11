@@ -1,0 +1,13 @@
+[project]
+name = "neosim"
+version = "0.1.0"
+requires-python = ">=3.11"
+dependencies = ["numpy", "scipy", "pyyaml", "matplotlib"]
+
+[project.optional-dependencies]
+dev = ["pytest"]
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+testpaths = ["tests"]
+markers = ["integration: needs built external tools (make tools)"]

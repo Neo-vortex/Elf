@@ -1,0 +1,10 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/NeoRadio.Dsp.Cli/NeoRadio.Dsp.Cli.csproj" />
+    <Project Path="src/NeoRadio.Dsp/NeoRadio.Dsp.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/NeoRadio.Dsp.Cli.Tests/NeoRadio.Dsp.Cli.Tests.csproj" />
+    <Project Path="tests/NeoRadio.Dsp.Tests/NeoRadio.Dsp.Tests.csproj" />
+  </Folder>
+</Solution>
