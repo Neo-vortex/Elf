@@ -53,3 +53,33 @@ def test_invalid_scenarios_raise(mutate, message):
     mutate(d)
     with pytest.raises(ScenarioError, match=message):
         parse_scenario(d)
+
+
+@pytest.mark.parametrize(
+    "text, message",
+    [
+        ("", "must be a mapping"),
+        ("- a\n- b\n", "must be a mapping"),
+        ("name: [unclosed\n", "invalid YAML"),
+    ],
+)
+def test_load_scenario_rejects_bad_documents(tmp_path, text, message):
+    from neosim.scenario import load_scenario
+    f = tmp_path / "s.yaml"
+    f.write_text(text)
+    with pytest.raises(ScenarioError, match=message):
+        load_scenario(f)
+
+
+def test_non_numeric_value_is_scenario_error():
+    d = base()
+    d["stations"][0]["snr_db"] = "abc"
+    with pytest.raises(ScenarioError, match="snr_db"):
+        parse_scenario(d)
+
+
+def test_station_entry_must_be_mapping():
+    d = base()
+    d["stations"].append("oops")
+    with pytest.raises(ScenarioError, match="mapping"):
+        parse_scenario(d)

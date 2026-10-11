@@ -60,9 +60,18 @@ class Scenario:
 
 
 def _require(d: dict, key: str, where: str):
+    if not isinstance(d, dict):
+        raise ScenarioError(f"{where} must be a mapping, got {type(d).__name__}")
     if key not in d:
         raise ScenarioError(f"{where} needs '{key}'")
     return d[key]
+
+
+def _num(value, key: str, where: str, cast=float):
+    try:
+        return cast(value)
+    except (TypeError, ValueError):
+        raise ScenarioError(f"{where}: {key} must be a number, got {value!r}") from None
 
 
 def _station(d: dict) -> Station:
@@ -71,21 +80,21 @@ def _station(d: dict) -> Station:
     mode = _require(d, "mode", where)
     if mode not in STATION_MODES:
         raise ScenarioError(f"{where}: unknown station mode '{mode}'")
-    snr = float(_require(d, "snr_db", where))
+    snr = _num(_require(d, "snr_db", where), "snr_db", where)
     if mode == "ft8":
-        audio = float(_require(d, "audio_hz", where))
+        audio = _num(_require(d, "audio_hz", where), "audio_hz", where)
         if not 200 <= audio <= 3000:
             raise ScenarioError(f"{where}: audio_hz must be 200..3000, got {audio}")
-        return Station(sid, mode, float(_require(d, "dial_hz", where)) + audio, snr,
+        return Station(sid, mode, _num(_require(d, "dial_hz", where), "dial_hz", where) + audio, snr,
                        msg=str(_require(d, "msg", where)), audio_hz=audio)
-    rf = float(_require(d, "rf_hz", where))
+    rf = _num(_require(d, "rf_hz", where), "rf_hz", where)
     if mode == "cw":
         text = str(_require(d, "text", where))
         try:
             morse.keying_units(text)
         except ValueError as e:
             raise ScenarioError(f"{where}: {e}") from e
-        wpm = float(_require(d, "wpm", where))
+        wpm = _num(_require(d, "wpm", where), "wpm", where)
         if not 5 <= wpm <= 60:
             raise ScenarioError(f"{where}: wpm must be 5..60, got {wpm}")
         return Station(sid, mode, rf, snr, text=text, wpm=wpm)
@@ -101,7 +110,7 @@ def _receive(d: dict, lo_hz: float) -> Receive:
     decoder = _require(d, "decoder", where)
     if decoder not in DECODERS:
         raise ScenarioError(f"{where}: unknown decoder '{decoder}'")
-    dial = float(_require(d, "dial_hz", where))
+    dial = _num(_require(d, "dial_hz", where), "dial_hz", where)
     if abs(dial - lo_hz) + RECEIVE_MARGIN_HZ > WINDOW_HZ:
         raise ScenarioError(f"{where}: dial {dial} Hz is outside the receiver window LO±{WINDOW_HZ:.0f} Hz")
     expect = dict(d.get("expect") or {})
@@ -117,13 +126,15 @@ def _receive(d: dict, lo_hz: float) -> Receive:
 
 
 def parse_scenario(data: dict) -> Scenario:
+    if not isinstance(data, dict):
+        raise ScenarioError(f"scenario must be a mapping, got {type(data).__name__}")
     name = str(_require(data, "name", "scenario"))
-    lo = float(_require(data, "lo_hz", "scenario"))
-    duration = float(data.get("duration_s", 15.0))
+    lo = _num(_require(data, "lo_hz", "scenario"), "lo_hz", "scenario")
+    duration = _num(data.get("duration_s", 15.0), "duration_s", "scenario")
     if not 1.0 <= duration <= 60.0:
         raise ScenarioError(f"duration_s must be 1..60, got {duration}")
     noise = data.get("noise", {"type": "awgn"})
-    if noise.get("type") != "awgn":
+    if not isinstance(noise, dict) or noise.get("type") != "awgn":
         raise ScenarioError(f"noise type '{noise.get('type')}' not supported yet: only awgn")
     stations = tuple(_station(s) for s in data.get("stations", []))
     ids = [s.id for s in stations]
@@ -132,10 +143,17 @@ def parse_scenario(data: dict) -> Scenario:
         raise ScenarioError(f"duplicate station id(s): {sorted(dupes)}")
     receive = tuple(_receive(r, lo) for r in _require(data, "receive", "scenario"))
     adc = data.get("adc", {})
-    return Scenario(name, lo, duration, int(data.get("seed", 0)), float(adc.get("noise_dbfs", -100.0)),
+    if not isinstance(adc, dict):
+        raise ScenarioError("adc must be a mapping")
+    return Scenario(name, lo, duration, _num(data.get("seed", 0), "seed", "scenario", int),
+                    _num(adc.get("noise_dbfs", -100.0), "noise_dbfs", "adc"),
                     stations, receive)
 
 
 def load_scenario(path: str | Path) -> Scenario:
     with open(path, encoding="utf-8") as f:
-        return parse_scenario(yaml.safe_load(f))
+        try:
+            data = yaml.safe_load(f)
+        except yaml.YAMLError as e:
+            raise ScenarioError(f"{path}: invalid YAML: {e}") from None
+    return parse_scenario(data)
