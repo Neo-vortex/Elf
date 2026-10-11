@@ -49,8 +49,9 @@ def capacitor(value, footprint: str = "Capacitor_SMD:C_0805_2012Metric", mpn: st
     return p
 
 
-# G6K-2F terminal arrangement (pin name -> footprint pad). Check against the Omron
-# datasheet before layout.
+# G6K terminal arrangement (pin name -> footprint pad), as drawn in Omron's
+# G6K-2F-RF-V datasheet (top view). The -RF-V variant adds ground pads between
+# these terminals; its footprint differs from the plain G6K-2F.
 RELAY_PINS = {"COIL+": "1", "NC1": "2", "COM1": "3", "NO1": "4",
               "NO2": "5", "COM2": "6", "NC2": "7", "COIL-": "8"}
 G6K_INSULATION_OHMS = 1e9  # Omron G6K datasheet: insulation resistance 1,000 MΩ min (500 VDC)
