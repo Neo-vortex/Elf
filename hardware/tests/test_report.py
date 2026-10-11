@@ -1,0 +1,20 @@
+import numpy as np
+
+from neohw.checks import BlockResult, CheckResult
+from neohw.report import write_report
+
+
+def test_report_contains_checks_and_plot(tmp_path):
+    svg = tmp_path / "d.svg"
+    svg.write_text('<?xml version="1.0"?><svg xmlns="http://www.w3.org/2000/svg"><text>K1</text></svg>')
+    bom = tmp_path / "b.csv"
+    bom.write_text("refs,value,footprint,mpn,qty,availability\nR1,61.9Ω,fp,mpn,2,unknown\n")
+    res = BlockResult("attenuator",
+                      [CheckResult("attenuation_min_db", 19.9, "≥ 19.5", True),
+                       CheckResult("bypass_loss_db", 0.3, "≤ 0.2", False)],
+                      plots={"pad S21 (dB)": (np.array([1e6, 2e6]), np.array([-20.0, -20.1]))},
+                      artefacts={"svg": svg, "bom": bom})
+    html = write_report([res], tmp_path / "r.html").read_text()
+    assert "attenuator" in html and "FAIL" in html and "PASS" in html
+    assert "attenuation_min_db" in html and "19.9" in html
+    assert "data:image/png;base64," in html and "<svg" in html and "unknown" in html

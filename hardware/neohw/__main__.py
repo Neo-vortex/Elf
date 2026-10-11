@@ -1,0 +1,40 @@
+"""Command line: python -m neohw run"""
+from __future__ import annotations
+
+import argparse
+import sys
+from pathlib import Path
+
+from neohw.checks import attenuator as attenuator_check
+from neohw.ngspice import NgspiceError
+from neohw.report import write_report
+from neohw.tools import ToolNotFoundError
+
+CHECKS = {"attenuator": attenuator_check.run}
+
+
+def main(argv: list[str]) -> int:
+    parser = argparse.ArgumentParser(prog="neohw")
+    sub = parser.add_subparsers(dest="command", required=True)
+    run = sub.add_parser("run", help="run block checks, write characterisation files and a report")
+    run.add_argument("--out", type=Path, default=Path("build/hw"))
+    run.add_argument("--characterized", type=Path, default=Path("characterized"))
+    run.add_argument("--report", type=Path, default=Path("build/hw/report.html"))
+    args = parser.parse_args(argv)
+
+    results = []
+    try:
+        for name, check in CHECKS.items():
+            result = check(args.out, args.characterized)
+            print(f"{'PASS' if result.passed else 'FAIL'}  {name}")
+            results.append(result)
+    except (ToolNotFoundError, NgspiceError) as e:
+        print(f"error: {e}", file=sys.stderr)
+        return 2
+    report = write_report(results, args.report)
+    print(f"report: {report}")
+    return 0 if all(r.passed for r in results) else 1
+
+
+if __name__ == "__main__":
+    sys.exit(main(sys.argv[1:]))
