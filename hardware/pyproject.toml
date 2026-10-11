@@ -1,0 +1,13 @@
+[project]
+name = "neohw"
+version = "0.1.0"
+requires-python = ">=3.11"
+dependencies = ["skidl==2.3.0", "numpy", "matplotlib"]
+
+[project.optional-dependencies]
+dev = ["pytest"]
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+testpaths = ["tests"]
+markers = ["integration: needs ngspice / dot installed"]
