@@ -34,6 +34,7 @@ Build the best HF receiver we can, from parts buyable in the Iranian market, con
 | Complexity | Keep the circuit as simple as the performance targets allow |
 | Sourcing | All parts from Iranian shops; checked on Torob (raw data: `2026-10-12-parts-availability-torob.json`) |
 | Pi software | **C# on .NET 10 (LTS)**, linux-arm64 |
+| Schematic capture | **Circuits as code with SKiDL (Python)**: one source per block generates the KiCad netlist (layout in KiCad) and the ngspice netlist (simulation) |
 | Verification | Heavy simulation before building (§9) |
 
 **User test equipment:** multimeter, bench power supply, RTL-SDR (weak on HF), no oscilloscope. A NanoVNA purchase is recommended for Rev 0.
@@ -175,7 +176,7 @@ Build the best HF receiver we can, from parts buyable in the Iranian market, con
 
 ## 9. Simulation and verification framework
 
-**Tools:** KiCad (with ngspice), ngspice, Qucs-S, openEMS, scikit-rf, Python (numpy/scipy), .NET 10 SDK (for `neoradio-dsp`), ft8_lib / jt9.
+**Tools:** SKiDL (schematics as Python; emits KiCad and SPICE netlists from the same source), KiCad (layout), ngspice, Qucs-S, openEMS, scikit-rf, Python (numpy/scipy), .NET 10 SDK (for `neoradio-dsp`), ft8_lib / jt9.
 
 **Language split:** the simulation framework (models, scenario generation, RF/mixer/ADC models, orchestration, reports) is **Python**. The receiver DSP is **C#**; the twin calls the shipping `neoradio-dsp` CLI on generated I/Q files, so the code under simulation is the code that ships.
 
@@ -231,7 +232,7 @@ expect: {ft8_decoded: ">= 2", cw_cer: "< 5%"}
 ## 11. Repository layout (planned)
 
 ```
-hardware/      KiCad project(s): rev0-coupon/, revA/
+hardware/      SKiDL circuit sources (blocks/ as Python modules) + generated netlists; KiCad layout projects rev0-coupon/, revA/
 sim/           models/, blocks/ (L2), em/ (L3), twin/ (L4), scenarios/, report/
 firmware/      ESP-IDF project; components/{audio,cat,radio,hal,supervisor,calib}; host/ (Linux build + tests)
 pi/            NeoRadio.sln: NeoRadio.Dsp, NeoRadio.Dsp.Cli, NeoRadio.Daemon (device, control, rigctl, audio_out, web, diagnostics, recorder, updater), tests; udev/, systemd/
