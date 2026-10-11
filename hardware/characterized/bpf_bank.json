@@ -1,0 +1,941 @@
+{
+ "schema_version": 1,
+ "block": "bpf_bank",
+ "status": "pass",
+ "generated_by": "8d84ca1",
+ "ripple_db": 0.02,
+ "q_assumed": 30.0,
+ "selection_rule": "filter n with lo_n <= f < hi_n; f = 54 MHz -> 10",
+ "filters": [
+  {
+   "index": 1,
+   "lo_hz": 100000.0,
+   "hi_hz": 500000.0,
+   "hpf_order": 5,
+   "lpf_order": 9,
+   "il_db": 1.8526367803474189,
+   "rl_db": 18.525701830916375,
+   "rej3f_db": null,
+   "mc_runs": 200,
+   "mc_passed": 200,
+   "s2p": "bpf_1.s2p",
+   "inductors": [
+    {
+     "position": 2,
+     "kind": "L_shunt",
+     "target_h": 6.094572129821718e-05,
+     "buy_h": [
+      3.9e-05,
+      2.2e-05
+     ]
+    },
+    {
+     "position": 4,
+     "kind": "L_shunt",
+     "target_h": 6.09457212982172e-05,
+     "buy_h": [
+      3.9e-05,
+      2.2e-05
+     ]
+    },
+    {
+     "position": 7,
+     "kind": "L_series",
+     "target_h": 2.243290921321993e-05,
+     "buy_h": [
+      2.2e-05,
+      4.7e-07
+     ]
+    },
+    {
+     "position": 9,
+     "kind": "L_series",
+     "target_h": 2.6348486402155528e-05,
+     "buy_h": [
+      1.8e-05,
+      8.2e-06
+     ]
+    },
+    {
+     "position": 11,
+     "kind": "L_series",
+     "target_h": 2.6348486402155535e-05,
+     "buy_h": [
+      1.8e-05,
+      8.2e-06
+     ]
+    },
+    {
+     "position": 13,
+     "kind": "L_series",
+     "target_h": 2.2432909213219943e-05,
+     "buy_h": [
+      2.2e-05,
+      4.7e-07
+     ]
+    }
+   ]
+  },
+  {
+   "index": 2,
+   "lo_hz": 500000.0,
+   "hi_hz": 1700000.0,
+   "hpf_order": 5,
+   "lpf_order": 9,
+   "il_db": 1.726200105524268,
+   "rl_db": 20.256156242978385,
+   "rej3f_db": null,
+   "mc_runs": 200,
+   "mc_passed": 200,
+   "s2p": "bpf_2.s2p",
+   "inductors": [
+    {
+     "position": 2,
+     "kind": "L_shunt",
+     "target_h": 1.2189144259643435e-05,
+     "buy_h": [
+      1.2e-05,
+      1.8e-07
+     ]
+    },
+    {
+     "position": 4,
+     "kind": "L_shunt",
+     "target_h": 1.2189144259643439e-05,
+     "buy_h": [
+      1.2e-05,
+      1.8e-07
+     ]
+    },
+    {
+     "position": 7,
+     "kind": "L_series",
+     "target_h": 6.597914474476448e-06,
+     "buy_h": [
+      5.6e-06,
+      1e-06
+     ]
+    },
+    {
+     "position": 9,
+     "kind": "L_series",
+     "target_h": 7.74955482416339e-06,
+     "buy_h": [
+      6.8e-06,
+      1e-06
+     ]
+    },
+    {
+     "position": 11,
+     "kind": "L_series",
+     "target_h": 7.749554824163392e-06,
+     "buy_h": [
+      6.8e-06,
+      1e-06
+     ]
+    },
+    {
+     "position": 13,
+     "kind": "L_series",
+     "target_h": 6.597914474476452e-06,
+     "buy_h": [
+      5.6e-06,
+      1e-06
+     ]
+    }
+   ]
+  },
+  {
+   "index": 3,
+   "lo_hz": 1700000.0,
+   "hi_hz": 2500000.0,
+   "hpf_order": 5,
+   "lpf_order": 9,
+   "il_db": 1.9141936923791034,
+   "rl_db": 18.09528571648703,
+   "rej3f_db": 73.69849125241726,
+   "mc_runs": 200,
+   "mc_passed": 200,
+   "s2p": "bpf_3.s2p",
+   "inductors": [
+    {
+     "position": 2,
+     "kind": "L_shunt",
+     "target_h": 3.585042429306893e-06,
+     "buy_h": [
+      1.8e-06,
+      1.8e-06
+     ]
+    },
+    {
+     "position": 4,
+     "kind": "L_shunt",
+     "target_h": 3.5850424293068936e-06,
+     "buy_h": [
+      1.8e-06,
+      1.8e-06
+     ]
+    },
+    {
+     "position": 7,
+     "kind": "L_series",
+     "target_h": 4.486581842643985e-06,
+     "buy_h": [
+      3.3e-06,
+      1.2e-06
+     ]
+    },
+    {
+     "position": 9,
+     "kind": "L_series",
+     "target_h": 5.269697280431106e-06,
+     "buy_h": [
+      4.7e-06,
+      5.6e-07
+     ]
+    },
+    {
+     "position": 11,
+     "kind": "L_series",
+     "target_h": 5.269697280431107e-06,
+     "buy_h": [
+      4.7e-06,
+      5.6e-07
+     ]
+    },
+    {
+     "position": 13,
+     "kind": "L_series",
+     "target_h": 4.4865818426439885e-06,
+     "buy_h": [
+      3.3e-06,
+      1.2e-06
+     ]
+    }
+   ]
+  },
+  {
+   "index": 4,
+   "lo_hz": 2500000.0,
+   "hi_hz": 4500000.0,
+   "hpf_order": 5,
+   "lpf_order": 9,
+   "il_db": 1.6985397162813098,
+   "rl_db": 20.428006737680207,
+   "rej3f_db": 54.89649616029918,
+   "mc_runs": 200,
+   "mc_passed": 200,
+   "s2p": "bpf_4.s2p",
+   "inductors": [
+    {
+     "position": 2,
+     "kind": "L_shunt",
+     "target_h": 2.437828851928687e-06,
+     "buy_h": [
+      2.2e-06,
+      2.2e-07
+     ]
+    },
+    {
+     "position": 4,
+     "kind": "L_shunt",
+     "target_h": 2.4378288519286877e-06,
+     "buy_h": [
+      2.2e-06,
+      2.2e-07
+     ]
+    },
+    {
+     "position": 7,
+     "kind": "L_series",
+     "target_h": 2.4925454681355473e-06,
+     "buy_h": [
+      1.5e-06,
+      1e-06
+     ]
+    },
+    {
+     "position": 9,
+     "kind": "L_series",
+     "target_h": 2.927609600239503e-06,
+     "buy_h": [
+      2.7e-06,
+      2.2e-07
+     ]
+    },
+    {
+     "position": 11,
+     "kind": "L_series",
+     "target_h": 2.927609600239504e-06,
+     "buy_h": [
+      2.7e-06,
+      2.2e-07
+     ]
+    },
+    {
+     "position": 13,
+     "kind": "L_series",
+     "target_h": 2.492545468135549e-06,
+     "buy_h": [
+      1.5e-06,
+      1e-06
+     ]
+    }
+   ]
+  },
+  {
+   "index": 5,
+   "lo_hz": 4500000.0,
+   "hi_hz": 7500000.0,
+   "hpf_order": 5,
+   "lpf_order": 9,
+   "il_db": 1.792559423557651,
+   "rl_db": 17.774071697631705,
+   "rej3f_db": 62.939529517540656,
+   "mc_runs": 200,
+   "mc_passed": 200,
+   "s2p": "bpf_5.s2p",
+   "inductors": [
+    {
+     "position": 2,
+     "kind": "L_shunt",
+     "target_h": 1.354349362182604e-06,
+     "buy_h": [
+      1.2e-06,
+      1.5e-07
+     ]
+    },
+    {
+     "position": 4,
+     "kind": "L_shunt",
+     "target_h": 1.3543493621826042e-06,
+     "buy_h": [
+      1.2e-06,
+      1.5e-07
+     ]
+    },
+    {
+     "position": 7,
+     "kind": "L_series",
+     "target_h": 1.4955272808813284e-06,
+     "buy_h": [
+      1.5e-06
+     ]
+    },
+    {
+     "position": 9,
+     "kind": "L_series",
+     "target_h": 1.7565657601437018e-06,
+     "buy_h": [
+      1.2e-06,
+      5.6e-07
+     ]
+    },
+    {
+     "position": 11,
+     "kind": "L_series",
+     "target_h": 1.756565760143702e-06,
+     "buy_h": [
+      1.2e-06,
+      5.6e-07
+     ]
+    },
+    {
+     "position": 13,
+     "kind": "L_series",
+     "target_h": 1.4955272808813293e-06,
+     "buy_h": [
+      1.5e-06
+     ]
+    }
+   ]
+  },
+  {
+   "index": 6,
+   "lo_hz": 7500000.0,
+   "hi_hz": 12000000.0,
+   "hpf_order": 5,
+   "lpf_order": 9,
+   "il_db": 1.877643880895433,
+   "rl_db": 17.61129422754429,
+   "rej3f_db": 67.74610537894502,
+   "mc_runs": 200,
+   "mc_passed": 200,
+   "s2p": "bpf_6.s2p",
+   "inductors": [
+    {
+     "position": 2,
+     "kind": "L_shunt",
+     "target_h": 8.126096173095623e-07,
+     "buy_h": [
+      8.2e-07
+     ]
+    },
+    {
+     "position": 4,
+     "kind": "L_shunt",
+     "target_h": 8.126096173095625e-07,
+     "buy_h": [
+      8.2e-07
+     ]
+    },
+    {
+     "position": 7,
+     "kind": "L_series",
+     "target_h": 9.347045505508302e-07,
+     "buy_h": [
+      8.2e-07,
+      1.2e-07
+     ]
+    },
+    {
+     "position": 9,
+     "kind": "L_series",
+     "target_h": 1.0978536000898136e-06,
+     "buy_h": [
+      1e-06,
+      1e-07
+     ]
+    },
+    {
+     "position": 11,
+     "kind": "L_series",
+     "target_h": 1.0978536000898138e-06,
+     "buy_h": [
+      1e-06,
+      1e-07
+     ]
+    },
+    {
+     "position": 13,
+     "kind": "L_series",
+     "target_h": 9.347045505508307e-07,
+     "buy_h": [
+      8.2e-07,
+      1.2e-07
+     ]
+    }
+   ]
+  },
+  {
+   "index": 7,
+   "lo_hz": 12000000.0,
+   "hi_hz": 16000000.0,
+   "hpf_order": 5,
+   "lpf_order": 7,
+   "il_db": 1.5139526219423014,
+   "rl_db": 17.182712343255957,
+   "rej3f_db": 60.6771274945617,
+   "mc_runs": 200,
+   "mc_passed": 199,
+   "s2p": "bpf_7.s2p",
+   "inductors": [
+    {
+     "position": 2,
+     "kind": "L_shunt",
+     "target_h": 5.078810108184765e-07,
+     "buy_h": [
+      3.9e-07,
+      1.2e-07
+     ]
+    },
+    {
+     "position": 4,
+     "kind": "L_shunt",
+     "target_h": 5.078810108184766e-07,
+     "buy_h": [
+      3.9e-07,
+      1.2e-07
+     ]
+    },
+    {
+     "position": 7,
+     "kind": "L_series",
+     "target_h": 6.864988352664276e-07,
+     "buy_h": [
+      6.8e-07
+     ]
+    },
+    {
+     "position": 9,
+     "kind": "L_series",
+     "target_h": 7.905470399231043e-07,
+     "buy_h": [
+      6.8e-07,
+      1.2e-07
+     ]
+    },
+    {
+     "position": 11,
+     "kind": "L_series",
+     "target_h": 6.86498835266428e-07,
+     "buy_h": [
+      6.8e-07
+     ]
+    }
+   ]
+  },
+  {
+   "index": 8,
+   "lo_hz": 16000000.0,
+   "hi_hz": 22000000.0,
+   "hpf_order": 5,
+   "lpf_order": 7,
+   "il_db": 1.5053563683835847,
+   "rl_db": 17.41172165387377,
+   "rej3f_db": 58.851700302137104,
+   "mc_runs": 200,
+   "mc_passed": 199,
+   "s2p": "bpf_8.s2p",
+   "inductors": [
+    {
+     "position": 2,
+     "kind": "L_shunt",
+     "target_h": 3.8091075811385736e-07,
+     "buy_h": [
+      3.9e-07
+     ]
+    },
+    {
+     "position": 4,
+     "kind": "L_shunt",
+     "target_h": 3.8091075811385746e-07,
+     "buy_h": [
+      3.9e-07
+     ]
+    },
+    {
+     "position": 7,
+     "kind": "L_series",
+     "target_h": 4.992718801937654e-07,
+     "buy_h": [
+      3.9e-07,
+      1e-07
+     ]
+    },
+    {
+     "position": 9,
+     "kind": "L_series",
+     "target_h": 5.749433017622576e-07,
+     "buy_h": [
+      4.7e-07,
+      1e-07
+     ]
+    },
+    {
+     "position": 11,
+     "kind": "L_series",
+     "target_h": 4.992718801937658e-07,
+     "buy_h": [
+      3.9e-07,
+      1e-07
+     ]
+    }
+   ]
+  },
+  {
+   "index": 9,
+   "lo_hz": 22000000.0,
+   "hi_hz": 30000000.0,
+   "hpf_order": 5,
+   "lpf_order": 7,
+   "il_db": 1.508506644432421,
+   "rl_db": 16.696819485272403,
+   "rej3f_db": 59.84566925741565,
+   "mc_runs": 200,
+   "mc_passed": 200,
+   "s2p": "bpf_9.s2p",
+   "inductors": [
+    {
+     "position": 2,
+     "kind": "L_shunt",
+     "target_h": 2.7702600590098715e-07,
+     "buy_h": [
+      1.8e-07,
+      1e-07
+     ]
+    },
+    {
+     "position": 4,
+     "kind": "L_shunt",
+     "target_h": 2.7702600590098725e-07,
+     "buy_h": [
+      1.8e-07,
+      1e-07
+     ]
+    },
+    {
+     "position": 7,
+     "kind": "L_series",
+     "target_h": 3.661327121420947e-07,
+     "buy_h": [
+      2.7e-07,
+      1e-07
+     ]
+    },
+    {
+     "position": 9,
+     "kind": "L_series",
+     "target_h": 4.216250879589889e-07,
+     "buy_h": [
+      2.7e-07,
+      1.5e-07
+     ]
+    },
+    {
+     "position": 11,
+     "kind": "L_series",
+     "target_h": 3.661327121420949e-07,
+     "buy_h": [
+      2.7e-07,
+      1e-07
+     ]
+    }
+   ]
+  },
+  {
+   "index": 10,
+   "lo_hz": 30000000.0,
+   "hi_hz": 54000000.0,
+   "hpf_order": 5,
+   "lpf_order": 9,
+   "il_db": 1.7119133975257457,
+   "rl_db": 17.69595966089646,
+   "rej3f_db": 57.596256224381435,
+   "mc_runs": 200,
+   "mc_passed": 200,
+   "s2p": "bpf_10.s2p",
+   "inductors": [
+    {
+     "position": 2,
+     "kind": "L_shunt",
+     "target_h": 2.0315240432739057e-07,
+     "buy_h": [
+      1e-07,
+      1e-07
+     ]
+    },
+    {
+     "position": 4,
+     "kind": "L_shunt",
+     "target_h": 2.0315240432739062e-07,
+     "buy_h": [
+      1e-07,
+      1e-07
+     ]
+    },
+    {
+     "position": 7,
+     "kind": "L_series",
+     "target_h": 2.0375570096663602e-07,
+     "buy_h": [
+      1e-07,
+      1e-07
+     ]
+    },
+    {
+     "position": 9,
+     "kind": "L_series",
+     "target_h": 2.393204673211657e-07,
+     "buy_h": [
+      1.2e-07,
+      1.2e-07
+     ]
+    },
+    {
+     "position": 11,
+     "kind": "L_series",
+     "target_h": 2.393204673211658e-07,
+     "buy_h": [
+      1.2e-07,
+      1.2e-07
+     ]
+    },
+    {
+     "position": 13,
+     "kind": "L_series",
+     "target_h": 2.0375570096663613e-07,
+     "buy_h": [
+      1e-07,
+      1e-07
+     ]
+    }
+   ]
+  }
+ ],
+ "checks": [
+  {
+   "name": "bpf1_il_db",
+   "value": 1.8526367803474189,
+   "limit": "\u2264 3",
+   "passed": true,
+   "unit": "dB"
+  },
+  {
+   "name": "bpf1_rl_db",
+   "value": 18.525701830916375,
+   "limit": "\u2265 14",
+   "passed": true,
+   "unit": "dB"
+  },
+  {
+   "name": "bpf1_mc_pass_pct",
+   "value": 100.0,
+   "limit": "\u2265 95",
+   "passed": true,
+   "unit": "%"
+  },
+  {
+   "name": "bpf2_il_db",
+   "value": 1.726200105524268,
+   "limit": "\u2264 3",
+   "passed": true,
+   "unit": "dB"
+  },
+  {
+   "name": "bpf2_rl_db",
+   "value": 20.256156242978385,
+   "limit": "\u2265 14",
+   "passed": true,
+   "unit": "dB"
+  },
+  {
+   "name": "bpf2_mc_pass_pct",
+   "value": 100.0,
+   "limit": "\u2265 95",
+   "passed": true,
+   "unit": "%"
+  },
+  {
+   "name": "bpf3_il_db",
+   "value": 1.9141936923791034,
+   "limit": "\u2264 3",
+   "passed": true,
+   "unit": "dB"
+  },
+  {
+   "name": "bpf3_rl_db",
+   "value": 18.09528571648703,
+   "limit": "\u2265 14",
+   "passed": true,
+   "unit": "dB"
+  },
+  {
+   "name": "bpf3_rej3f_db",
+   "value": 73.69849125241726,
+   "limit": "\u2265 50",
+   "passed": true,
+   "unit": "dB"
+  },
+  {
+   "name": "bpf3_mc_pass_pct",
+   "value": 100.0,
+   "limit": "\u2265 95",
+   "passed": true,
+   "unit": "%"
+  },
+  {
+   "name": "bpf4_il_db",
+   "value": 1.6985397162813098,
+   "limit": "\u2264 3",
+   "passed": true,
+   "unit": "dB"
+  },
+  {
+   "name": "bpf4_rl_db",
+   "value": 20.428006737680207,
+   "limit": "\u2265 14",
+   "passed": true,
+   "unit": "dB"
+  },
+  {
+   "name": "bpf4_rej3f_db",
+   "value": 54.89649616029918,
+   "limit": "\u2265 50",
+   "passed": true,
+   "unit": "dB"
+  },
+  {
+   "name": "bpf4_mc_pass_pct",
+   "value": 100.0,
+   "limit": "\u2265 95",
+   "passed": true,
+   "unit": "%"
+  },
+  {
+   "name": "bpf5_il_db",
+   "value": 1.792559423557651,
+   "limit": "\u2264 3",
+   "passed": true,
+   "unit": "dB"
+  },
+  {
+   "name": "bpf5_rl_db",
+   "value": 17.774071697631705,
+   "limit": "\u2265 14",
+   "passed": true,
+   "unit": "dB"
+  },
+  {
+   "name": "bpf5_rej3f_db",
+   "value": 62.939529517540656,
+   "limit": "\u2265 50",
+   "passed": true,
+   "unit": "dB"
+  },
+  {
+   "name": "bpf5_mc_pass_pct",
+   "value": 100.0,
+   "limit": "\u2265 95",
+   "passed": true,
+   "unit": "%"
+  },
+  {
+   "name": "bpf6_il_db",
+   "value": 1.877643880895433,
+   "limit": "\u2264 3",
+   "passed": true,
+   "unit": "dB"
+  },
+  {
+   "name": "bpf6_rl_db",
+   "value": 17.61129422754429,
+   "limit": "\u2265 14",
+   "passed": true,
+   "unit": "dB"
+  },
+  {
+   "name": "bpf6_rej3f_db",
+   "value": 67.74610537894502,
+   "limit": "\u2265 50",
+   "passed": true,
+   "unit": "dB"
+  },
+  {
+   "name": "bpf6_mc_pass_pct",
+   "value": 100.0,
+   "limit": "\u2265 95",
+   "passed": true,
+   "unit": "%"
+  },
+  {
+   "name": "bpf7_il_db",
+   "value": 1.5139526219423014,
+   "limit": "\u2264 3",
+   "passed": true,
+   "unit": "dB"
+  },
+  {
+   "name": "bpf7_rl_db",
+   "value": 17.182712343255957,
+   "limit": "\u2265 14",
+   "passed": true,
+   "unit": "dB"
+  },
+  {
+   "name": "bpf7_rej3f_db",
+   "value": 60.6771274945617,
+   "limit": "\u2265 50",
+   "passed": true,
+   "unit": "dB"
+  },
+  {
+   "name": "bpf7_mc_pass_pct",
+   "value": 99.5,
+   "limit": "\u2265 95",
+   "passed": true,
+   "unit": "%"
+  },
+  {
+   "name": "bpf8_il_db",
+   "value": 1.5053563683835847,
+   "limit": "\u2264 2",
+   "passed": true,
+   "unit": "dB"
+  },
+  {
+   "name": "bpf8_rl_db",
+   "value": 17.41172165387377,
+   "limit": "\u2265 14",
+   "passed": true,
+   "unit": "dB"
+  },
+  {
+   "name": "bpf8_rej3f_db",
+   "value": 58.851700302137104,
+   "limit": "\u2265 50",
+   "passed": true,
+   "unit": "dB"
+  },
+  {
+   "name": "bpf8_mc_pass_pct",
+   "value": 99.5,
+   "limit": "\u2265 95",
+   "passed": true,
+   "unit": "%"
+  },
+  {
+   "name": "bpf9_il_db",
+   "value": 1.508506644432421,
+   "limit": "\u2264 2",
+   "passed": true,
+   "unit": "dB"
+  },
+  {
+   "name": "bpf9_rl_db",
+   "value": 16.696819485272403,
+   "limit": "\u2265 14",
+   "passed": true,
+   "unit": "dB"
+  },
+  {
+   "name": "bpf9_rej3f_db",
+   "value": 59.84566925741565,
+   "limit": "\u2265 50",
+   "passed": true,
+   "unit": "dB"
+  },
+  {
+   "name": "bpf9_mc_pass_pct",
+   "value": 100.0,
+   "limit": "\u2265 95",
+   "passed": true,
+   "unit": "%"
+  },
+  {
+   "name": "bpf10_il_db",
+   "value": 1.7119133975257457,
+   "limit": "\u2264 2",
+   "passed": true,
+   "unit": "dB"
+  },
+  {
+   "name": "bpf10_rl_db",
+   "value": 17.69595966089646,
+   "limit": "\u2265 14",
+   "passed": true,
+   "unit": "dB"
+  },
+  {
+   "name": "bpf10_rej3f_db",
+   "value": 57.596256224381435,
+   "limit": "\u2265 50",
+   "passed": true,
+   "unit": "dB"
+  },
+  {
+   "name": "bpf10_mc_pass_pct",
+   "value": 100.0,
+   "limit": "\u2265 95",
+   "passed": true,
+   "unit": "%"
+  },
+  {
+   "name": "bank_mute_isolation_db",
+   "value": 188.62479164153137,
+   "limit": "\u2265 40",
+   "passed": true,
+   "unit": "dB"
+  }
+ ]
+}
