@@ -13,8 +13,11 @@ class NgspiceError(RuntimeError):
     """ngspice failed or produced unusable output."""
 
 
-# ngspice 45 exits 0 and only warns for these, then writes a rawfile of garbage.
-_FATAL_WARNINGS = ("singular matrix", "is not a valid")
+# ngspice 45 exits 0 and only warns when it drops a malformed element line, then
+# simulates the remaining circuit. ("singular matrix" alone is not fatal: a node
+# reached only through capacitors, like an open relay contact, triggers it at the
+# operating point and ngspice recovers.)
+_FATAL_WARNINGS = ("is not a valid",)
 
 
 def _fail(reason: str, deck_path: Path, log: str) -> NgspiceError:
