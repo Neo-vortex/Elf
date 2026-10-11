@@ -136,4 +136,55 @@ public sealed class CliTests : IDisposable
         Assert.Equal(850, cfg.HighCutHz);
         Assert.Equal(NeoRadio.Dsp.Sideband.Upper, cfg.Sideband);
     }
+
+    string WriteRawMeta(string name, string json, int dataBytes = 16)
+    {
+        var meta = Path.Combine(_dir, name + ".sigmf-meta");
+        File.WriteAllText(meta, json);
+        File.WriteAllBytes(Path.Combine(_dir, name + ".sigmf-data"), new byte[dataBytes]);
+        return meta;
+    }
+
+    [Theory]
+    [InlineData("{\"global\":{\"core:datatype\":5,\"core:sample_rate\":96000}}", "core:datatype")]
+    [InlineData("[]", "global")]
+    [InlineData("{\"global\":{\"core:datatype\":\"cf32_le\",\"core:sample_rate\":96000},\"captures\":[{\"core:frequency\":\"x\"}]}", "core:frequency")]
+    public void Malformed_metadata_is_input_error(string json, string expected)
+    {
+        var meta = WriteRawMeta("bad", json);
+        var (code, err) = Run("--input", meta, "--output", Path.Combine(_dir, "x.wav"), "--tune-offset", "0");
+        Assert.Equal(3, code);
+        Assert.Contains(expected, err);
+    }
+
+    [Fact]
+    public void Empty_data_file_is_input_error()
+    {
+        var meta = WriteRawMeta("empty", "{\"global\":{\"core:datatype\":\"cf32_le\",\"core:sample_rate\":96000}}", 0);
+        var (code, err) = Run("--input", meta, "--output", Path.Combine(_dir, "x.wav"), "--tune-offset", "0");
+        Assert.Equal(3, code);
+        Assert.Contains("empty", err);
+    }
+
+    [Theory]
+    [InlineData("--tune-offset", "NaN")]
+    [InlineData("--low-cut", "NaN")]
+    [InlineData("--high-cut", "Infinity")]
+    public void Non_finite_numbers_are_usage_errors(string option, string value)
+    {
+        var args = new List<string> { "--input", "a.sigmf-meta", "--output", "b.wav", "--tune-offset", "0" };
+        if (option == "--tune-offset") args[5] = value; else args.AddRange(new[] { option, value });
+        var (code, err) = Run(args.ToArray());
+        Assert.Equal(2, code);
+        Assert.Contains("finite", err);
+    }
+
+    [Fact]
+    public void Missing_output_directory_is_output_error()
+    {
+        var meta = WriteSigMf("okdir", "cf32_le", 96000, Tone(15500, 96000, 9600, 0.1));
+        var (code, err) = Run("--input", meta, "--output", Path.Combine(_dir, "no", "such", "x.wav"), "--tune-offset", "14000");
+        Assert.Equal(3, code);
+        Assert.Contains("output error", err);
+    }
 }

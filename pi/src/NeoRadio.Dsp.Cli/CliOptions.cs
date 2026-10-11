@@ -43,9 +43,9 @@ public sealed record CliOptions(
         double Number(string key, double fallback)
         {
             if (!values.TryGetValue(key, out var v)) return fallback;
-            return double.TryParse(v, NumberStyles.Float, CultureInfo.InvariantCulture, out var d)
-                ? d
-                : throw new CliUsageException($"{key} expects a number, got '{v}'");
+            if (!double.TryParse(v, NumberStyles.Float, CultureInfo.InvariantCulture, out var d))
+                throw new CliUsageException($"{key} expects a number, got '{v}'");
+            return double.IsFinite(d) ? d : throw new CliUsageException($"{key} must be a finite number, got '{v}'");
         }
 
         string mode = values.GetValueOrDefault("--mode", "usb");

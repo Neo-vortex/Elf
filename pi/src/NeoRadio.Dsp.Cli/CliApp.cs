@@ -28,7 +28,7 @@ public static class CliApp
         {
             recording = SigMfReader.Read(options.InputPath);
         }
-        catch (Exception e) when (e is InvalidDataException or IOException or JsonException)
+        catch (Exception e) when (e is InvalidDataException or IOException or JsonException or UnauthorizedAccessException)
         {
             stderr.WriteLine($"input error: {e.Message}");
             return InputError;
@@ -46,9 +46,17 @@ public static class CliApp
         }
 
         float[] audio = receiver.Process(recording.Samples);
-        WavWriter.WriteMono16(options.OutputPath, audio, (int)options.AudioRate);
-        if (options.MetricsPath is not null)
-            File.WriteAllText(options.MetricsPath, JsonSerializer.Serialize(Metrics.From(recording.Samples.Length, audio)));
+        try
+        {
+            WavWriter.WriteMono16(options.OutputPath, audio, (int)options.AudioRate);
+            if (options.MetricsPath is not null)
+                File.WriteAllText(options.MetricsPath, JsonSerializer.Serialize(Metrics.From(recording.Samples.Length, audio)));
+        }
+        catch (Exception e) when (e is IOException or UnauthorizedAccessException)
+        {
+            stderr.WriteLine($"output error: {e.Message}");
+            return InputError;
+        }
         return Ok;
     }
 }

@@ -19,10 +19,14 @@ public static class SigMfReader
             throw new FileNotFoundException($"metadata file not found: {metaPath}");
 
         using var doc = JsonDocument.Parse(File.ReadAllText(metaPath));
-        if (!doc.RootElement.TryGetProperty("global", out var global))
+        if (doc.RootElement.ValueKind != JsonValueKind.Object
+            || !doc.RootElement.TryGetProperty("global", out var global)
+            || global.ValueKind != JsonValueKind.Object)
             throw new InvalidDataException("metadata has no 'global' object");
 
-        string datatype = global.TryGetProperty("core:datatype", out var dt) ? dt.GetString() ?? "" : "";
+        string datatype = global.TryGetProperty("core:datatype", out var dt) && dt.ValueKind == JsonValueKind.String
+            ? dt.GetString() ?? ""
+            : (dt.ValueKind == JsonValueKind.Undefined ? "" : dt.GetRawText());
         if (datatype != "cf32_le")
             throw new InvalidDataException($"unsupported core:datatype '{datatype}', expected cf32_le");
 
@@ -31,12 +35,18 @@ public static class SigMfReader
 
         double centre = 0;
         if (doc.RootElement.TryGetProperty("captures", out var captures) && captures.ValueKind == JsonValueKind.Array
-            && captures.GetArrayLength() > 0 && captures[0].TryGetProperty("core:frequency", out var f))
+            && captures.GetArrayLength() > 0 && captures[0].ValueKind == JsonValueKind.Object
+            && captures[0].TryGetProperty("core:frequency", out var f))
+        {
+            if (f.ValueKind != JsonValueKind.Number)
+                throw new InvalidDataException("core:frequency must be a number");
             centre = f.GetDouble();
+        }
 
         string dataPath = metaPath[..^MetaSuffix.Length] + ".sigmf-data";
         if (!File.Exists(dataPath)) throw new FileNotFoundException($"data file not found: {dataPath}");
         byte[] bytes = File.ReadAllBytes(dataPath);
+        if (bytes.Length == 0) throw new InvalidDataException($"data file is empty: {dataPath}");
         if (bytes.Length % 8 != 0)
             throw new InvalidDataException($"data file length {bytes.Length} is not a multiple of 8 bytes (cf32_le)");
         if (!BitConverter.IsLittleEndian)
