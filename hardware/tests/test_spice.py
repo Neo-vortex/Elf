@@ -46,9 +46,10 @@ def test_relay_coil_pins_may_be_unconnected():
     ckt = Circuit()
     with ckt:
         k = parts.relay_dpdt("released")
-        for pin in ["COM1", "NC1", "NO1", "COM2", "NC2", "NO2"]:
-            k[pin] += Net(pin.lower())
-    deck, _ = to_deck(ckt, "k", [], [Op()])
+        nets = [Net(pin.lower()) for pin in ["COM1", "NC1", "NO1", "COM2", "NC2", "NO2"]]
+        for pin, net in zip(["COM1", "NC1", "NO1", "COM2", "NC2", "NO2"], nets):
+            k[pin] += net
+    deck, _ = to_deck(ckt, "k", [Port(net, i + 1) for i, net in enumerate(nets)], [Op()])
     assert "com1 nc1 0.05" in deck
 
 
@@ -64,3 +65,32 @@ def test_simulated_divider_s21_matches_theory():
     zl = 1 / (1 / 2000 + 1 / 50)
     s21 = 2 * zl / (50 + 1000 + zl)
     np.testing.assert_allclose(np.abs(sp.data["s_2_1"]), s21, rtol=1e-3)
+
+
+def test_single_pin_net_is_rejected():
+    ckt, a, mid = divider()
+    with ckt:
+        r3 = parts.resistor("1k"); r3[1] += mid; r3[2] += Net("stub")
+    with pytest.raises(SpiceError, match="stub"):
+        to_deck(ckt, "x", [Port(a, 1), Port(mid, 2)], [Op()])
+
+
+def test_port_net_may_have_a_single_pin():
+    ckt, a, mid = divider()
+    deck, _ = to_deck(ckt, "x", [Port(a, 1)], [Op()])
+    assert "VPORT1 rf_in 0" in deck
+
+
+def test_nets_that_map_to_the_same_node_are_rejected():
+    ckt = Circuit()
+    with ckt:
+        r = parts.resistor("1k"); r[1] += Net("RF in"); r[2] += Net("rf_in")
+        r2 = parts.resistor("1k"); r2[1] += r[1].net; r2[2] += r[2].net
+    with pytest.raises(SpiceError, match="same SPICE node"):
+        to_deck(ckt, "x", [], [Op()])
+
+
+def test_ground_name_is_case_insensitive():
+    ckt = Circuit()
+    with ckt:
+        assert node_name(Net("gnd")) == "0"

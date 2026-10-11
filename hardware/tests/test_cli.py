@@ -30,3 +30,17 @@ def test_cli_tool_error_is_exit_2(tmp_path, monkeypatch, capsys):
     assert cli.main(["run", "--out", str(tmp_path), "--characterized", str(tmp_path),
                      "--report", str(tmp_path / "r.html")]) == 2
     assert "sudo apt install ngspice" in capsys.readouterr().err
+
+
+def test_cli_spice_error_is_exit_2_and_other_blocks_still_reported(tmp_path, monkeypatch, capsys):
+    from neohw.spice import SpiceError
+
+    def broken(out_dir, char_dir):
+        raise SpiceError("R1 pin 2 is unconnected")
+    monkeypatch.setattr(cli, "CHECKS", {"broken": broken, "fake": _fake(True)})
+    report = tmp_path / "r.html"
+    assert cli.main(["run", "--out", str(tmp_path), "--characterized", str(tmp_path),
+                     "--report", str(report)]) == 2
+    assert "unconnected" in capsys.readouterr().err
+    html = report.read_text()
+    assert "fake" in html and "broken" in html and "ERROR" in html

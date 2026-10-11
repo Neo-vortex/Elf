@@ -36,7 +36,18 @@ def test_relay_contacts_follow_state(state, closed, open_):
     lines = k.spice_lines(nodes)
     assert f"R{k.ref}_{closed[1]} {closed[0].lower()} {closed[1].lower()} 0.05" in lines
     assert f"C{k.ref}_{open_[1]} {open_[0].lower()} {open_[1].lower()} 5e-13" in lines
-    assert len(lines) == 4  # two contacts per pole, coil emits nothing
+    assert f"R{k.ref}_{open_[1]}_ins {open_[0].lower()} {open_[1].lower()} 1e+09" in lines
+    assert len(lines) == 6  # closed R, open C || R_ins per pole; coil emits nothing
+
+
+def test_relay_pins_use_datasheet_pad_numbers():
+    # G6K-2F terminal arrangement: 1 COIL+, 2 NC1, 3 COM1, 4 NO1, 5 NO2, 6 COM2, 7 NC2, 8 COIL-
+    ckt = Circuit()
+    with ckt:
+        k = parts.relay_dpdt("released")
+    assert {p.name: p.num for p in k.pins} == {
+        "COIL+": "1", "NC1": "2", "COM1": "3", "NO1": "4",
+        "NO2": "5", "COM2": "6", "NC2": "7", "COIL-": "8"}
 
 
 def test_relay_rejects_unknown_state():

@@ -23,7 +23,7 @@ def small():
 
 
 def test_bom_groups_identical_parts():
-    rows = export.bom_rows(small(), {"G6K-2F": {"ok": True, "hits": [{"instock": True}]}})
+    rows = export.bom_rows(small(), {"G6K-2F": {"ok": True, "hits": [{"name": "G6K-2F", "instock": True}]}})
     by_value = {r["value"]: r for r in rows}
     assert by_value["61.9Ω"]["qty"] == 2
     assert by_value["61.9Ω"]["availability"] == "available"

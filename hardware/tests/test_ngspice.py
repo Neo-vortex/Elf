@@ -51,3 +51,29 @@ def test_missing_rawfile_is_error():
     _need_ngspice()
     with pytest.raises(NgspiceError, match="nothere.raw"):
         run_deck(RC, ["nothere.raw"])
+
+
+@pytest.mark.integration
+def test_failed_run_keeps_deck_for_inspection():
+    _need_ngspice()
+    bad = RC.replace("R1 in out 1k", "R1 in out")
+    with pytest.raises(NgspiceError) as err:
+        run_deck(bad, ["ac.raw"])
+    deck = str(err.value).split("(deck: ")[1].split(")")[0]
+    from pathlib import Path
+    assert Path(deck).exists() and (Path(deck).parent / "ngspice.log").exists()
+
+
+@pytest.mark.integration
+def test_node_reached_only_through_a_capacitor_is_error():
+    _need_ngspice()
+    floating = RC.replace("C1 out 0 159.155n", "C1 out 0 159.155n\nC2 out x 1n\nC3 x 0 1n")
+    with pytest.raises(NgspiceError, match="singular matrix"):
+        run_deck(floating, ["ac.raw"])
+
+
+@pytest.mark.integration
+def test_unknown_value_model_is_error():
+    _need_ngspice()
+    with pytest.raises(NgspiceError, match="find model"):
+        run_deck(RC.replace("159.155n", "1x"), ["ac.raw"])

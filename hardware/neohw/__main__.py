@@ -6,8 +6,10 @@ import sys
 from pathlib import Path
 
 from neohw.checks import attenuator as attenuator_check
+from neohw.checks import BlockResult, CheckResult
 from neohw.ngspice import NgspiceError
 from neohw.report import write_report
+from neohw.spice import SpiceError
 from neohw.tools import ToolNotFoundError
 
 CHECKS = {"attenuator": attenuator_check.run}
@@ -22,17 +24,21 @@ def main(argv: list[str]) -> int:
     run.add_argument("--report", type=Path, default=Path("build/hw/report.html"))
     args = parser.parse_args(argv)
 
-    results = []
-    try:
-        for name, check in CHECKS.items():
+    results, errored = [], False
+    for name, check in CHECKS.items():
+        try:
             result = check(args.out, args.characterized)
+        except (ToolNotFoundError, NgspiceError, SpiceError, RuntimeError) as e:
+            print(f"ERROR {name}\nerror: {e}", file=sys.stderr)
+            errored = True
+            result = BlockResult(name, [CheckResult("ERROR", float("nan"), str(e).splitlines()[0], False, "")])
+        else:
             print(f"{'PASS' if result.passed else 'FAIL'}  {name}")
-            results.append(result)
-    except (ToolNotFoundError, NgspiceError) as e:
-        print(f"error: {e}", file=sys.stderr)
-        return 2
+        results.append(result)
     report = write_report(results, args.report)
     print(f"report: {report}")
+    if errored:
+        return 2
     return 0 if all(r.passed for r in results) else 1
 
 

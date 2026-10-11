@@ -48,9 +48,29 @@ class Op:
 
 
 def node_name(net) -> str:
-    if net.name == "GND":
+    if net.name.upper() == "GND":
         return "0"
     return re.sub(r"[^a-z0-9_]", "_", net.name.lower())
+
+
+def _check_nets(circuit, ports: list[Port]) -> None:
+    """Reject what KiCad and SPICE would read differently, or a part cut out of the circuit."""
+    port_nets = {id(p.net) for p in ports}
+    pins_on: dict[int, int] = {}
+    nets: dict[int, object] = {}
+    for part in circuit.parts:
+        for pin in part.pins:
+            if pin.net is not None and not pin.name.upper().startswith("COIL"):
+                pins_on[id(pin.net)] = pins_on.get(id(pin.net), 0) + 1
+                nets[id(pin.net)] = pin.net
+    by_node: dict[str, str] = {}
+    for key, net in nets.items():
+        node = node_name(net)
+        if node in by_node and by_node[node] != net.name:
+            raise SpiceError(f"nets {by_node[node]!r} and {net.name!r} map to the same SPICE node {node!r}")
+        by_node[node] = net.name
+        if pins_on[key] < 2 and key not in port_nets and node != "0":
+            raise SpiceError(f"net {net.name!r} has a single connection (dangling part?)")
 
 
 def to_deck(circuit, title: str, ports: list[Port], analyses: list, extra_lines=()) -> tuple[str, list[str]]:
@@ -66,6 +86,7 @@ def to_deck(circuit, title: str, ports: list[Port], analyses: list, extra_lines=
                 raise SpiceError(f"{part.ref} pin {pin.name} is unconnected")
             nodes[pin.name] = node_name(pin.net)
         lines.extend(part.spice_lines(nodes))
+    _check_nets(circuit, ports)
     for port in ports:
         drive = 1 if port.number == 1 else 0
         lines.append(f"VPORT{port.number} {node_name(port.net)} 0 dc 0 ac {drive} "

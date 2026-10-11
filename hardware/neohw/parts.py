@@ -6,9 +6,11 @@ from skidl import SKIDL, TEMPLATE, Part, Pin
 from neohw.units import format_si, parse_si
 
 
-def _template(name: str, prefix: str, pins: list[str], footprint: str) -> Part:
+def _template(name: str, prefix: str, pins: list[str] | dict[str, str], footprint: str) -> Part:
+    """`pins` is a list of names (pad number = name) or a name -> footprint pad number map."""
+    numbered = pins if isinstance(pins, dict) else {p: p for p in pins}
     return Part(tool=SKIDL, name=name, ref_prefix=prefix, dest=TEMPLATE, footprint=footprint,
-                pins=[Pin(num=p, name=p) for p in pins])
+                pins=[Pin(num=num, name=name) for name, num in numbered.items()])
 
 
 def _positive(value) -> float:
@@ -47,7 +49,11 @@ def capacitor(value, footprint: str = "Capacitor_SMD:C_0805_2012Metric", mpn: st
     return p
 
 
-RELAY_PINS = ["COM1", "NC1", "NO1", "COM2", "NC2", "NO2", "COIL+", "COIL-"]
+# G6K-2F terminal arrangement (pin name -> footprint pad). Check against the Omron
+# datasheet before layout.
+RELAY_PINS = {"COIL+": "1", "NC1": "2", "COM1": "3", "NO1": "4",
+              "NO2": "5", "COM2": "6", "NC2": "7", "COIL-": "8"}
+G6K_INSULATION_OHMS = 1e9  # Omron G6K datasheet: insulation resistance 1,000 MΩ min (500 VDC)
 
 
 def relay_dpdt(state: str, contact_r: float = 0.05, open_c: float = 0.5e-12,
@@ -65,6 +71,8 @@ def relay_dpdt(state: str, contact_r: float = 0.05, open_c: float = 0.5e-12,
             closed, open_ = ("NC", "NO") if state == "released" else ("NO", "NC")
             out.append(f"R{p.ref}_{closed}{pole} {com} {n[closed + pole]} {_num(contact_r)}")
             out.append(f"C{p.ref}_{open_}{pole} {com} {n[open_ + pole]} {_num(open_c)}")
+            # the insulation resistance also gives every contact node a DC path
+            out.append(f"R{p.ref}_{open_}{pole}_ins {com} {n[open_ + pole]} {_num(G6K_INSULATION_OHMS)}")
         return out
 
     p.spice_lines = lines

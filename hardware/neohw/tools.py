@@ -7,6 +7,7 @@ import subprocess
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
+SOURCE_DIR = Path(__file__).resolve().parent
 
 _ENV = {"ngspice": "NEOHW_NGSPICE", "dot": "NEOHW_DOT"}
 _HINT = {
@@ -32,11 +33,18 @@ def tool_path(name: str) -> Path:
 
 
 def git_describe() -> str:
+    """Last commit that changed the generating sources (hardware/neohw), -dirty if they have edits.
+
+    Scoped to the sources so a committed characterisation file regenerates byte-identically:
+    a file can never contain the hash of the commit that adds it.
+    """
     try:
-        head = subprocess.run(["git", "rev-parse", "--short", "HEAD"], cwd=REPO_ROOT,
+        head = subprocess.run(["git", "log", "-1", "--format=%h", "--", str(SOURCE_DIR)], cwd=REPO_ROOT,
                               capture_output=True, text=True, check=True).stdout.strip()
-        dirty = subprocess.run(["git", "status", "--porcelain"], cwd=REPO_ROOT,
+        dirty = subprocess.run(["git", "status", "--porcelain", "--", str(SOURCE_DIR)], cwd=REPO_ROOT,
                                capture_output=True, text=True, check=True).stdout.strip()
     except (OSError, subprocess.CalledProcessError):
+        return "unknown"
+    if not head:
         return "unknown"
     return f"{head}-dirty" if dirty else head
