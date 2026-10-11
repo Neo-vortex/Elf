@@ -1,0 +1,75 @@
+using System.Globalization;
+using NeoRadio.Dsp;
+
+namespace NeoRadio.Dsp.Cli;
+
+public sealed class CliUsageException(string message) : Exception(message);
+
+public sealed record CliOptions(
+    string InputPath,
+    string OutputPath,
+    string Mode,
+    double TuneOffsetHz,
+    double AudioRate,
+    double LowCutHz,
+    double HighCutHz,
+    double CwPitchHz,
+    double CwBandwidthHz,
+    bool AgcEnabled,
+    string? MetricsPath)
+{
+    public const string Usage =
+        "usage: neoradio-dsp --input X.sigmf-meta --output Y.wav --tune-offset HZ [--mode usb|lsb|cw] " +
+        "[--audio-rate 12000] [--low-cut 200] [--high-cut 2800] [--cw-pitch 600] [--cw-bandwidth 500] " +
+        "[--no-agc] [--metrics M.json]";
+
+    public static CliOptions Parse(string[] args)
+    {
+        var values = new Dictionary<string, string>();
+        bool agc = true;
+        for (int i = 0; i < args.Length; i++)
+        {
+            string key = args[i];
+            if (key == "--no-agc") { agc = false; continue; }
+            if (key is not ("--input" or "--output" or "--mode" or "--tune-offset" or "--audio-rate" or "--low-cut"
+                or "--high-cut" or "--cw-pitch" or "--cw-bandwidth" or "--metrics"))
+                throw new CliUsageException($"unknown option {key}");
+            if (i + 1 >= args.Length) throw new CliUsageException($"{key} needs a value");
+            values[key] = args[++i];
+        }
+
+        string Required(string key) =>
+            values.TryGetValue(key, out var v) ? v : throw new CliUsageException($"missing required option {key}");
+        double Number(string key, double fallback)
+        {
+            if (!values.TryGetValue(key, out var v)) return fallback;
+            return double.TryParse(v, NumberStyles.Float, CultureInfo.InvariantCulture, out var d)
+                ? d
+                : throw new CliUsageException($"{key} expects a number, got '{v}'");
+        }
+
+        string mode = values.GetValueOrDefault("--mode", "usb");
+        if (mode is not ("usb" or "lsb" or "cw")) throw new CliUsageException($"--mode must be usb, lsb or cw, got '{mode}'");
+
+        return new CliOptions(
+            Required("--input"),
+            Required("--output"),
+            mode,
+            values.ContainsKey("--tune-offset") ? Number("--tune-offset", 0) : throw new CliUsageException("missing required option --tune-offset"),
+            Number("--audio-rate", 12000),
+            Number("--low-cut", 200),
+            Number("--high-cut", 2800),
+            Number("--cw-pitch", 600),
+            Number("--cw-bandwidth", 500),
+            agc,
+            values.GetValueOrDefault("--metrics"));
+    }
+
+    public ReceiverConfig ToReceiverConfig(double inputRate) => Mode switch
+    {
+        "cw" => new ReceiverConfig(Sideband.Upper, inputRate, AudioRate, TuneOffsetHz,
+            CwPitchHz - CwBandwidthHz / 2, CwPitchHz + CwBandwidthHz / 2, AgcEnabled),
+        "lsb" => new ReceiverConfig(Sideband.Lower, inputRate, AudioRate, TuneOffsetHz, LowCutHz, HighCutHz, AgcEnabled),
+        _ => new ReceiverConfig(Sideband.Upper, inputRate, AudioRate, TuneOffsetHz, LowCutHz, HighCutHz, AgcEnabled),
+    };
+}
