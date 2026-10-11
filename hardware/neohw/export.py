@@ -4,6 +4,7 @@ from __future__ import annotations
 import contextlib
 import csv
 import html
+import re
 import subprocess
 import tempfile
 from pathlib import Path
@@ -22,20 +23,26 @@ def kicad_netlist(circuit, path: Path) -> Path:
     return path
 
 
+def _natural(refs: str) -> list:
+    """Sort key so R2 comes before R10."""
+    return [int(t) if t.isdigit() else t for t in re.split(r"(\d+)", refs.split()[0])]
+
+
 def bom_rows(circuit, data: dict) -> list[dict]:
     groups: dict[tuple, dict] = {}
     for part in circuit.parts:
         mpn = getattr(part, "mpn", None) or ""
         key = (part.value, part.footprint, mpn)
+        availability = lookup(getattr(part, "torob", None), data, getattr(part, "torob_match", None))
         row = groups.setdefault(key, {"refs": [], "value": part.value, "footprint": part.footprint,
-                                      "mpn": mpn, "qty": 0,
-                                      "availability": lookup(getattr(part, "torob", None), data)})
+                                      "mpn": mpn, "qty": 0, "availability": availability,
+                                      "note": getattr(part, "bom_note", "")})
         row["refs"].append(part.ref)
         row["qty"] += 1
     rows = list(groups.values())
     for row in rows:
         row["refs"] = " ".join(sorted(row["refs"]))
-    return sorted(rows, key=lambda r: r["refs"])
+    return sorted(rows, key=lambda r: _natural(r["refs"]))
 
 
 def write_bom(circuit, path: Path, data: dict) -> Path:
@@ -43,7 +50,7 @@ def write_bom(circuit, path: Path, data: dict) -> Path:
     path.parent.mkdir(parents=True, exist_ok=True)
     rows = bom_rows(circuit, data)
     with path.open("w", newline="", encoding="utf-8") as f:
-        writer = csv.DictWriter(f, fieldnames=["refs", "value", "footprint", "mpn", "qty", "availability"])
+        writer = csv.DictWriter(f, fieldnames=["refs", "value", "footprint", "mpn", "qty", "availability", "note"])
         writer.writeheader()
         writer.writerows(rows)
     return path

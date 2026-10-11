@@ -1,8 +1,11 @@
 """Part constructors: SKiDL parts that also know their SPICE model."""
 from __future__ import annotations
 
+import math
+
 from skidl import SKIDL, TEMPLATE, Part, Pin
 
+from neohw.availability import inductor_hit
 from neohw.units import format_si, parse_si
 
 
@@ -81,6 +84,41 @@ def relay_dpdt(state: str, contact_r: float = 0.05, open_c: float = 0.5e-12,
             # the insulation resistance also gives every contact node a DC path
             out.append(f"R{p.ref}_{open_}{pole}_ins {com} {n[open_ + pole]} {_num(G6K_INSULATION_OHMS)}")
         return out
+
+    p.spice_lines = lines
+    return p
+
+
+# Axial colour-ring (moulded) inductors, measured and selected with an LCR meter.
+INDUCTOR_FOOTPRINT = "Inductor_THT:L_Axial_L6.6mm_D2.7mm_P10.16mm_Horizontal_Vishay_IM-2"
+INDUCTOR_C_PAR = 2.5e-12  # SRF: 1 µH ≈ 100 MHz, 10 µH ≈ 32 MHz, 100 µH ≈ 10 MHz (IM-2 class minimums)
+
+
+def inductor(value, q: float, q_freq_hz: float, tol: float = 0.03, trim: float = 1.0,
+             mpn: str | None = None, torob: str | None = None) -> Part:
+    """L + series R (giving `q` at `q_freq_hz`) with a parallel C for the self-resonance.
+
+    `value` is the part to buy. `trim` scales it to what the builder selects with an LCR
+    meter (a pair is picked so its sum hits the design target); `tol` is the selection
+    tolerance. Q is assumed; both are stated in the BOM note.
+    """
+    henries = _positive(value)
+    if q <= 0 or q_freq_hz <= 0:
+        raise ValueError(f"q and q_freq_hz must be positive, got {q!r}, {q_freq_hz!r}")
+    if not 0.9 <= trim <= 1.1:
+        raise ValueError(f"trim {trim:.3f} is outside the ±10 % a selected part can reach")
+    henries_built = henries * trim
+    r_s = 2 * math.pi * q_freq_hz * henries_built / q
+    p = _tagged(_template("L", "L", ["1", "2"], INDUCTOR_FOOTPRINT)(value=format_si(henries, "H")))
+    p.mpn, p.torob, p.tol = mpn, torob, tol
+    p.torob_match = lambda name: inductor_hit(name, henries)
+    p.bom_note = f"select to ±{tol * 100:g} % with LCR meter; Q={q:g} assumed"
+
+    def lines(n, k=1.0):
+        mid = f"{p.ref}_m"
+        return [f"L{p.ref} {n['1']} {mid} {_num(henries_built * k)}",
+                f"R{p.ref} {mid} {n['2']} {_num(r_s * k)}",
+                f"C{p.ref}_p {n['1']} {n['2']} {_num(INDUCTOR_C_PAR)}"]
 
     p.spice_lines = lines
     return p

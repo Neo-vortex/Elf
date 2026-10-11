@@ -68,3 +68,28 @@ def test_resistor_and_capacitor_follow_variation():
     assert r.spice_lines({"1": "a", "2": "b"}, 1.1)[0].endswith(" 1100")
     assert c.spice_lines({"1": "a", "2": "b"}, 0.98)[0].endswith(" 9.8e-11")
     assert (r.tol, c.tol) == (0.01, 0.02)
+
+
+def test_inductor_model_has_q_resistor_and_srf_capacitor():
+    ckt = Circuit()
+    with ckt:
+        ind = parts.inductor("1u", q=30, q_freq_hz=1e6)
+    assert ind.value == "1uH"
+    assert ind.footprint == parts.INDUCTOR_FOOTPRINT
+    assert ind.spice_lines({"1": "a", "2": "b"}) == [
+        f"L{ind.ref} a {ind.ref}_m 1e-06", f"R{ind.ref} {ind.ref}_m b 0.20944", f"C{ind.ref}_p a b 2.5e-12"]
+    assert "LCR meter" in ind.bom_note and "Q=30" in ind.bom_note
+
+
+def test_inductor_trim_and_variation_scale_l_and_r():
+    ckt = Circuit()
+    with ckt:
+        ind = parts.inductor("1u", q=30, q_freq_hz=1e6, trim=1.05)
+    lines = ind.spice_lines({"1": "a", "2": "b"}, 1.02)
+    assert lines[0].endswith(f" {1e-6 * 1.05 * 1.02:.6g}")
+    assert lines[1].endswith(f" {0.20944 * 1.05 * 1.02:.5g}")
+
+
+def test_inductor_trim_beyond_selection_range_rejected():
+    with pytest.raises(ValueError, match="trim"):
+        parts.inductor("1u", q=30, q_freq_hz=1e6, trim=1.2)
