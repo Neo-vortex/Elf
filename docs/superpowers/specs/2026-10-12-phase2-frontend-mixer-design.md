@@ -27,6 +27,8 @@ The receiver's RF and baseband circuits are written as Python code (SKiDL). From
 | Review artefacts | Code is the source of truth. Reviewers get an auto-generated SVG connection diagram (Graphviz), BOM and plots per block. No hand-drawn schematic. |
 | Twin coupling | The twin reads committed characterisation files and never runs ngspice |
 | 3f rejection target | **System ≥ 60 dB = filter ≥ 50 dB + Tayloe's inherent ≈ 9.5 dB** (the 3rd-harmonic response has amplitude 1/3). This amends parent §4. |
+| BPF design (amended 2026-10-12, plan 2.2 prototype) | Chebyshev **0.02 dB** ripple, not 0.1 dB: two 0.1 dB sections in cascade give only ~11 dB return loss even with ideal parts. Each inductor is 1–2 E12 parts in series and each capacitor 1–2 E24 C0G parts in parallel: single E12 inductors land up to ~10 % off and give 6–10 dB return loss. Relay stays the plain G6K-2F (the -RF variants cost ~30× more on Torob). |
+| BPF insertion loss (amended 2026-10-12) | **≤ 3 dB on filters 1–7** (LF to 20 m, where the preamp is bypassed because band noise dominates), **≤ 2 dB on filters 8–10**. This amends parent §4's 2 dB for the lower bands. |
 
 ## 3. Code structure
 
@@ -63,10 +65,10 @@ hardware/
 | **Bias-T (5 V)** | Choke chain 1 mH + 47 µH + 4.7 µH (each covers above the previous one's SRF), DC blocks, AO3401 switch + PTC (switching itself is phase 3) | Shunt impedance > 500 Ω across 0.1–54 MHz; insertion loss < 0.3 dB |
 | **Protection** | GDT at the connector, 1 MΩ bleed, BAV99 anti-parallel limiter after the attenuator | Limiter IMD3 products at −10 dBm two-tone ≤ −100 dBm |
 | **Attenuator** | 20 dB π-pad 61.9 Ω / 249 Ω (E96) on a G6K-2F DPDT; relay model = contact R + open-contact C from the datasheet | 20 ± 0.5 dB; return loss ≥ 18 dB; bypass loss ≤ 0.2 dB, 0.1–54 MHz |
-| **BPF bank** | 10 filters (parent §4 table): 5th-order HPF + 7th-order LPF, Chebyshev 0.1 dB, 50 Ω; values snapped to E12 inductors (1008CS / LQW18 / 1210 wirewound) and E24 C0G capacitors; inductors modelled with Q and SRF; one G6K-2F per filter | In-band IL ≤ 2 dB; RL ≥ 14 dB; rejection at 3× the band's lower edge ≥ 50 dB; Monte Carlo 200 runs (L ±5 %, C ±2 %), ≥ 95 % pass |
+| **BPF bank** | 10 filters (parent §4 table): 5th-order HPF + LPF of order 9 (filters 1–6, 10) or 7 (filters 7–9), Chebyshev 0.02 dB, 50 Ω, cutoffs 3 % outside the band edges. Each L = 1–2 E12 **axial colour-ring (moulded) inductors** in series, through-hole, **measured and selected with an LCR meter to ±3 %** (unselected ±10 % parts fail: return loss ≈ 11 dB at the 5th percentile), modelled as L + series R giving **Q = 30 at the band centre** (below the Vishay IM-2 / Bourns 78F class minimum of ~40; assumed, flagged in the BOM) + 2.5 pF parallel C for the SRF. No ferrite or iron-powder HF cores were found on Torob (only power ferrite, Q ≈ 15 → 3–4 dB loss). Each C = 1–2 E24 C0G 0805 parts in parallel. One G6K-2F per filter; the NC contacts ground the ends of an unselected filter | In-band IL ≤ 3 dB (filters 1–7) / ≤ 2 dB (8–10); in-band RL ≥ 14 dB; rejection ≥ 50 dB from 3× the lower to 3× the upper band edge (filters 3–10; for filters 1–2, 3× the lower edge lies inside the passband); Monte Carlo 200 runs (L ±3 % after selection, C ±2 %, uniform), ≥ 95 % pass |
 | **Preamp** | BFR92A resistive-feedback stage, 5 V / ~25 mA, bypass relay | Gain 14 ± 1 dB over 1–54 MHz; NF ≤ 4 dB; OIP3 ≥ +25 dBm; unconditionally stable (K > 1, \|Δ\| < 1) from 0.1 to 500 MHz; RL ≥ 12 dB |
 
-Filters 1–2 (LF/MW) use 1210 wirewound inductors with lower Q. The IL limit is relaxed to ≤ 3 dB there because band noise dominates.
+Prototype result (2026-10-12, Q = 30, L ±3 %): every filter passes 200/200 Monte Carlo runs; in-band IL ≤ 2.02 dB and RL ≥ 15.6 dB at the 95th/5th percentile; 3f rejection ≥ 54.9 dB nominal. Rev 0 must measure real inductor Q (NanoVNA). Iranian availability of axial inductors is not yet surveyed (no Torob key).
 
 ## 5. Mixer and baseband (2b)
 
