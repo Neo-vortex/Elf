@@ -186,7 +186,7 @@ Build the best HF receiver we can, from parts buyable in the Iranian market, con
 | **L2 Blocks** | AC, noise, short transient, Monte Carlo, corners (temp, 4.75–5.25 V) for filters, preamp, mixer+baseband, bias-T, power | pass/fail vs §4, §5, §7 targets |
 | **L3 EM** | openEMS on the real KiCad layout: filters in place; coupling boost→front end, ESP32→front end, Si5351→antenna; S-params fed back into L2 | post-layout results |
 | **L4 Digital twin** | YAML scenarios (stations, ITU-R P.372 band noise, blockers, impulse noise, fading) → front-end (L2/L3 data) → mixer model (3f/5f response, phase noise, DC offset, I/Q imbalance) → ADC (quantisation, clipping) → I/Q file (SigMF) → **shipping C# DSP (`neoradio-dsp`)** → real decoders | FT8 decode vs SNR, CW CER, MDS, BDR, IMD3 DR, image rejection |
-| **L5 Software-in-the-loop** | Firmware (host build) + L4 model = virtual board on a pty + ALSA loopback; `neoradiod`, web UI, SDR++, WSJT-X run against it | end-to-end system test without hardware |
+| **L5 Whole-board simulation over real USB** | The real firmware C code (including its TinyUSB stack) compiled for Linux, with a virtual-hardware backend fed by the L4 twin (I2S samples from the ADC model; virtual Si5351, relays, INA219). A USB/IP device-controller backend for TinyUSB attaches it through `vhci_hcd`, so the Linux kernel enumerates a real "NeoRadio" USB device (`snd-usb-audio` + `cdc_acm`). `neoradiod`, the web UI, SDR++ and WSJT-X run against it unchanged. Chosen 2026-10-12 over a Python USB emulator because it tests the actual firmware USB code. | end-to-end system test of firmware + USB + host software without hardware |
 | **L6 Hardware validation** | Rev 0 coupon and Rev A board: Si5351 cal tone as generator, NanoVNA on filters, RTL-SDR for spurs >24 MHz, real antenna vs WebSDR; raw I/Q recordings fed back into L4 | calibrated models |
 
 **Automation:** one command (`make sim`) runs everything and writes an HTML report with plots and pass/fail. Re-run on every design change.
@@ -247,7 +247,7 @@ docs/          specs, plans, measurement logs
 4. **Rev A layout** + L3 EM + post-layout L2/L4.
 5. **Firmware** (host-tested modules, then on target).
 6. **Pi software** (`neoradiod`, web UI, raw view, SDR++/WSJT-X integration).
-7. **L5 software-in-the-loop** sign-off → order Rev A.
+7. **L5 whole-board simulation over real USB** (firmware + TinyUSB over USB/IP + host software) sign-off → order Rev A.
 8. **L6 validation** on the real board; models recalibrated.
 
 Each phase gets its own implementation plan.
