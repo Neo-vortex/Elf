@@ -81,7 +81,7 @@ Build the best HF receiver we can, from parts buyable in the Iranian market, con
 6. **Preamp, 2 modes:** *Bypass* (default on 160–20 m, where band noise dominates) and *5 V LNA* (BFR92A or 2N3866 resistive-feedback stage, ~15 dB gain, ~25 mA).
 
 **Targets (simulated):**
-- Rejection at 3× the passband frequency ≥ 60 dB in every filter (Tayloe responds at 3f and 5f).
+- Rejection of the 3f response ≥ 60 dB at system level = filter ≥ 50 dB at 3× the band's lower edge + the Tayloe mixer's inherent ≈ 9.5 dB (amended 2026-10-12, see phase 2 spec).
 - Passband insertion loss ≤ 2 dB with realistic inductor Q.
 - System noise figure on 6 m with LNA ≤ 8 dB.
 - 2nd/3rd-order products from a +60 dB blocker below the noise floor in the L4 scenarios.
