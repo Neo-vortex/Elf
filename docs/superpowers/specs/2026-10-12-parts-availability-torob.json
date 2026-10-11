@@ -1,0 +1,7594 @@
+{
+ "SI5351A": {
+  "ok": true,
+  "hits": [
+   {
+    "name": "ماژول کلاک ژنراتور GY-SI5351 دارای ارتباط I2C",
+    "price": "از ۳۲۰٫۲۳۲ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "GY-SI5351",
+    "price": "۲۹۹٫۵۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "GY-SI5351",
+    "price": "۳۵۱٫۵۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "آی سی تایمر SI5351C-B-GM1",
+    "price": "۷۰۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "SI5351C-B-GM1",
+    "price": "۴۰۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "ماژول مولد سیگنال مربعی SI5351B دارای ارتباط I2C",
+    "price": "ناموجود",
+    "shop": "",
+    "instock": false
+   }
+  ]
+ },
+ "SI5351 module": {
+  "ok": true,
+  "hits": [
+   {
+    "name": "ماژول کلاک ژنراتور GY-SI5351 دارای ارتباط I2C",
+    "price": "از ۳۲۰٫۲۳۲ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "ماژول مولد سیگنال مربعی SI5351B دارای ارتباط I2C",
+    "price": "ناموجود",
+    "shop": "",
+    "instock": false
+   },
+   {
+    "name": "GY-SI5351",
+    "price": "۲۹۹٫۵۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "GY-SI5351",
+    "price": "۳۵۱٫۵۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "آی سی تایمر SI5351C-B-GM1",
+    "price": "۷۰۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "SI5351C-B-GM1",
+    "price": "۴۰۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   }
+  ]
+ },
+ "Si570": {
+  "ok": true,
+  "hits": []
+ },
+ "AD9850": {
+  "ok": true,
+  "hits": [
+   {
+    "name": "AD9850BRS",
+    "price": "۵۳۷٫۵۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "ماژول سیگنال ژنراتور AD9850",
+    "price": "از ۱٫۹۴۱٫۶۲۵ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "ماژول سیگنال ژنراتور DDS مبتنی بر AD9850",
+    "price": "از ۲٫۵۷۴٫۲۷۵ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "(DDS) AD9850BRSZ Direct Digital Synthesizer",
+    "price": "ناموجود",
+    "shop": "",
+    "instock": false
+   }
+  ]
+ },
+ "TCXO 25MHz": {
+  "ok": true,
+  "hits": [
+   {
+    "name": "اسیلاتور 12.0000 مگاهرتز TCXO",
+    "price": "۴۵۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "کریستال اسیلاتور TCXO 65.537MHZ پایه دار، بسته بندی DIP14",
+    "price": "۲۵۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "Meshstick - آداپتر USB به SPI مدل SX1262 با TCXO | استیک LoRa پلاگین‌اند‌پلی برا",
+    "price": "۲۱٫۵۳۵٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "نکات کاربردی TCXOها",
+    "price": "۳۹۷٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "نکات کاربردی TCXOها",
+    "price": "۳۹۷٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "نکات کاربردی TCXOها",
+    "price": "۴۹۷٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "نکات کاربردی TCXOها",
+    "price": "۵۹۷٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "نکات کاربردی TCXOها",
+    "price": "۲۹۷٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "نکات کاربردی TCXOها",
+    "price": "۴۹۷٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "نکات کاربردی TCXOها",
+    "price": "۳۹۷٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "نکات کاربردی TCXOها",
+    "price": "۲۲٫۹۵۰ تومان",
+    "shop": "",
+    "instock": true
+   }
+  ]
+ },
+ "TCXO 27MHz": {
+  "ok": true,
+  "hits": [
+   {
+    "name": "اسیلاتور 12.0000 مگاهرتز TCXO",
+    "price": "۴۵۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "کریستال اسیلاتور TCXO 65.537MHZ پایه دار، بسته بندی DIP14",
+    "price": "۲۵۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "Meshstick - آداپتر USB به SPI مدل SX1262 با TCXO | استیک LoRa پلاگین‌اند‌پلی برا",
+    "price": "۲۱٫۵۳۵٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "نکات کاربردی TCXOها",
+    "price": "۳۹۷٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "نکات کاربردی TCXOها",
+    "price": "۳۹۷٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "نکات کاربردی TCXOها",
+    "price": "۴۹۷٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "نکات کاربردی TCXOها",
+    "price": "۵۹۷٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "نکات کاربردی TCXOها",
+    "price": "۲۹۷٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "نکات کاربردی TCXOها",
+    "price": "۴۹۷٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "نکات کاربردی TCXOها",
+    "price": "۳۹۷٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   }
+  ]
+ },
+ "FST3253": {
+  "ok": true,
+  "hits": [
+   {
+    "name": "قاب گوشی فانتزی سگ پا کوتاه به همراه ولت کد C3253 | لوازم جانبی مسلمی - iPhone 1",
+    "price": "۱٫۰۶۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "آی سی مالتی پلکسر / دی مالتی پلکسر SMD FST3253",
+    "price": "۵۱۶٫۲۵۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "آی سی مالتی پلکسر / دی مالتی پلکسر SMD FST3253",
+    "price": "۴۱۳٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "قاب گوشی فانتزی سگ پا کوتاه به همراه ولت کد C3253 | لوازم جانبی مسلمی - iPhone 1",
+    "price": "۱٫۰۶۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   }
+  ]
+ },
+ "74CBT3253": {
+  "ok": true,
+  "hits": [
+   {
+    "name": "آی سی مالتی پلکسر / دی مالتی پلکسر SMD FST3253",
+    "price": "۵۱۶٫۲۵۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "آی سی مالتی پلکسر / دی مالتی پلکسر SMD FST3253",
+    "price": "۴۱۳٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "پاوربانک مک دودو مدل MC3253 ظرفیت 10000 میلی آمپر ساعت",
+    "price": "از ۲٫۹۰۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "عینک آفتابی اورجینال زنانه برند آناهیکمن مدل AH 3253",
+    "price": "۲۲٫۰۰۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "اسباب بازی اجاق گاز مای هوم مدل 3253 رنگ آبی",
+    "price": "از ۱٫۵۷۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "رنگ نیپون Cookie Dough کد NP N 3253P",
+    "price": "۷٫۰۰۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "فورسپس - Forceps - 3253",
+    "price": "۲۵٫۹۰۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "قاب گوشی فانتزی سگ پا کوتاه به همراه ولت کد C3253 | لوازم جانبی مسلمی - iPhone 1",
+    "price": "۱٫۰۶۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "قاب گوشی گل لیلیوم آبی کد C3253",
+    "price": "۵۴۸٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "خرید میوه خوری آبگز دسته چوبی تک و عمده کد Z3253",
+    "price": "از ۷۴۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "پرده چاپی نوزاد کد S3253 | طرح دلخواه | پرده چاپی هازان و مخمل کالیفرنیا",
+    "price": "۸٫۵۲۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "کفش کژوال مردانه تامر تانجا چرم قهوه ای | 537 3253 ERK AYK SK23/24 Tamer Tanca T",
+    "price": "۴۴٫۸۳۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "کیف رودوشی زنانه قهوه ای | 3253-Monc Genel Markalar TR",
+    "price": "۱۰٫۸۰۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "پخش کننده خودرو وکس ایست مدل UN-RU3253F",
+    "price": "۵٫۱۷۵٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "پاوربانک 10000 مک دودو Mcdodo MC-3253 توان 22.5 وات و کابل لایتنینگ - مشکی",
+    "price": "۳٫۷۴۳٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "قاب جای بلندگو(کیف بغل )جلو R بژ بدون جا کلید (3253) سمند",
+    "price": "۱٫۹۵۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "سوکت 4 فیش مدول بخاری و کویل پژو (3253)",
+    "price": "۱۴۹٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "نرم افزار ریست پرینتر اپسون Epson EcoTank L3253",
+    "price": "۳۹۵٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "سیلندر چرخ عقب پژو ABS راست دیاکو 3253",
+    "price": "۷۲۵٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "کارت وایرلس لپ تاپ مدل Intel® Centrino® Advanced-N 6205, Dual Band - سیستم لنوو ",
+    "price": "۳۴۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   }
+  ]
+ },
+ "74HC4053": {
+  "ok": true,
+  "hits": [
+   {
+    "name": "آی سی (74HC4053AFN) IC",
+    "price": "۱۲۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "آی سی 74HC4053D",
+    "price": "۸۰۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "آی سی MM74HC4053WMX 16PIN SMD",
+    "price": "۶۲٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "آی سی 4053 DIP-16",
+    "price": "از ۳۹٫۹۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "SN74HC4053",
+    "price": "۱۵۰٫۱۵۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "74HC4053D - SMD",
+    "price": "۶۴٫۵۶۲ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "آیسی TTL 74HC4053",
+    "price": "۴۵٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "آی سی 74HC4053D",
+    "price": "۳۷۹٫۶۷۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "آی سی دیپ مدل 74hc4053 بسته 2 عددی",
+    "price": "۴۰۵٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "آیسی TTL 74HC4053",
+    "price": "۴۳٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "آیسی TTL 74HC4053",
+    "price": "۴۳٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "74HC4053D",
+    "price": "۶۵٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "MM74HC4053MX-SMD-FSC --- IC TTL-SMD FSC",
+    "price": "۴۴٫۹۹۱ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "آی سی 74HC4053D",
+    "price": "۸۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "آی سی 74HC4053N",
+    "price": "۷۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "آی سی (74HC4053AFN) IC",
+    "price": "۱۲۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "MM74HC4053",
+    "price": "۲۲٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "آی سی SN74HC4053 SMD",
+    "price": "ناموجود",
+    "shop": "",
+    "instock": false
+   },
+   {
+    "name": "74HC4053D - SMD",
+    "price": "ناموجود",
+    "shop": "",
+    "instock": false
+   },
+   {
+    "name": "آی سی 74HC4053 پکیج DIP16",
+    "price": "ناموجود",
+    "shop": "",
+    "instock": false
+   },
+   {
+    "name": "SN74HC4053",
+    "price": "ناموجود",
+    "shop": "",
+    "instock": false
+   },
+   {
+    "name": "SN74HC4053",
+    "price": "ناموجود",
+    "shop": "",
+    "instock": false
+   },
+   {
+    "name": "آی سی مالتی پلکسر 74HC4053D",
+    "price": "ناموجود",
+    "shop": "",
+    "instock": false
+   },
+   {
+    "name": "74HC4053N . --- IC TTL DIP16 PHILIPS",
+    "price": "ناموجود",
+    "shop": "",
+    "instock": false
+   },
+   {
+    "name": "آی سی 74HC4053 پکیج DIP-16",
+    "price": "ناموجود",
+    "shop": "",
+    "instock": false
+   }
+  ]
+ },
+ "74HC4052": {
+  "ok": true,
+  "hits": [
+   {
+    "name": "آی سی 74HC4052",
+    "price": "۶۵٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "IC 74HC4052D (Original)",
+    "price": "۹۸٫۴۳۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "آی سی MC74HC4052DR2 SMD 16PIN MOTOROLA",
+    "price": "۶۸٫۲۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "(74HC4052(16P",
+    "price": "۵۹٫۳۵۶ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "CD74HC4052E آی سی DIP",
+    "price": "۴۲٫۵۳۲ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "آی سی HD74HC4052P DIP-16PIN RENESAS",
+    "price": "۴۹٫۶۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "(74HC4052D/SMD(SO16",
+    "price": "۶۶٫۸۸۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "74HC4052M آی سی SMD",
+    "price": "۶۵٫۸۸۵ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "MM74HC4052M",
+    "price": "۵۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "74HC4052 SMD F204",
+    "price": "۵۴٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "SN74HC4052",
+    "price": "۲۱۰٫۱۰۹ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "74HC4052 DIP F204",
+    "price": "۸۴٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "MM74HC4052N --- IC TTL FSC",
+    "price": "۱۲۵٫۴۸۲ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "آی سی 74HC4052M SMD",
+    "price": "ناموجود",
+    "shop": "",
+    "instock": false
+   },
+   {
+    "name": "SN74HC4052 744052",
+    "price": "ناموجود",
+    "shop": "",
+    "instock": false
+   },
+   {
+    "name": "74HC4052D",
+    "price": "ناموجود",
+    "shop": "",
+    "instock": false
+   },
+   {
+    "name": "74HC4052D - SMD",
+    "price": "ناموجود",
+    "shop": "",
+    "instock": false
+   },
+   {
+    "name": "SN74HC4052",
+    "price": "ناموجود",
+    "shop": "",
+    "instock": false
+   },
+   {
+    "name": "SN74HC4052",
+    "price": "ناموجود",
+    "shop": "",
+    "instock": false
+   }
+  ]
+ },
+ "74AC74": {
+  "ok": true,
+  "hits": []
+ },
+ "74LVC74": {
+  "ok": true,
+  "hits": [
+   {
+    "name": "74LVC74 SO-14",
+    "price": "۸۷٫۹۳۵ تومان",
+    "shop": "",
+    "instock": true
+   }
+  ]
+ },
+ "CS4272": {
+  "ok": true,
+  "hits": [
+   {
+    "name": "CS4272-CZZ TSSOP28",
+    "price": "۲٫۸۴۸٫۳۲۲ تومان",
+    "shop": "",
+    "instock": true
+   }
+  ]
+ },
+ "PCM3060": {
+  "ok": true,
+  "hits": []
+ },
+ "WM8731": {
+  "ok": true,
+  "hits": []
+ },
+ "PCM1808": {
+  "ok": true,
+  "hits": []
+ },
+ "WM8782": {
+  "ok": true,
+  "hits": []
+ },
+ "PCM1804": {
+  "ok": true,
+  "hits": []
+ },
+ "CS5343": {
+  "ok": true,
+  "hits": [
+   {
+    "name": "آی‌سی مبدل آنالوگ به دیجیتال CS5343 543C",
+    "price": "۳۵۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "لوازم توکار اجاق گاز سفید 60 سانتی متری CS5343W01 Silverline",
+    "price": "۱۵۵٫۱۵۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "اجاق گاز چدنی توکار SILVERLINE CS5343S01 خاکستری Silverline",
+    "price": "۱۲۹٫۵۷۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "اجاق گاز توکار شیشه ای سفید CS5343W01 Silverline",
+    "price": "۱۲۳٫۳۵۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "CS5343",
+    "price": "۲۰۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   }
+  ]
+ },
+ "AK5386": {
+  "ok": true,
+  "hits": []
+ },
+ "PCM5102": {
+  "ok": true,
+  "hits": [
+   {
+    "name": "ماژول مبدل دیجیتال به آنالوگ استریو PCM5102 با ارتباط I2S",
+    "price": "۵۰۹٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "ماژول PCM5102A مبدل دیجیتال به آنالوگ صوتی استریو CJMCU - 5102",
+    "price": "۳٫۳۴۵٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "ماژول مبدل دیجیتال به آنالوگ صوتی استریو - مدل PCM5102A",
+    "price": "۷۷۲٫۲۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "ماژول مبدل دیجیتال به آنالوگ صوتی استریو PCM5102A",
+    "price": "از ۵۰۹٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "آی سی آمپلیفایر PCM5102APWR PCM5102A",
+    "price": "۴۱۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "ماژول مبدل دیجیتال به آنالوگ صوتی استریو PCM5102A",
+    "price": "۷۱۵٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "ماژول DAC صوتی GY-PCM5102",
+    "price": "۴۰۱٫۷۲۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "ماژول DAC صوتی GY-PCM5102",
+    "price": "۳۶۵٫۲۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "PCM5102APWR",
+    "price": "۲۳۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   }
+  ]
+ },
+ "PCM1794": {
+  "ok": true,
+  "hits": []
+ },
+ "CS4344": {
+  "ok": true,
+  "hits": [
+   {
+    "name": "مبدل ديجيتال به آنالوگ استريو CS4344",
+    "price": "۳۰۲٫۵۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "CS4344",
+    "price": "۷۹٫۷۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "CS4344-DZZR",
+    "price": "۱۵۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "مبدل ديجيتال به آنالوگ استريو CS4344",
+    "price": "۲۵۸٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "CS4344-CZZ",
+    "price": "۱۵۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "آی سی مبدل دیجیتال به آنالوگ CS4344-DZZR 344D",
+    "price": "۲۶۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "ماژول مبدل دیجیتال به آنالوگ صوتی CS4344",
+    "price": "ناموجود",
+    "shop": "",
+    "instock": false
+   }
+  ]
+ },
+ "PCM2902": {
+  "ok": true,
+  "hits": []
+ },
+ "CM108": {
+  "ok": true,
+  "hits": []
+ },
+ "LT6231": {
+  "ok": true,
+  "hits": []
+ },
+ "OPA1612": {
+  "ok": true,
+  "hits": [
+   {
+    "name": "OPA1612AIDR SOP-8",
+    "price": "ناموجود",
+    "shop": "",
+    "instock": false
+   },
+   {
+    "name": "OPA1612AIDR",
+    "price": "ناموجود",
+    "shop": "",
+    "instock": false
+   }
+  ]
+ },
+ "LM4562": {
+  "ok": true,
+  "hits": [
+   {
+    "name": "(OP AMP) LM4562MAX",
+    "price": "۳۷۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "(OP AMP) LM4562MAX",
+    "price": "۳۷۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "آیسی Audio Amplifiers LM4562NA - اورجینال - New and original+گارانتی",
+    "price": "ناموجود",
+    "shop": "",
+    "instock": false
+   }
+  ]
+ },
+ "NE5532": {
+  "ok": true,
+  "hits": [
+   {
+    "name": "آی سی NE5532P پکیج DIP",
+    "price": "از ۱۷٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "آی سی NE5532 DIP (اورجینال)",
+    "price": "از ۷۷٫۷۶۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "آی سی آمپلی فایر عملیاتی دوگانه NE5532P SMD",
+    "price": "۱۰۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "آی سی NE5532 (=LM5532) SMD",
+    "price": "از ۴۵٫۳۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "NE5532",
+    "price": "۹۵٫۶۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "NE5532P/DUAL LOW NOIS",
+    "price": "۱۵٫۴۸۴ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "(NE5532DR/SMD(SO8",
+    "price": "۱۰۰٫۳۲۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "NE5532DR - SMD",
+    "price": "۱۳۲٫۸۵۸ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "آی سی NE5532 SMD",
+    "price": "۶۷٫۶۲۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "NE5532P - DIP",
+    "price": "۷۵٫۰۳۵ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "ماژول پری آمپلی فایر XH-M164 با تراشه NE5532 و ۴ ولوم",
+    "price": "از ۹۳۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "ماژول پری آمپلی فایر XH-A902 با تراشه NE5532 دو کانال",
+    "price": "از ۳۳۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "برد پری آمپلی فایر حرفه ای NE5532",
+    "price": "از ۱٫۲۲۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "ماژول آمپلی فایر مونو ساب ووفر دار مدل TPA3116D2 100W NE5532",
+    "price": "۱٫۱۵۱٫۸۳۳ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "تقویت‌کننده عملیاتی دوکاناله کم‌نویز NE5532DG",
+    "price": "۲۳۹٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "آیسی NE5532 دو آپ امپ کم نویز - معمولی",
+    "price": "۳۱٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "آی سی آپ امپ NE5532",
+    "price": "۹۴٫۳۸۲ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "ماژول آمپلی فایر مونو ساب ووفر دار مدل TPA3116D2 100W NE5532 فروش عمده (بسته 10 ",
+    "price": "۱۰٫۶۴۸٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "ماژول پری آمپلی فایر مدل NE5532",
+    "price": "۱٫۰۵۳٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "(OP AMP) NE5532DR",
+    "price": "۵۵٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   }
+  ]
+ },
+ "OPA2134": {
+  "ok": true,
+  "hits": [
+   {
+    "name": "OPA2134UAE4 --- IC OP-AMP SMD",
+    "price": "۳۰۸٫۸۸۸ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "آی سی آپ امپ SMD OPA2134",
+    "price": "۶۶۷٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "آی سی آپ امپ SMD OPA2134",
+    "price": "ناموجود",
+    "shop": "",
+    "instock": false
+   },
+   {
+    "name": "رسیور تقویت کننده صوتی KGUSS Topping D10s Mini USB DAC CSS XMOS XU208 ES9038Q2M ",
+    "price": "ناموجود",
+    "shop": "",
+    "instock": false
+   },
+   {
+    "name": "OPA2134PA",
+    "price": "ناموجود",
+    "shop": "",
+    "instock": false
+   }
+  ]
+ },
+ "OPA1642": {
+  "ok": true,
+  "hits": []
+ },
+ "AD8656": {
+  "ok": true,
+  "hits": [
+   {
+    "name": "آی سی AD8656AR",
+    "price": "ناموجود",
+    "shop": "",
+    "instock": false
+   }
+  ]
+ },
+ "OPA2209": {
+  "ok": true,
+  "hits": []
+ },
+ "LME49720": {
+  "ok": true,
+  "hits": []
+ },
+ "AD8066": {
+  "ok": true,
+  "hits": [
+   {
+    "name": "تقویت‌کننده عملیاتی دوکاناله پرسرعت AD8066ARZ",
+    "price": "۴٫۲۷۸٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "AD8066ARZ",
+    "price": "۷۶۷٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   }
+  ]
+ },
+ "THS4521": {
+  "ok": true,
+  "hits": []
+ },
+ "ESP32-S3-WROOM-1": {
+  "ok": true,
+  "hits": [
+   {
+    "name": "ماژول وای فای و بلوتوث ESP32-S3-WROOM-1",
+    "price": "از ۱٫۳۰۵٫۹۱۱ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "برد توسعه وای‌فای و بلوتوث ESP32-S3-WROOM-1-N16R8 با قابلیت آنتن خارجی",
+    "price": "از ۱٫۷۴۸٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "ماژول ESP32-S3-WROOM-1-N8R2 وای‌فای و بلوتوث",
+    "price": "از ۱٫۴۸۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "ماژول وای‌فای ESP32-S3-WROOM-1-N16R8",
+    "price": "از ۱٫۰۷۲٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "برد توسعه ESP32-S3-DEV-KIT-NXR8 با چیپ ESP32-S3-WROOM-1-N8R8 - ساخت WAVESHARE",
+    "price": "۳٫۹۴۲٫۹۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "برد توسعه ESP32-S3-WROOM-1 N16R8 | حافظه 16MB Flash و 8MB PSRAM",
+    "price": "۲٫۴۸۶٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "ماژول وای فای و بلوتوث ESP32-S3-WROOM-1-N4 ظرفیت ۴MB",
+    "price": "از ۸۵۸٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "برد توسعه ESP32-S3-WROOM-1 دارای Wifi و بلوتوث با تراشه CP2102",
+    "price": "۱٫۷۲۰٫۲۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "ماژول وای فای ESP32-S3-WROOM-1-N4R2 4MB",
+    "price": "۹۷۵٫۴۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "ESP32-S3-WROOM-1U-N4",
+    "price": "۱٫۰۴۹٫۷۳۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "ماژول ESP32-S3-WROOM-1-N8R8",
+    "price": "۱٫۲۷۶٫۵۷۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "ماژول ESP32-S3-WROOM-1-N4",
+    "price": "۱٫۱۶۷٫۵۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "ماژول وای فای و بلوتوث ESP32-S3-CAM با دوربین RHYX M21-45",
+    "price": "از ۲٫۷۵۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "محفظه فشرده ESP32-S3 WROOM CAM | خدمات چاپ سه بعدی سفارشی",
+    "price": "۲۵۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "ماژول ESP32 مناسب ESP32-WROOM-32 و ESP32-S3-WROOM",
+    "price": "۱۳۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "ماژول esp32s3 n16r8 wroom",
+    "price": "۹۹۰٫۱۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "برد کمکی ماژول ESP32 مناسب ماژول های ESP32-WROOM-32 , ESP32-S3-WROOM",
+    "price": "۱۶۲٫۵۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "ماژول ESP32 S3 WROOM 1 N4R2 4MB",
+    "price": "ناموجود",
+    "shop": "",
+    "instock": false
+   },
+   {
+    "name": "ماژول وای فای ESP32-S3-WROOM-1-N4R2",
+    "price": "ناموجود",
+    "shop": "",
+    "instock": false
+   },
+   {
+    "name": "ماژول وای فای ESP32-S3-WROOM-1-N4",
+    "price": "ناموجود",
+    "shop": "",
+    "instock": false
+   },
+   {
+    "name": "ماژول ESP32-S3-WROOM-1 دارای بلوتوث و وایفای داخلی",
+    "price": "ناموجود",
+    "shop": "",
+    "instock": false
+   },
+   {
+    "name": "ماژول وای فای ESP32-S3-WROOM-1-N4 4MB",
+    "price": "ناموجود",
+    "shop": "",
+    "instock": false
+   },
+   {
+    "name": "ESP32-S3-WROOM-1-N4 4MB",
+    "price": "ناموجود",
+    "shop": "",
+    "instock": false
+   },
+   {
+    "name": "ماژول ESP32-S3-WROOM-1-N4R2",
+    "price": "ناموجود",
+    "shop": "",
+    "instock": false
+   }
+  ]
+ },
+ "ESP32-S3 N16R8": {
+  "ok": true,
+  "hits": [
+   {
+    "name": "ماژول وای فای و بلوتوث ESP32-S3-WROOM-1",
+    "price": "از ۱٫۳۰۵٫۹۱۱ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "ماژول وای فای و بلوتوث ESP32-S3-CAM با دوربین RHYX M21-45",
+    "price": "از ۲٫۷۵۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "برد توسعه وای‌فای و بلوتوث ESP32-S3-WROOM-1-N16R8 با قابلیت آنتن خارجی",
+    "price": "از ۱٫۷۴۸٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "ماژول وای‌فای ESP32-S3-WROOM-1-N16R8",
+    "price": "از ۱٫۰۷۲٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "برد توسعه ESP32-S3-WROOM-1 N16R8 | حافظه 16MB Flash و 8MB PSRAM",
+    "price": "۲٫۴۸۶٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "ماژول وای فای ESP32-S3-N16R8 دارای بلوتوث",
+    "price": "۱٫۳۳۰٫۵۶۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "ماژول esp32s3 n16r8 wroom",
+    "price": "۹۹۰٫۱۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "قاب محافظ 3D print برد توسعه ESP32-S3 سری N8R2 و N16R8 و N8R8",
+    "price": "۱۵۴٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "برد توسعه ESP32-S3-DEV-KIT-NXR8 با چیپ ESP32-S3-WROOM-1-N8R8 - ساخت WAVESHARE",
+    "price": "۳٫۹۴۲٫۹۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "Seeed Studio XIAO ESP32-S3 برد توسعه ESP32-S3 با Wi-Fi و Bluetooth",
+    "price": "۳٫۰۳۷٫۵۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "برد توسعه ESP32-S3-CAM-WROOM باهسته ESP32-S3-N16R8 به همراه دوربین",
+    "price": "ناموجود",
+    "shop": "",
+    "instock": false
+   },
+   {
+    "name": "برد توسعه ESP32-S3 N16R8 with OV5640 Camera",
+    "price": "ناموجود",
+    "shop": "",
+    "instock": false
+   },
+   {
+    "name": "برد توسعه ESP32-S3-CAM-WROOM باهسته ESP32-S3-N16R8 به همراه دوربین",
+    "price": "ناموجود",
+    "shop": "",
+    "instock": false
+   },
+   {
+    "name": "ماژول ESP32-S3-WROOM-1-N8R8",
+    "price": "۱٫۲۷۶٫۵۷۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "برد توسعه ESP32-S3R8 با نمایشگر لمسی IPS 3.49 اینچی، رزولوشن 172×640 و Wi-Fi/Blu",
+    "price": "۲۰٫۶۵۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "برد توسعه ESP32-S3-N8R8 دارای کانکتور USB Type-C",
+    "price": "ناموجود",
+    "shop": "",
+    "instock": false
+   },
+   {
+    "name": "برد توسعه ESP32-S3 مدل LCKFB ESP32-S3-R8N8",
+    "price": "ناموجود",
+    "shop": "",
+    "instock": false
+   }
+  ]
+ },
+ "CH334": {
+  "ok": true,
+  "hits": [
+   {
+    "name": "بکدراپ کریسمس کد CH334",
+    "price": "۷٫۶۵۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "بکدراپ کریسمس کد CH334",
+    "price": "۷٫۶۵۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   }
+  ]
+ },
+ "FE1.1s": {
+  "ok": true,
+  "hits": [
+   {
+    "name": "آی سی هاب USB 2.0 با 4 پورت SMD FE1.1S-BSOP28BCN",
+    "price": "۱۶۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "IC FE1.1s-BSOP28BCN USB2 Hi-Speed 4Port Hub Controller (ORIGINAL)",
+    "price": "۱۶۱٫۸۴۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "آی سی هاب USB 2.0 با 4 پورت SMD FE1.1S-BSOP28BCN",
+    "price": "۲۰۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   }
+  ]
+ },
+ "CP2102": {
+  "ok": true,
+  "hits": [
+   {
+    "name": "ماژول ESP32 WROOM-32 دارای بلوتوث و وای فای با مبدل CP2102",
+    "price": "از ۸۷۶٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "ماژول وای فای و بلوتوث NodeMcu با هسته ESP8266 و مبدل CP2102",
+    "price": "از ۵۹۶٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "ماژول مبدل USB به TTL با تراشه CP2102",
+    "price": "از ۲۶۹٫۵۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "برد توسعه ESP32_S دارای wifi و بلوتوث داخلی با مبدل سریال CP2102 به همراه فایل آ",
+    "price": "۴٫۵۰۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "ماژول مبدل چندکاره USB TTL RS232 RS485 تراشه CP2102",
+    "price": "از ۴۱۸٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "ماژول مبدل USB به سریال CP2102",
+    "price": "از ۲۴۵٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "برد توسعه NodeMcu دارای هسته وای فای ESP8266 و مبدل CP2102",
+    "price": "از ۵۷۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "برد توسعه ESP32-DevKitc-V4 با چیپ ESP32-WROOM-32D و مبدل CP2102",
+    "price": "۱٫۳۴۲٫۵۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "برد توسعه NODE MCU ESP8266 - CP2102",
+    "price": "از ۷۸۶٫۵۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "برد ESP32 WROOM-32U با مبدل CP2102 دارای بلوتوث و WIFI فروش عمده (بسته 10 عددی)",
+    "price": "۱۰٫۵۰۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "برد توسعه ESP32-S3-WROOM-1 دارای Wifi و بلوتوث با تراشه CP2102",
+    "price": "۱٫۷۲۰٫۲۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "کابل مبدل USB به سریال TTL مدل CP2102",
+    "price": "از ۵۲۶٫۳۸۱ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "برد توسعه ESP32 با مبدل CP2102 دارای WiFi و Bluetooth مدل 30 پایه Type-C",
+    "price": "۱٫۲۵۹٫۳۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "مبدل چند کاره /RS485/RS232/TTL TO USB تراشه CP2102",
+    "price": "از ۴۴۹٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "آی‌سی مبدل USB به UART مدل CP2102",
+    "price": "۴۷۷٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "ماژول بلوتوث و وایفای 30 پایه ESP32-WROOM رابط CP2102 با ورودی Type-C",
+    "price": "۱٫۰۷۳٫۱۱۸ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "برد توسعه ESP32-DevKitC مجهز به ESP32-WROOM-32D و مبدل CP2102",
+    "price": "۱٫۵۴۲٫۷۸۶ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "ماژول مبدل USB به سریال TTL با تراشه CP2102",
+    "price": "از ۳۱۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "برد توسعه ESP32 WROOM-32U دارای بلوتوث، وای فای داخلی و مبدل CP2102",
+    "price": "۱٫۶۰۳٫۱۰۰ تومان",
+    "shop": "",
+    "instock": true
+   }
+  ]
+ },
+ "USB type c female 16pin": {
+  "ok": true,
+  "hits": [
+   {
+    "name": "کانکتور USB مادگی Type C شش پین SMD",
+    "price": "از ۱۰٫۳۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "سوکت وکانکتورمادگی USB Type-C چراغ دار 3 آمپر، رو پنلی گرد شفاف",
+    "price": "۹۶٫۵۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "کانکتور Type-C مادگی 4 سیم گرد روپنلی مهره خور",
+    "price": "از ۱۳۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "سوکت USB Type-C مادگی ۶ پین ضد آب",
+    "price": "۱۱۴٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "کانکتور مادگی Type-C 6pin با هولدر ۴ پایه",
+    "price": "از ۹٫۴۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "سوکت و کانکتور USB Type-C مادگی شاسی‌دار ۴ پین ضدآب",
+    "price": "ناموجود",
+    "shop": "",
+    "instock": false
+   },
+   {
+    "name": "کانکتور USB Type-C مادگی 16pin با هولدر 4 پایه",
+    "price": "۱۲٫۹۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "سوکت مادگی USB Type-C رو پنلی فلزی",
+    "price": "از ۴۲٫۴۵۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "کانکتور نری Type-c ضد آب 2 سیم",
+    "price": "از ۷۱٫۹۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "کانکتور مادگی Type-C چراغ دار شفاف",
+    "price": "از ۸۵٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   }
+  ]
+ },
+ "RD16HHF1": {
+  "ok": true,
+  "hits": [
+   {
+    "name": "RD16HHF1",
+    "price": "ناموجود",
+    "shop": "",
+    "instock": false
+   }
+  ]
+ },
+ "RD15HVF1": {
+  "ok": true,
+  "hits": [
+   {
+    "name": "RD15HVF1(ORGINAL)",
+    "price": "۳٫۹۹۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "RD15HVF1",
+    "price": "ناموجود",
+    "shop": "",
+    "instock": false
+   }
+  ]
+ },
+ "RD06HHF1": {
+  "ok": true,
+  "hits": []
+ },
+ "RD06HVF1": {
+  "ok": true,
+  "hits": [
+   {
+    "name": "RD06HVF1",
+    "price": "ناموجود",
+    "shop": "",
+    "instock": false
+   }
+  ]
+ },
+ "RD01MUS2": {
+  "ok": true,
+  "hits": [
+   {
+    "name": "RD01MUS2",
+    "price": "ناموجود",
+    "shop": "",
+    "instock": false
+   }
+  ]
+ },
+ "IRF510": {
+  "ok": true,
+  "hits": [
+   {
+    "name": "ترانزیستور IRF510",
+    "price": "از ۵۹٫۷۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "ماسفت قدرت IRF510 N-Channel",
+    "price": "۱۲۸٫۷۵۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "IRF510 ماسفت قدرت",
+    "price": "۱۱۴٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "IRF510 ماسفت قدرت",
+    "price": "۱۱۴٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "ماسفت مدل irf510 کد 123",
+    "price": "۲۷۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "IRF510",
+    "price": "۱۴۶٫۱۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "ماسفت مدل irf510 کد 123",
+    "price": "۲۷۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "IRF510N X192",
+    "price": "۶۹٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "IRF510",
+    "price": "ناموجود",
+    "shop": "",
+    "instock": false
+   }
+  ]
+ },
+ "2N5109": {
+  "ok": true,
+  "hits": [
+   {
+    "name": "ترانزیستور مدل 2N5109",
+    "price": "۵۹۵٫۱۵۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "ترانزیستور 2N5109 20V-400mA-1W-1200mhz NPN ST",
+    "price": "۱٫۷۰۵٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "2N5109",
+    "price": "ناموجود",
+    "shop": "",
+    "instock": false
+   }
+  ]
+ },
+ "2SC1971": {
+  "ok": true,
+  "hits": [
+   {
+    "name": "ترانزیستور 2SC1971 (C1971)",
+    "price": "۲۹۳٫۲۵۰ تومان",
+    "shop": "",
+    "instock": true
+   }
+  ]
+ },
+ "2SC1970": {
+  "ok": true,
+  "hits": []
+ },
+ "BD139": {
+  "ok": true,
+  "hits": [
+   {
+    "name": "ترانزیستور BD139 پکیج TO-126",
+    "price": "از ۴٫۵۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "ترانزیستور BD139 نوع NPN پکیج TO-126",
+    "price": "از ۴٫۵۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "ترانزیستور BD139",
+    "price": "از ۵٫۸۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "ترانزیستور مدل BD139 بسته 10 عددی",
+    "price": "از ۱۸۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "BD139",
+    "price": "۷٫۸۳۷ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "BD139 بسته 50 عددی ترانزیستور BD139",
+    "price": "۱۶۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "ترانزیستور NPN BD139 TO-126",
+    "price": "۷٫۲۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "ترانزیستور مدل BD139 بسته 10 عددی",
+    "price": "۱۸۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "ترانزیستور BD139 NPN",
+    "price": "۷٫۸۲۲ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "BD139",
+    "price": "۱۰٫۲۸۸ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "ترانزیستور مدل BD139 بسته 20 عددی",
+    "price": "۲۹۱٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "ترانزیستور BD139 نوع NPN مارک ST پکیج TO-126",
+    "price": "۲۴٫۷۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "BD139 X110",
+    "price": "۵٫۷۵۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "ترانزیستور BD139",
+    "price": "۵٫۷۱۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "ترانزیستور BD139 NPN",
+    "price": "۷٫۸۲۲ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "ترانزیستور BD139 پکیج TO126 فروش عمده (بسته 200 عددی)",
+    "price": "۱٫۳۰۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "ترانزیستور مدل BD139 بسته 20 عددی",
+    "price": "۲۱۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "ترانزیستور BD139 نوع NPN پکیج TO-126",
+    "price": "۱۱٫۰۲۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "ترانزیستورBD139",
+    "price": "۷٫۸۵۶ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "BD139",
+    "price": "۸٫۶۹۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "ترانزیستور BD139 NPN ST اورجینال",
+    "price": "۴۱٫۶۵۱ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "ترانزیستور BD139 کپی",
+    "price": "۵٫۷۵۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "ترانزیستور BD139 NPN ST اورجینال",
+    "price": "۴۱٫۶۵۱ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "ترانزیستور NPN BD139 ولتاژ 80V جریان 1.5A",
+    "price": "۴۲٫۱۰۰ تومان",
+    "shop": "",
+    "instock": true
+   }
+  ]
+ },
+ "2SC2166": {
+  "ok": true,
+  "hits": []
+ },
+ "J310": {
+  "ok": true,
+  "hits": [
+   {
+    "name": "باطری موبایل Samsung مدل Grand Prime-G530-J5-J3-J310",
+    "price": "۸۹۵٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "درب پشت اصلی گوشی سامسونگ Samsung Galaxy j3 2016 j310",
+    "price": "۱۰۹٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "فلت تاچ سامسونگ J310",
+    "price": "از ۱٫۲۵۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "فلت هوم سامسونگ Samsung Galaxy J3 2016 / J310 / J320 Home Button",
+    "price": "۱۶۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "میکروفن سامسونگ Samsung J310 / J510 / J710 (پک ۵ عددی)",
+    "price": "۲۸۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "کیس کامپیوتر اورکول مدل J310",
+    "price": "۳٫۸۰۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "قاب جیر Kajsa طرح مگ سیف MNC مدل Samsung Galaxy J3 (2016) / J320 / J310 - قهوه ا",
+    "price": "۲۶۹٫۸۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "قاب جیر Kajsa طرح مگ سیف MNC مدل Samsung Galaxy J3 (2016) / J320 / J310 - مشکی",
+    "price": "۲۶۹٫۸۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "کیف موبایل مگنتی درجه یک MNC مدل Samsung Galaxy J3 (2016) / J310 - عسلی",
+    "price": "۶۲۹٫۸۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "قاب طرح چرم RYOURK مدل Samsung Galaxy J3 (2016) / J310 - مشکی",
+    "price": "۲۲۷٫۸۰۰ تومان",
+    "shop": "",
+    "instock": true
+   }
+  ]
+ },
+ "BFR92": {
+  "ok": true,
+  "hits": [
+   {
+    "name": "BFR92A",
+    "price": "۵۷٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   }
+  ]
+ },
+ "BF998": {
+  "ok": true,
+  "hits": [
+   {
+    "name": "ترانزیستور ماسفت دوگانه N کانال BF998R",
+    "price": "۱۴۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "BF998",
+    "price": "ناموجود",
+    "shop": "",
+    "instock": false
+   },
+   {
+    "name": "آی سی M0 SOT-143 BF998/BF998R/BF998RW",
+    "price": "ناموجود",
+    "shop": "",
+    "instock": false
+   },
+   {
+    "name": "BF998 Transistor",
+    "price": "ناموجود",
+    "shop": "",
+    "instock": false
+   },
+   {
+    "name": "BF998B-GS08 --- Mosfet-SMD SOT143 VISHAY",
+    "price": "ناموجود",
+    "shop": "",
+    "instock": false
+   }
+  ]
+ },
+ "2N3904": {
+  "ok": true,
+  "hits": [
+   {
+    "name": "ترانزیستور 2N3904 نوع NPN پکیج TO-92",
+    "price": "از ۱٫۰۶۳ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "TRA SMD 2N3904",
+    "price": "۱٫۹۹۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "ترانزیستور SMD 2N3904 کد 1AM",
+    "price": "۲٫۹۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "ترانزیستور اورجینال 2N3904 - SMD",
+    "price": "از ۱٫۴۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "ترانزیستور 2N3904 NPN(بسته 5 عددی)",
+    "price": "۷٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "ترانزیستور 2N3904 بسته 10 عددی",
+    "price": "۱۷٫۷۰۹ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "ترانزیستور 2N3904",
+    "price": "۲٫۰۷۵ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "ترانزیستور 2N3904 SMD پکیج SOT-23",
+    "price": "۷٫۴۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "2N3904 Z232",
+    "price": "۱٫۴۹۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "2N3904 SOT23",
+    "price": "۵۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "TR 2N3904",
+    "price": "۲٫۵۱۳ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "ترانزیستور مدل 2N3904A بسته 20 عددی",
+    "price": "۱۴۷٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "2N3904",
+    "price": "۱٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "ترانزیستور 2N3904 نوع NPN پکیج TO-92 بسته 10 عددی",
+    "price": "۱۶٫۷۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "2N3904",
+    "price": "۲٫۲۵۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "ترانزیستور 2N3904 / MOTOROLA MALAYSIA",
+    "price": "۳٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "ترانزیستور 2N3904L NPN 40V 0.2A",
+    "price": "۲٫۵۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "ترانزیستور 2N3904 40V-200mA-0.31W NPN KEC",
+    "price": "۴٫۱۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "ترانزیستور NPN 60V,0.2A,0.6W - 2N3904 پکیج TO-92",
+    "price": "۲٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "ترانزیستور 2N3904 smd (ترانزیستور1AM)",
+    "price": "۲٫۶۴۶ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "ترانزیستور 2N3904 کد 1AM یا W1A بسته 10 عددی",
+    "price": "۱۶٫۷۲۷ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "ترانزیستور NPN 60V,0.2A,0.6W - 2N3904 پکیج TO-92",
+    "price": "۲٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "ترانزیستور 2N3904 NPN TO-92",
+    "price": "۱٫۸۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "ترانزیستور 2N3904",
+    "price": "۶٫۱۲۲ تومان",
+    "shop": "",
+    "instock": true
+   }
+  ]
+ },
+ "PGA-103": {
+  "ok": true,
+  "hits": []
+ },
+ "MAR-6": {
+  "ok": true,
+  "hits": []
+ },
+ "SA612": {
+  "ok": true,
+  "hits": [
+   {
+    "name": "آی سی 8 پایه DIP مدل SA612AN",
+    "price": "۴٫۲۵۵٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   }
+  ]
+ },
+ "NE612": {
+  "ok": true,
+  "hits": [
+   {
+    "name": "ساک ورزشی Nike مدل NE612",
+    "price": "۱٫۹۹۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "قاب گوشی Xiaomi Mi 11 Lite 4G - Mi 11 Lite 5G - Mi 11 Lite Ne شیائومی طرح دار فا",
+    "price": "ناموجود",
+    "shop": "",
+    "instock": false
+   }
+  ]
+ },
+ "GALI-74": {
+  "ok": true,
+  "hits": [
+   {
+    "name": "GALI-74+",
+    "price": "۹۹۱٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "GALI-74",
+    "price": "۱٫۸۴۸٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   }
+  ]
+ },
+ "AD8307": {
+  "ok": true,
+  "hits": [
+   {
+    "name": "تقویت کننده AD8307ARZ",
+    "price": "ناموجود",
+    "shop": "",
+    "instock": false
+   },
+   {
+    "name": "تقویت کننده AD8307",
+    "price": "ناموجود",
+    "shop": "",
+    "instock": false
+   },
+   {
+    "name": "AD8307ANZ",
+    "price": "ناموجود",
+    "shop": "",
+    "instock": false
+   },
+   {
+    "name": "AD8307AR",
+    "price": "ناموجود",
+    "shop": "",
+    "instock": false
+   },
+   {
+    "name": "فرز دندانپزشکی الماسی جراحی آلو‌ئوپلاستی برای کانتورینگ ریج جوتا JOTA کد D8307XG",
+    "price": "۵٫۵۰۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "فرز جراحی الماسی آلو‌ئوپلاستی برای کانتورینگ ریج جوتا JOTA کد D8307XG",
+    "price": "۵٫۵۰۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   }
+  ]
+ },
+ "AD8318": {
+  "ok": true,
+  "hits": [
+   {
+    "name": "AD8318ACPZ",
+    "price": "۲٫۳۰۱٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "AD8318ACPZ RF Detector",
+    "price": "ناموجود",
+    "shop": "",
+    "instock": false
+   }
+  ]
+ },
+ "BAT54": {
+  "ok": true,
+  "hits": [
+   {
+    "name": "دیود شاتکی (BAT54S) Schottky Diode",
+    "price": "۵٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "دیود BAT54C",
+    "price": "از ۸۹۳ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "BAT54C",
+    "price": "۳٫۳۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "DIO BAT54 SOT23 دیود اس ام دی",
+    "price": "۳٫۶۷۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "DIO BAT54A SOT23",
+    "price": "۳٫۰۲۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "BAT54C-Q",
+    "price": "۳۴٫۲۷۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "BAT54HT1G",
+    "price": "۵٫۰۹۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "BAT54S",
+    "price": "از ۲٫۸۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "دیود شاتکی پرسرعت onsemi مدل BAT54LT1، ولتاژ 30 ولت، جریان 200 میلی‌آمپر",
+    "price": "۶۵٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "دیود شاتکی دوگانه آند مشترک BAT54C، ولتاژ 30 ولت",
+    "price": "۵۹٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "دیود شاتکی (BAT54WS) Schottky Diode",
+    "price": "۱۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "دیود BAT54 یکسوکننده SOT23-3",
+    "price": "۱٫۴۵۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "دیود SOT-523 BAT54ST SMD",
+    "price": "از ۳٫۵۳۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "BAT54S",
+    "price": "از ۶٫۲۲۲ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "دیود BAT54ST SMD (حداقل سفارش 100 عدد)",
+    "price": "۱۴۶٫۴۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "BAT54-NM --- Diode Schottky SOT23 NO MARK",
+    "price": "۵٫۶۱۸ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "BAT54SW",
+    "price": "۱۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "BAT54C",
+    "price": "۶٫۲۱۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "دیود شاتکی (BAT54S) Schottky Diode",
+    "price": "۵٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "دیود BAT54",
+    "price": "۴٫۲۱۲ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "BAT54CPT --- Diode Schottky SOT23 CHENMKO",
+    "price": "۵٫۸۰۸ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "دیود BAT54S",
+    "price": "۳٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "دیود شاتکی مدل BAT54C بسته 10 عددی",
+    "price": "۱۳۸٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "دیود شاتکی SMD BAT54WS",
+    "price": "۲۲٫۲۵۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "دیود شاتکی BAT54C",
+    "price": "۴٫۳۵۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "BAT54LT1",
+    "price": "۱٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   }
+  ]
+ },
+ "1N5711": {
+  "ok": true,
+  "hits": []
+ },
+ "HSMS-2822": {
+  "ok": true,
+  "hits": [
+   {
+    "name": "دیود شاتکی RF دوبل سری Broadcom HSMS-2822",
+    "price": "۴۴٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "دیود شاتکی (HSMS-2822-TR1G) Schottky Diode",
+    "price": "۵٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "دیود شاتکی (HSMS-2822-TR1G) Schottky Diode",
+    "price": "۵٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   }
+  ]
+ },
+ "PE4259": {
+  "ok": true,
+  "hits": []
+ },
+ "T50-2": {
+  "ok": true,
+  "hits": [
+   {
+    "name": "شارژر سامسونگ مدل EP-T5020 توان 50 وات سه پین همراه کابل",
+    "price": "از ۲٫۸۸۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   }
+  ]
+ },
+ "T37-2": {
+  "ok": true,
+  "hits": []
+ },
+ "T50-6": {
+  "ok": true,
+  "hits": []
+ },
+ "T68-2": {
+  "ok": true,
+  "hits": []
+ },
+ "FT37-43": {
+  "ok": true,
+  "hits": []
+ },
+ "FT50-43": {
+  "ok": true,
+  "hits": []
+ },
+ "FT82-43": {
+  "ok": true,
+  "hits": []
+ },
+ "BN43-202": {
+  "ok": true,
+  "hits": []
+ },
+ "FT240-43": {
+  "ok": true,
+  "hits": []
+ },
+ "G6K-2F": {
+  "ok": true,
+  "hits": [
+   {
+    "name": "رله SMD مینی مخابراتی امرون 5 ولت 1 آمپر 8 پایه OMRON G6K-2F-Y",
+    "price": "۳۴۳٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "رله G6K-2F-RF-S-TR03 DC4.5",
+    "price": "۶٫۱۶۵٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "رله SMD مینی مخابراتی امرون 12 ولت 1 آمپر 8 پایه OMRON G6K-2F-Y",
+    "price": "۳۲۲٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "رله OMRON G6K-2F-Y 12V SMD",
+    "price": "۲۴۳٫۶۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "رله G6K-2F-RF-S-DC3",
+    "price": "۹٫۵۴۸٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "رله SMD مینی مخابراتی امرون 24 ولت 1 آمپر 8 پایه SMD OMRON G6K-2F-Y",
+    "price": "۳۵۲٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "رله SMD مینی مخابراتی امرون 5 ولت 1 آمپر 8 پایه(پایه باز ) OMRON G6K-2F",
+    "price": "۵۱۵٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "رله OMRON G6K-2F-Y 24V SMD",
+    "price": "۳۰۲٫۴۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "رله امرن لچ مدل G6K-2F دارای 12 ولت و 8 پین",
+    "price": "ناموجود",
+    "shop": "",
+    "instock": false
+   },
+   {
+    "name": "رله امرن مخابراتی مدل G6K-2F-RF-S دارای 5 ولت و 8 پین",
+    "price": "ناموجود",
+    "shop": "",
+    "instock": false
+   },
+   {
+    "name": "رله اس ام دی امرون مدل OMRON G6K-2F-Y 12V",
+    "price": "ناموجود",
+    "shop": "",
+    "instock": false
+   },
+   {
+    "name": "رله امرن مدل G6k-2F-Y دارای ولتاژ 5VDC و 8 پین",
+    "price": "ناموجود",
+    "shop": "",
+    "instock": false
+   },
+   {
+    "name": "رله G6K-2F-RF-S-5V",
+    "price": "ناموجود",
+    "shop": "",
+    "instock": false
+   },
+   {
+    "name": "رله اس ام دی امرون مدل OMRON G6K-2F-Y 24V",
+    "price": "ناموجود",
+    "shop": "",
+    "instock": false
+   },
+   {
+    "name": "رله OMRON G6K-2F-Y 5V SMD",
+    "price": "ناموجود",
+    "shop": "",
+    "instock": false
+   },
+   {
+    "name": "رله اس ام دی امرون مدل OMRON G6K-2F-Y 5V",
+    "price": "ناموجود",
+    "shop": "",
+    "instock": false
+   },
+   {
+    "name": "رله امرن لچ مدل G6K-2F دارای 3 ولت و 8 پین",
+    "price": "ناموجود",
+    "shop": "",
+    "instock": false
+   },
+   {
+    "name": "رله نظامی G6KU-2F-RF",
+    "price": "۹٫۰۱۶٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "مانیتور گیمینگ هایسنس ۳۴G6K-Pro سایز ۳۴ اینچ کیفیت WQHD با نرخ تازه‌سازی ۱۸۰ هرت",
+    "price": "از ۹۸٫۰۰۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "مانیتور گیمینگ هایسنس ۲۷G6K Pro سایز ۲۷ اینچ WQHD ۲۴۰ هرتز",
+    "price": "از ۸۱٫۰۰۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   }
+  ]
+ },
+ "HFD3": {
+  "ok": true,
+  "hits": []
+ },
+ "TQ2-5V": {
+  "ok": true,
+  "hits": [
+   {
+    "name": "رله مینی مخابراتی نایس 5 ولت 1 آمپر 10 پایه Panasonic TQ2-5V",
+    "price": "۲۹۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "رله مینی مخابراتی لچ نایس دوبوبین 5 ولت 1 آمپر 10 پایه NAIS TQ2-L2-5V",
+    "price": "۶۳۲٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "رله مخابراتی ۵ ولت ۱۰ پایه ۱ آمپر دو کنتاکت TQ2-5V برند NAIS",
+    "price": "۳۶۸٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "رله مینی مخابراتی لچ نایس دوبوبین 24 ولت 1 آمپر 10 پایه NAIS TQ2-L2-24V",
+    "price": "۶۳۲٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "رله مینی مخابراتی لچ نایس دوبوبین 12 ولت 1 آمپر 10 پایه NAIS TQ2-L2-12V",
+    "price": "۶۳۲٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "TQ2-4.5V",
+    "price": "۴۴۲٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "TQ2-12V K281",
+    "price": "۳۸۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "رله اس ام دی لچ دو بوبین نایس 5 ولت 10 پایه TQ2SA-L2-5V SMD",
+    "price": "ناموجود",
+    "shop": "",
+    "instock": false
+   },
+   {
+    "name": "TQ2SA-5V-Z",
+    "price": "ناموجود",
+    "shop": "",
+    "instock": false
+   },
+   {
+    "name": "سلف DLW5BTM251TQ2L",
+    "price": "۱۸۳٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "سلف DLW5BTZ251TQ2L",
+    "price": "۱۲۹٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "رله RELAY TQ2-5V 5VDC 2C 10PIN NAIS",
+    "price": "۵۲۷٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "پودر جرم گیر ماشین ظرفشویی و لباسشویی کد TQ2 وزن 40 گرم بسته 5 عددی",
+    "price": "۴۳۷٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   }
+  ]
+ },
+ "HK19F": {
+  "ok": true,
+  "hits": [
+   {
+    "name": "ساعت هوشمند HK19 Pro Plus با صفحه AMOLED و بدنه آلومینیومی",
+    "price": "از ۳٫۰۰۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "ساعت هوشمند HK19 Ultra 2 با نمایشگر AMOLED و بدنه آلومینیومی",
+    "price": "از ۱٫۳۴۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "کابل AUX کینگ پلاس مدل HK-19",
+    "price": "۳۵۵٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "بند واچ من مدل Spigen Sport: برای ساعت‌های هوشمند HK13 ultra2 / HK14 ultra2 / HK",
+    "price": "۱٫۰۱۲٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "بند واچ من مدل Simple Style: انتخاب شیک برای ساعت های هوشمند HK 13 ultra2 / HK14",
+    "price": "۵۰۴٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "بند واچ من مدل magnet style مناسب برای ساعت هوشمند HK 13 ultra2 / HK14 ultra2 / ",
+    "price": "۹۶۶٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "بند واچ من مدل Spigen Sport: برای ساعت‌های هوشمند HK13 ultra2 / HK14 ultra2 / HK",
+    "price": "۱٫۰۱۲٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "بند واچ من مدل Simple Style: انتخاب شیک برای ساعت های هوشمند HK 13 ultra2 / HK14",
+    "price": "۵۰۴٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "بند واچ من مدل magnet style مناسب برای ساعت هوشمند HK 13 ultra2 / HK14 ultra2 / ",
+    "price": "۹۶۶٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "بند ساعت هوشمند HK19 ULTRA 2",
+    "price": "۹۹٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "بند واچ من مدل magnet style مناسب برای ساعت هوشمند HK 13 ultra2 / HK14 ultra2 / ",
+    "price": "۹۶۶٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "بند واچ من مدل magnet style مناسب برای ساعت هوشمند HK 13 ultra2 / HK14 ultra2 / ",
+    "price": "۹۶۶٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "بند واچ من مدل Spigen Sport: برای ساعت‌های هوشمند HK13 ultra2 / HK14 ultra2 / HK",
+    "price": "۱٫۰۱۲٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "بند واچ من مدل Spigen Sport: برای ساعت‌های هوشمند HK13 ultra2 / HK14 ultra2 / HK",
+    "price": "۱٫۰۱۲٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "بند واچ من مدل Simple Style: انتخاب شیک برای ساعت های هوشمند HK 13 ultra2 / HK14",
+    "price": "۵۰۴٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "بند واچ من مدل Simple Style: انتخاب شیک برای ساعت های هوشمند HK 13 ultra2 / HK14",
+    "price": "۵۰۴٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "بند واچ من مدل magnet style مناسب برای ساعت هوشمند HK 13 ultra2 / HK14 ultra2 / ",
+    "price": "۹۶۶٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "بند واچ من مدل magnet style مناسب برای ساعت هوشمند HK 13 ultra2 / HK14 ultra2 / ",
+    "price": "۹۶۶٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "بند واچ من مدل Spigen Sport: برای ساعت‌های هوشمند HK13 ultra2 / HK14 ultra2 / HK",
+    "price": "۱٫۰۱۲٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "بند واچ من مدل Spigen Sport: برای ساعت‌های هوشمند HK13 ultra2 / HK14 ultra2 / HK",
+    "price": "۱٫۰۱۲٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "بند واچ من مدل Simple Style: انتخاب شیک برای ساعت های هوشمند HK 13 ultra2 / HK14",
+    "price": "۵۰۴٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "بند واچ من مدل Simple Style: انتخاب شیک برای ساعت های هوشمند HK 13 ultra2 / HK14",
+    "price": "۵۰۴٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "بند واچ من مدل Simple Style: انتخاب شیک برای ساعت های هوشمند HK 13 ultra2 / HK14",
+    "price": "۵۰۴٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "بند واچ من مدل Simple Style: انتخاب شیک برای ساعت های هوشمند HK 13 ultra2 / HK14",
+    "price": "۵۰۴٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   }
+  ]
+ },
+ "G5V-2": {
+  "ok": true,
+  "hits": [
+   {
+    "name": "رله G5V-2-12v RELAY 12VDC-2A-2C",
+    "price": "۲۴۸٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "رله G5V-2-H1 48VDC-2C-1A-8KR 8PIN",
+    "price": "۱۵۵٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "رله مخابراتی امرون 12 ولت 1 آمپر 8 پایه OMRON G5V-2-H1",
+    "price": "۴۰۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "رله RELAY G5V-2-H1 12VDC-2C -930R",
+    "price": "۲۴۸٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "شارژر تبلت-کارتخوان MICRO USB مدلSK02G 5V 2A (10W)",
+    "price": "۴۸۶٫۷۴۷ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "رله G5V-2-H1 4.5VDC-1A-2C 8PIN",
+    "price": "۱۷۰٫۵۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "G5V-2-DC48",
+    "price": "۲۸۷٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "FTR-C1CA005G (5V-2C) --- Relay 5VDC FUJITSU",
+    "price": "۱۶۳٫۸۶۱ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "رله مخابراتی امرون 12 ولت 1 آمپر 8 پایه OMRON G5V-2",
+    "price": "۳۶۲٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "رله (G5V-2-H 24VDC) Relay",
+    "price": "۶۵۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "رله G5V-2- 24VDC",
+    "price": "۶۵۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "رله مخابراتی امرون 24 ولت 1 آمپر 8 پایه OMRON G5V-2",
+    "price": "۴۰۲٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   }
+  ]
+ },
+ "LM5116": {
+  "ok": true,
+  "hits": [
+   {
+    "name": "کنترلر سوئیچینگ LM5116MH",
+    "price": "۷۸۹٫۷۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "LM5116MH",
+    "price": "۲۹۵٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   }
+  ]
+ },
+ "TPS54360": {
+  "ok": true,
+  "hits": [
+   {
+    "name": "TPS54360DDA",
+    "price": "۱۷۹٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "تراشه DC-DC کانورتر TPS54360 با جریان 3.5A پکیج HSOIC-8",
+    "price": "۱۸۲٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "TPS54360DDAR",
+    "price": "۱۱۷٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "رگولاتور کاهنده SOIC-8 | TPS54360",
+    "price": "۲۳۶٫۶۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "رگولاتور سوئیچینگ TPS54360DDA 3.5 آمپر",
+    "price": "۱۴۳٫۶۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "آی سی TPS54360 کانورتر جریان DC به DC با جریان 3.5A",
+    "price": "ناموجود",
+    "shop": "",
+    "instock": false
+   },
+   {
+    "name": "تراشه DC-DC کانورتر TPS54360 با جریان ۳٫۵A",
+    "price": "ناموجود",
+    "shop": "",
+    "instock": false
+   },
+   {
+    "name": "TPS54360DDA - SMD",
+    "price": "ناموجود",
+    "shop": "",
+    "instock": false
+   },
+   {
+    "name": "رگولاتور TPS54360DDAR",
+    "price": "ناموجود",
+    "shop": "",
+    "instock": false
+   },
+   {
+    "name": "رگولاتور سوییچینگ TPS54360DDA",
+    "price": "۱۷۲٫۵۰۰ تومان",
+    "shop": "",
+    "instock": true
+   }
+  ]
+ },
+ "XL4016": {
+  "ok": true,
+  "hits": [
+   {
+    "name": "ماژول کاهنده ولتاژ XL4016 ظرفیت ۱۰ آمپر با کنترل جریان",
+    "price": "از ۷۲۰٫۶۳۳ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "ماژول کاهنده ولتاژ XL4016E1 ظرفیت ۸ آمپر",
+    "price": "از ۴۷۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "ماژول رگولاتور کاهنده 9 آمپر 300 وات XL4016 با کنترل جریان",
+    "price": "۷۵۴٫۴۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "ماژول کاهنده ولتاژ 10آمپر مدل XL4016",
+    "price": "۸۲۲٫۹۷۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "ماژول مبدل DC به DC کاهنده 36-1.25 ولت 8 آمپر XL4016E1 دارای نمایشگر",
+    "price": "۱٫۳۶۲٫۵۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "ماژول رگولاتور ۲۰۰ وات ۸ آمپر با ولوم XL4016E1 فروش عمده (بسته 10 عددی)",
+    "price": "۵٫۱۱۵٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "ماژول کاهنده ولتاژ XH-M401 (xl4016)",
+    "price": "۵۸۶٫۳۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "ماژول مبدل DC به DC کاهنده 36-1.25 ولت 9 آمپر XL4016 با قابلیت تنظیم جریان",
+    "price": "۱٫۲۰۵٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "ماژول کاهنده 8 آمپر 200 وات XL4016E1 به همراه نمایشگر ولتاژ",
+    "price": "۱٫۰۷۲٫۵۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "ماژول کاهنده 8 آمپر dc to dc XH-M401 XL4016",
+    "price": "۵۵۶٫۸۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "XL4016E1",
+    "price": "۴۱۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "ماژول مبدل DC به DC کاهنده 36-1.25 ولت 8 آمپر XL4016E1",
+    "price": "۵۳۶٫۲۵۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "ماژول کاهنده ولتاژ 8آمپر مدل XL4016",
+    "price": "۶۱۵٫۶۱۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "ماژول کاهنده 8 آمپر 200 وات XL4016E1 به همراه نمایشگر ولتاژ",
+    "price": "۹۳۳٫۹۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "ماژول کاهنده ولتاژ مدل XL4016E1",
+    "price": "۶۳۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "ماژول رگولاتور کاهنده 9 آمپر 300 وات XL4016 با کنترل جریان",
+    "price": "۹۴۶٫۶۲۲ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "ماژول کاهنده ۸ آمپر ۲۰۰ وات XL4016E1 با نمایشگر ولتاژ",
+    "price": "از ۴۱۴٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "XL4016E1 TO-220-5",
+    "price": "۱۳۶٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "ماژول رگولاتور کاهنده XL4016E1 ظرفیت ۸ آمپر ۲۰۰ وات",
+    "price": "از ۴۸۸٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "رگولاتور سوئیچینگ XL4016E1 8 آمپر",
+    "price": "۱۵۴٫۷۰۰ تومان",
+    "shop": "",
+    "instock": true
+   }
+  ]
+ },
+ "XL7015": {
+  "ok": true,
+  "hits": [
+   {
+    "name": "ماژول کاهنده ولتاژ XL7015 و LM2596 ظرفیت ۳ آمپر",
+    "price": "از ۱۱۵٫۹۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "رگولاتور سوئیچینگ کاهنده XL7015E1",
+    "price": "۹۷٫۱۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "آی سی رگولاتور کاهنده XL7015-E - SMD",
+    "price": "۸۲٫۵۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "ماژول تغذیه DC-DC کاهنده XL7015",
+    "price": "۳۱۳٫۶۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "رگولاتور سوئیچینگ کاهنده XL7015E1",
+    "price": "۱۲۱٫۳۷۵ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "ماژول مبدل DC به DC کاهنده 20-5 ولت 0.8 آمپر XL7015",
+    "price": "۲۳۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "ماژول تغذیه DC-DC کاهنده ولتاژ XL7015",
+    "price": "۱۸۹٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   }
+  ]
+ },
+ "LM2596HV": {
+  "ok": true,
+  "hits": [
+   {
+    "name": "رگولاتور قابل تنظیم 3آمپر ، 1.23 تا 35 ولت-LM2596HV",
+    "price": "۱۳۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "ماژول تغذیه DC به DC و AC به DC کاهنده LM2596HV",
+    "price": "۵۰۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "ماژول تغذیه DC-DC و AC-DC کاهنده LM2596HV",
+    "price": "۴۴۸٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "ماژول تغذیه DC به DC و AC به DC کاهنده LM2596HV",
+    "price": "۶۲۵٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "رگولاتور سوئیچینگ کاهنده LM2596-HVT",
+    "price": "۷۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "LM2596HVS-ADJ",
+    "price": "۱۲۷٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "lm2596 hvs",
+    "price": "۲۴۴٫۵۰۰ تومان",
+    "shop": "",
+    "instock": true
+   }
+  ]
+ },
+ "LM5175": {
+  "ok": true,
+  "hits": []
+ },
+ "LTC3780": {
+  "ok": true,
+  "hits": [
+   {
+    "name": "ماژول مبدل DC-DC کاهنده/افزاینده LTC3780",
+    "price": "از ۲٫۰۲۹٫۲۴۳ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "ماژول LTC3780 کاهنده ولتاژ 10A بازه 5-32 ولت به 1 تا 30 ولت Buck Convertor",
+    "price": "از ۱٫۵۶۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "ماژول رگولاتور اتوماتیک DC به DC کاهنده - افزاینده LTC3780",
+    "price": "۱٫۶۵۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "ماژول مبدل DC-DC کاهنده و افزاینده قابل تنظیم LTC3780",
+    "price": "۶٫۴۰۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "ماژول رگولاتور اتوماتیک DC به DC کاهنده - افزاینده LTC3780 مناسب برای شارژرهای خ",
+    "price": "۳٫۰۲۶٫۵۶۹ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "ماژول رگولاتور اتوماتیک DC به DC کاهنده - افزاینده LTC3780 مناسب برای شارژرهای خ",
+    "price": "ناموجود",
+    "shop": "",
+    "instock": false
+   },
+   {
+    "name": "ماژول رگولاتور اتوماتیک DC به DC کاهنده - افزاینده LTC3780 مناسب برای شارژرهای خ",
+    "price": "ناموجود",
+    "shop": "",
+    "instock": false
+   },
+   {
+    "name": "ماژول رگولاتور اتوماتیک DC به DC کاهنده - افزاینده LTC3780",
+    "price": "ناموجود",
+    "shop": "",
+    "instock": false
+   },
+   {
+    "name": "ماژول کاهنده و افزاینده ولتاژ LTC3780",
+    "price": "ناموجود",
+    "shop": "",
+    "instock": false
+   },
+   {
+    "name": "ماژول رگولاتور اتوماتیک DC به DC کاهنده - افزاینده LTC3780 مناسب برای شارژرهای خ",
+    "price": "۴٫۱۴۳٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "ماژول رگولاتور اتوماتیک DC به DC کاهنده - افزاینده LTC3780 مناسب برای شارژرهای خ",
+    "price": "۳٫۴۰۷٫۱۰۰ تومان",
+    "shop": "",
+    "instock": true
+   }
+  ]
+ },
+ "XL6019": {
+  "ok": true,
+  "hits": [
+   {
+    "name": "ماژول افزاینده XL6019 جریان ۵ آمپر",
+    "price": "از ۲۴۴٫۴۷۴ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "ماژول افزاینده ولتاژ XL6019 ظرفیت ۵ آمپر",
+    "price": "از ۲۷۷٫۲۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "ماژول افزاینده ولتاژ XL6019 5A DC-DC",
+    "price": "۴۴۳٫۹۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "ماژول XL6019 مبدل DC به DC افزاینده ۵ آمپر",
+    "price": "۲۹۵٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "ماژول افزاینده ولتاژ 5 امپر DC-DC STEP UP XL6019",
+    "price": "۳۲۰٫۰۴۵ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "ماژول افزاینده ولتاژ XL6019E ظرفیت ۵ آمپر",
+    "price": "۲۴۳٫۱۷۳ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "ماژول افزاینده ولتاژ 5 آمپر XL6019 با خروجی قابل تنظیم",
+    "price": "۴۲۵٫۵۵۴ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "ماژول افزاینده ولتاژ XL6019",
+    "price": "۲۶۶٫۵۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "ماژول افزاینده XL6019/5A",
+    "price": "۴۱۸٫۷۱۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "عینک طبی زنانه برند miu miu مدل ویفر کت کد xl6019c2",
+    "price": "۵٫۲۵۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "عینک طبی زنانه برند miu miu مدل ویفر کت کد xl6019c2",
+    "price": "۷٫۵۰۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "آی سی رگولاتور XL6019E1",
+    "price": "از ۱۴۵٫۳۸۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "XL6019E1 آی سی SMD",
+    "price": "۱۰۹٫۱۰۵ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "XL6019E1 L125",
+    "price": "۲۲۲٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "ماژول تغذيه افزاينده 5 آمپر مدل xl6019 dc to dc",
+    "price": "ناموجود",
+    "shop": "",
+    "instock": false
+   },
+   {
+    "name": "ماژول افزاینده ولتاژ 5 آمپر XL6019 5A DC-DC",
+    "price": "ناموجود",
+    "shop": "",
+    "instock": false
+   },
+   {
+    "name": "ماژول تغذيه افزاينده 5 آمپر مدل xl6019 dc to dc",
+    "price": "ناموجود",
+    "shop": "",
+    "instock": false
+   },
+   {
+    "name": "ماژول افزاینده ولتاژ 5 آمپر XL6019 با خروجی قابل تنظیم",
+    "price": "ناموجود",
+    "shop": "",
+    "instock": false
+   },
+   {
+    "name": "ماژول افزاینده DC به DC جریان 5 آمپر XL6019",
+    "price": "ناموجود",
+    "shop": "",
+    "instock": false
+   },
+   {
+    "name": "ماژول مبدل DC-DC افزاینده و کاهنده XL6019 با کنترل جریان خروجی",
+    "price": "ناموجود",
+    "shop": "",
+    "instock": false
+   },
+   {
+    "name": "ماژول افزاینده ولتاژ 5 آمپر XL6019 با خروجی قابل تنظیم",
+    "price": "ناموجود",
+    "shop": "",
+    "instock": false
+   }
+  ]
+ },
+ "LM2576HV": {
+  "ok": true,
+  "hits": [
+   {
+    "name": "LM2576HV-12 F115",
+    "price": "۱۳۲٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "LM2576HV-ADJ SMD F110",
+    "price": "۱۲۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "رگولاتور سوئیچینگ قابل تنظیم LM2576HV ADJ",
+    "price": "۱۶۲٫۵۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "LM2576HV-ADJ F110",
+    "price": "۱۲۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "رگولاتورLM2576HVT",
+    "price": "۶۶۶٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "رگولاتورLM2576HVT",
+    "price": "۶۶۶٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "رگولاتور LM2576HVT-ADJ HIGH COPY پکیج TO-220-5",
+    "price": "از ۴۳٫۰۵۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "رگولاتور TO-220-5 | LM2576HVT ADJ",
+    "price": "از ۹۷٫۷۶۰ تومان",
+    "shop": "",
+    "instock": true
+   }
+  ]
+ },
+ "MP1584": {
+  "ok": true,
+  "hits": [
+   {
+    "name": "ماژول رگولاتور کاهنده DC به DC مدل MP1584 ظرفیت ۳ آمپر",
+    "price": "از ۸۶٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "ماژول کاهنده DC-DC MP1584 همراه با پتانسیومتر",
+    "price": "از ۱۰۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "ماژول رگولاتور DC به DC کاهنده متغیر 3 آمپر MP1584EN",
+    "price": "۱۴۰٫۳۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "ماژول رگولاتور کاهنده ۵ ولت ۳ آمپر MP1584EN با پورت USB",
+    "price": "از ۲۰۹٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "ماژول کاهنده ولتاژ MP1584 ثابت کدکالا692",
+    "price": "۱۲۲٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "ماژول رگولاتور DC به DC کاهنده متغیر 3 آمپر MP1584EN",
+    "price": "از ۱۱۲٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "ماژول رگولاتور کاهنده ولتاژ به 5 ولت 5 آمپر dcبه dc مدل MP1584EN",
+    "price": "۳۳۳٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "ماژول رگولاتور کاهنده MP1584EN",
+    "price": "۱۷۶٫۸۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "ماژول کاهنده ولتاژ MP1584 3A",
+    "price": "از ۱۰۵٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "ماژول DC DC STEP DOWN MP1584EN بدون پتانسیومتر",
+    "price": "۱۴۷٫۰۸۵ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "ماژول مبدل DC به DC کاهنده 5 ولت 3 آمپر مدل MP1584",
+    "price": "۱۸۲٫۵۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "ماژول کاهنده DC به DC با جریان 3 آمپر MP1584",
+    "price": "۱۷۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "ماژول کاهنده ولتاژ به 12 ولت MP1584",
+    "price": "۹۴٫۷۱۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "ماژول کاهنده MP1584 با خروجی ثابت 5 ولت 3 آمپر",
+    "price": "۱۵۵٫۳۷۵ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "ماژول رگولاتور DC به DC کاهنده 5 ولت 3 آمپر MP1584EN با پورت USB",
+    "price": "۱۴۳٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "ماژول کاهنده DC-DC MP1584 با خروجی متغیر",
+    "price": "۱۸۱٫۵۹۴ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "ماژول مبدل کاهنده ولتاژ رگولاتوری 3 آمپر MP1584EN فروش عمده (بسته 10 عددی)",
+    "price": "۹۱۳٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "ماژول کاهنده ولتاژ MP1584 ثابت کدکالا690",
+    "price": "۱۲۲٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "ماژول مبدل DC به DC کاهنده 20-0.8 ولت 3 آمپر مدل MP1584",
+    "price": "۱۱۱٫۱۲۵ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "ماژول کاهنده ولتاژ MP1584EN | رنگ سبز",
+    "price": "۱۸۵٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "ماژول کاهنده ولتاژ MP1584 ثابت کدکالا689",
+    "price": "۱۲۲٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "آی سی رگولاتور سوئیچینگ MP1584EN",
+    "price": "از ۸۲٫۱۳۷ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "رگولاتور MP1584EN-LF-Z",
+    "price": "از ۹۳٫۸۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "آي سي MP1584EN",
+    "price": "۵۸٫۳۷۵ تومان",
+    "shop": "",
+    "instock": true
+   }
+  ]
+ },
+ "LT3045": {
+  "ok": true,
+  "hits": [
+   {
+    "name": "LT3045EMSE#TRPBF",
+    "price": "۲٫۶۲۵٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "آی سی #LT3045EMSE",
+    "price": "ناموجود",
+    "shop": "",
+    "instock": false
+   }
+  ]
+ },
+ "ADP150": {
+  "ok": true,
+  "hits": [
+   {
+    "name": "شارژر لپ تاپ ایسوس Asus ADP-150CH B 20V 7.5A",
+    "price": "از ۶٫۵۰۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "قطعات یدکی کامپیوتر آداپتور شارژ اصلی 20V 7.5A 150W 6.0 3.7MM ADP 150CH B, A18 1",
+    "price": "۳۶٫۰۶۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "شارژر لپ تاپ ایسوس Asus ADP-150CH B 20V 7.5A",
+    "price": "۱۱٫۴۳۱٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "شارژر لپ تاپ 19.5 7.7 آمپر دابل ام مدل ADP-150W Slim",
+    "price": "۳٫۱۶۷٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "شارژر لپتاپ 19 7.7 آمپر مدل ADP-150W slim",
+    "price": "۴٫۰۴۴٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "آی سی ADP150AUJZ-2.5",
+    "price": "۴۸۸٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "آداپتور 19 ولت 7.89 آمپر مدل ADP-150WB",
+    "price": "۲٫۶۵۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   }
+  ]
+ },
+ "LP5907": {
+  "ok": true,
+  "hits": []
+ },
+ "AMS1117": {
+  "ok": true,
+  "hits": [
+   {
+    "name": "رگولاتور AMS1117 ظرفیت ۳.۳ ولت SOT-223",
+    "price": "از ۲٫۵۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "رگولاتور AMS1117-5.0 پنج ولت پکیج SOT-223",
+    "price": "از ۴٫۸۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "رگولاتور AMS1117 ظرفیت ۲.۵ ولت SOT-223",
+    "price": "از ۴٫۱۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "Ams1117 3.3v with board",
+    "price": "از ۳۴٫۵۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "تغذیه ams1117-adj - سایز بزرگ (ادجاست)",
+    "price": "۱۳۳٫۱۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "رگولاتور اورجینال AMS1117 SOT-223 - 1.8 ولت",
+    "price": "از ۵٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "ماژول رگلاتور 5 ولت چیپ AMS1117",
+    "price": "از ۳۴٫۹۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "ماژول رگولاتور 3.3 ولت AMS1117 سه پین",
+    "price": "۴۱٫۰۵۵ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "رگولاتور AMS1117CD-3.3 پکیج TO-252",
+    "price": "از ۷٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "رگولاتور اورجینال AMS1117 SOT-223 - 1.2 ولت",
+    "price": "از ۴٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "آی سی رگولاتور AMS1117-2.5 (SMD)",
+    "price": "از ۶٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "AMS1117-5.0 Copy (بسته 10تایی)",
+    "price": "۶۹٫۶۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "رگولاتور AMS1117-ADJ پکیج SOT-223",
+    "price": "از ۳٫۸۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "AMS1117-5.0",
+    "price": "از ۵٫۴۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "ماژول رگولاتور 5v چیپ AMS1117",
+    "price": "۱۹۱٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "ماژول رگولاتور AMS1117 Regulator Module",
+    "price": "از ۳۴٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "رگولاتور AMS1117CD-1.8 پکیج TO-252 (D-PAK)",
+    "price": "از ۱۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "ماژول 5 ولت AMS1117",
+    "price": "از ۳۵٫۱۹۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "آی سی رگولاتور 3.3 ولت smd (AMS 1117 )",
+    "price": "از ۵٫۰۱۸ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "رگولاتور اورجینال AMS1117 SOT-223 - ADJ",
+    "price": "از ۱۱٫۵۷۹ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "Ams1117 5v with board",
+    "price": "از ۳۷٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "رگولاتور 5 ولت AMS1117 پکیج TO-252",
+    "price": "از ۷٫۱۵۰ تومان",
+    "shop": "",
+    "instock": true
+   }
+  ]
+ },
+ "INA219": {
+  "ok": true,
+  "hits": [
+   {
+    "name": "ماژول اندازه گیری ولتاژ و جریان INA219A با خروجی I2C",
+    "price": "از ۲۰۹٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   }
+  ]
+ },
+ "INA226": {
+  "ok": true,
+  "hits": []
+ },
+ "ADS1115": {
+  "ok": true,
+  "hits": [
+   {
+    "name": "ماژول مبدل آنالوگ به دیجیتال ۱۶ بیتی ADS1115 چهار کاناله",
+    "price": "از ۳۰۵٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "مبدل ADC ADS1115 آدافروت Adafruit مبدل 16 بیت 4 کانال با PGA",
+    "price": "۳٫۶۲۹٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "ADS1115 I2C Compact",
+    "price": "از ۳۲۰٫۵۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "ADS1115IDGSR",
+    "price": "۴۰۸٫۳۲۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "خرید ماژول مبدل ADC آنالوگ به دیجیتال 12 بیتی ADS1115",
+    "price": "۳۶۲٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "ماژول A2D 16 بيتي ADS1115",
+    "price": "۳۸۵٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "ماژول مبدل آنالوگ به دیجیتال 16 بیتی ADS1115",
+    "price": "۴۰۷٫۵۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "ADS1115 Module",
+    "price": "۴۸۱٫۲۵۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "مبدل آنالوگ به دیجیتال 16 بیتی SMD ADS1115IDGSR",
+    "price": "۴۴۱٫۲۵۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "ADS1115 I2C Compact",
+    "price": "۳۲۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "ماژول ADS1115 مبدل ADC 16 bit",
+    "price": "۴۱۸٫۵۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "مبدل آنالوگ به دیجیتال 16 بیتی SMD ADS1115IDGSR",
+    "price": "۳۵۳٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "آی سی ADS1115 پکیج SMD",
+    "price": "۲۰۶٫۶۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "آی سی ADS1115IDGSR",
+    "price": "۱٫۰۶۲٫۲۸۲ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "شیلد مبدل 16 بیتی ADC با آی سی ADS1115 مخصوص رزبری پای - 4Channel 16Bit ADC With",
+    "price": "۲٫۲۶۹٫۷۳۶ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "ADS1115 Module",
+    "price": "ناموجود",
+    "shop": "",
+    "instock": false
+   },
+   {
+    "name": "ماژول مبدل آنالوگ به دیجیتال کپی ADS1115",
+    "price": "ناموجود",
+    "shop": "",
+    "instock": false
+   },
+   {
+    "name": "ADS1115IDGSR",
+    "price": "ناموجود",
+    "shop": "",
+    "instock": false
+   },
+   {
+    "name": "خرید ماژول آنالوگ به دیجیتال ADS1115 ویژه برد رسپبری پای",
+    "price": "ناموجود",
+    "shop": "",
+    "instock": false
+   },
+   {
+    "name": "ADS1115IDGSR",
+    "price": "ناموجود",
+    "shop": "",
+    "instock": false
+   },
+   {
+    "name": "ADS1115QDGSRQ1",
+    "price": "ناموجود",
+    "shop": "",
+    "instock": false
+   },
+   {
+    "name": "ADS1115IRUGR",
+    "price": "ناموجود",
+    "shop": "",
+    "instock": false
+   },
+   {
+    "name": "ADS1115IDGST",
+    "price": "ناموجود",
+    "shop": "",
+    "instock": false
+   },
+   {
+    "name": "ADS1115QDGSRQ1",
+    "price": "ناموجود",
+    "shop": "",
+    "instock": false
+   }
+  ]
+ },
+ "TMP102": {
+  "ok": true,
+  "hits": []
+ },
+ "LM75": {
+  "ok": true,
+  "hits": [
+   {
+    "name": "LM75ADP,118",
+    "price": "۵۹٫۷۳۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "LM75BD,118",
+    "price": "۷۷٫۷۷۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "LM75BIM-3/NOPB",
+    "price": "۱۹۶٫۴۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "ماژول دما LM75 MODULE",
+    "price": "از ۱۷۵٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "LM75CIM-5 SMD",
+    "price": "۹۴٫۴۱۵ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "سنسور دمای LM75A",
+    "price": "از ۷۵٫۲۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "سنسور دمایی LM75CIM 5",
+    "price": "۱۰۸٫۷۹۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "کابل شارژ فست Liami Type-C To Lightning مدل CA-LM75 120W - چند رنگ کد 1523658",
+    "price": "۱٫۱۰۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "کابل Type-C به Type-C لیامی CA-LM75 فست شارژ 120W کد 140773",
+    "price": "۹۸۹٫۵۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "LM75CIMX آی سی SMD",
+    "price": "۱۳۶٫۳۲۲ تومان",
+    "shop": "",
+    "instock": true
+   }
+  ]
+ },
+ "BNC female PCB": {
+  "ok": true,
+  "hits": [
+   {
+    "name": "فیش تبدیل BNC FEMALE TO RCA",
+    "price": "۳۹٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "کانکتور BNC PCB جک 75 اهم راستا",
+    "price": "۲۱۶٫۷۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "کانکتور رو بردی BNC جک PCB",
+    "price": "۴۰۱٫۴۱۷ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "مبدل BNC نری به PL259 مادگی",
+    "price": "۴۰۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "فیش BNC پیچی دوربین مداربسته طلایی",
+    "price": "از ۴۳٫۵۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "فیش BNC پیچی دوربین مداربسته طلایی",
+    "price": "از ۳۲٫۵۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "کانکتور BNC مادگی روبردی نود درجه پلاستیکی (بدون مهره و واشر) - USED",
+    "price": "۴۱٫۳۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "تبدیل فیشAV به BNC",
+    "price": "از ۲۴٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "ترمیاتور عبوری 50 اهم BNC برند فلوک مدل TRM50",
+    "price": "۱۲۵٫۳۷۱٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "فیش تبدیل BNC FEMALE TO RCA",
+    "price": "۳۹٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "آداپتور BNC نری به BNC ماده برند فلوک مدل PM9093",
+    "price": "۳۵٫۱۱۶٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "کابل رابط BNC مادگی پنلی به MCX نری ۹۰ درجه - RG179، طول 15 سانتی‌متر",
+    "price": "۵۰۱٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "آداپتور BNC دو سر موزی (نر) به مادگی برند فلوک مدل PM9081",
+    "price": "۲۸٫۴۳۲٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "BNC Panel Mount Coupler, BNC Female to BNC Female (PE9093)",
+    "price": "۲۹۵٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "آداپتور BNC دو سر موزی (ماده) به نری برند فلوک مدل PM9082",
+    "price": "۲۸٫۴۳۲٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   }
+  ]
+ },
+ "SO-239": {
+  "ok": true,
+  "hits": [
+   {
+    "name": "کانکتور BNC UHF-Female SO-239 Bulkhead Connector - Rear Mount/ AMPHENOL USA",
+    "price": "۳٫۶۱۸٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   }
+  ]
+ },
+ "SMA female PCB": {
+  "ok": true,
+  "hits": [
+   {
+    "name": "SMA RIGHT FEMALE کانکتور",
+    "price": "۵۹٫۵۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "کانکتور sma female PCB mount /Right Angle",
+    "price": "۵۲۲٫۵۰۱ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "کانکتور SMA مادگی صاف",
+    "price": "از ۲۶٫۷۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "SMA Female Right Angle Bulkhead Mount Connector Solder Attachment Thru Hole PCB ",
+    "price": "۴۱٫۳۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "SMA Female Right Angle Bulkhead Mount Connector Solder Attachment Thru Hole PCB ",
+    "price": "۴۱٫۳۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "SMA Female Right Angle Mount Connector Solder Attachment Thru Hole PCB/Used",
+    "price": "۳۰٫۹۷۵ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "SMA Female Right Angle Bulkhead Mount Connector Solder Attachment Thru Hole PCB ",
+    "price": "۵۱٫۶۲۵ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "SMA-PCB Female",
+    "price": "ناموجود",
+    "shop": "",
+    "instock": false
+   },
+   {
+    "name": "کانکتور sma pcb (کد 2)",
+    "price": "۶۰٫۹۴۳ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "کانکتور SMA-PCB",
+    "price": "۴۶٫۲۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "(11_SMA-50-4-53/139_NE)کانکتور SMA نری سرکابلی مستقیم S04212B",
+    "price": "۵٫۳۴۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "SMA Connector Male - Right Angle (PCB Mount)",
+    "price": "۲۰۶٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "SMA 4 HOLE PANEL MOUNT JACK SOLDER POST TERMINAL PCB - with 15mm Insulator",
+    "price": "۲۳۶٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "SMA-PCB MALE",
+    "price": "۹۹٫۸۲۵ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "SMA Straight PCB Edge Mount/End Launch, Jack, Gold, 50Ω, Connector Solder",
+    "price": "۲۰۶٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "کانکتور sma pcb طول رزوه 1cm (کد 22)",
+    "price": "۲۷۴٫۱۷۷ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "کانکتور SMA صاف مادگی PCB Mount Solder",
+    "price": "۳۰٫۴۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "کانکتور SMA PCB 25mm",
+    "price": "۱۳۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "کانکتور SMA PCB 17mm",
+    "price": "۷۳٫۱۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "کانکتور SMA female straight 2 hole",
+    "price": "۱٫۲۱۰٫۰۰۴ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "تفلون بلندSMA FEMALE 2HOLE Panel Mount RF Connector",
+    "price": "۵۰۲٫۶۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "TNC female TO SMA female",
+    "price": "۱٫۲۳۷٫۵۰۴ تومان",
+    "shop": "",
+    "instock": true
+   }
+  ]
+ },
+ "LTC2208": {
+  "ok": true,
+  "hits": []
+ },
+ "LTC2165": {
+  "ok": true,
+  "hits": []
+ },
+ "AD9467": {
+  "ok": true,
+  "hits": [
+   {
+    "name": "AD9467BCPZRL7-250",
+    "price": "ناموجود",
+    "shop": "",
+    "instock": false
+   }
+  ]
+ },
+ "AD9649": {
+  "ok": true,
+  "hits": [
+   {
+    "name": "مبدل آنالوگ به دیجیتال 14 بیتی AD9649BCPZ-65 با نرخ نمونه‌برداری 65MSPS",
+    "price": "۳۶٫۲۳۹٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "AD9649BCPZ-80",
+    "price": "ناموجود",
+    "shop": "",
+    "instock": false
+   },
+   {
+    "name": "AD9649BCPZ-40",
+    "price": "ناموجود",
+    "shop": "",
+    "instock": false
+   }
+  ]
+ },
+ "AD9226": {
+  "ok": true,
+  "hits": []
+ },
+ "AD9238": {
+  "ok": true,
+  "hits": [
+   {
+    "name": "AD9238BCPZ-65",
+    "price": "ناموجود",
+    "shop": "",
+    "instock": false
+   },
+   {
+    "name": "AD9238BCPZ-65",
+    "price": "ناموجود",
+    "shop": "",
+    "instock": false
+   },
+   {
+    "name": "AD9238BSTZ-20",
+    "price": "ناموجود",
+    "shop": "",
+    "instock": false
+   }
+  ]
+ },
+ "ADS4245": {
+  "ok": true,
+  "hits": []
+ },
+ "AD9866": {
+  "ok": true,
+  "hits": []
+ },
+ "AD9361": {
+  "ok": true,
+  "hits": [
+   {
+    "name": "ترجمه دیتاشیت آی سی فرستنده -گیرنده مخابراتی AD9361",
+    "price": "۵۹۷٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "بررسی انواع FPGA های RF با تاکید بر FPRF مدل AD9361",
+    "price": "۵۹۷٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "بررسی انواع FPGA های RF با تاکید بر FPRF مدل AD9361",
+    "price": "۵۹۹٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "ترجمه دیتاشیت آی سی فرستنده -گیرنده مخابراتی AD9361",
+    "price": "۵۰٫۴۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "بررسی انواع FPGA های RF با تاکید بر FPRF مدل AD9361",
+    "price": "۲۷٫۴۵۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "بررسی انواع FPGA های RF با تاکید بر FPRF مدل AD9361",
+    "price": "۵۹۷٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "ترجمه دیتاشیت آی سی فرستنده -گیرنده مخابراتی AD9361",
+    "price": "۵۹۷٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "بررسی انواع FPGA های RF با تاکید بر FPRF مدل AD9361",
+    "price": "۵۹۷٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "ترجمه دیتاشیت آی سی فرستنده -گیرنده مخابراتی AD9361",
+    "price": "۵۹۹٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "ترجمه دیتاشیت آی سی فرستنده -گیرنده مخابراتی AD9361",
+    "price": "۵۹۷٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   }
+  ]
+ },
+ "LMS7002M": {
+  "ok": true,
+  "hits": []
+ },
+ "AD9363": {
+  "ok": true,
+  "hits": []
+ },
+ "ADC08100": {
+  "ok": true,
+  "hits": []
+ },
+ "EP4CE10": {
+  "ok": true,
+  "hits": []
+ },
+ "EP4CE22": {
+  "ok": true,
+  "hits": [
+   {
+    "name": "برد پروژه FPGA های EP4CE22) ALTERA) از سری Cyclone4 کد 152",
+    "price": "۳۱٫۰۰۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   }
+  ]
+ },
+ "EP4CE6": {
+  "ok": true,
+  "hits": [
+   {
+    "name": "برد توسعه FPGA مدل Cyclone IV (EP4CE6)",
+    "price": "ناموجود",
+    "shop": "",
+    "instock": false
+   },
+   {
+    "name": "برد توسعه FPGA مدل CoreEP4CE6 با تراشه ALTERA Cyclone IV",
+    "price": "۷٫۸۰۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   }
+  ]
+ },
+ "XC6SLX9": {
+  "ok": true,
+  "hits": [
+   {
+    "name": "برد توسعه XILINX FPGA SPARTAN6 XC6SLX9",
+    "price": "از ۲۲٫۶۰۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "برد آموزشی FPGA فراد 1 با Xilinx Spartan-6 XC6SLX9-2TQG144",
+    "price": "۵۳٫۴۶۹٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "برد توسعه XILINX FPGA SPARTAN6 XC6SLX9",
+    "price": "۲۵٫۰۰۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "خرید برد توسعه XILINX FPGA SPARTAN6 XC6SLX9",
+    "price": "۲۲٫۶۰۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "برد آموزشی FPGA های XC6SLX9 &#8211; XILINX (سری Spartan6) مدل NSK118",
+    "price": "۵۵٫۰۰۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "برد پروژه FPGA های XC6SLX9) XILINX) از سری Spartan6",
+    "price": "۱۹٫۵۰۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "برد پروژه FPGA های XC6SLX9) XILINX) از سری Spartan6 کد 151",
+    "price": "۲۹٫۰۰۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "XC6SLX9-2TQG144C - USED",
+    "price": "۹۷۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "XC6SLX9-2TQG144I",
+    "price": "۱٫۸۸۱٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "XC6SLX9-3TQG144I",
+    "price": "۵٫۳۱۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "آی سی XC6SLX9-3TQG144I",
+    "price": "۶٫۳۵۵٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "FPGA XC6SLX9-2TQG144C",
+    "price": "۲٫۶۶۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "Spartan-6 FPGA XC6SLX9-2TQG144C",
+    "price": "ناموجود",
+    "shop": "",
+    "instock": false
+   },
+   {
+    "name": "XC6SLX9-2TQG144I",
+    "price": "ناموجود",
+    "shop": "",
+    "instock": false
+   },
+   {
+    "name": "XC6SLX9-2FTG256I",
+    "price": "ناموجود",
+    "shop": "",
+    "instock": false
+   },
+   {
+    "name": "برد توسعه زایلینکس مدل پازج 1-FPGA-XC6SLX9",
+    "price": "ناموجود",
+    "shop": "",
+    "instock": false
+   },
+   {
+    "name": "XC6SLX9-2TQG144C",
+    "price": "ناموجود",
+    "shop": "",
+    "instock": false
+   },
+   {
+    "name": "ماژول XILINX FPGA SPARTAN6 XC6SLX9-6",
+    "price": "ناموجود",
+    "shop": "",
+    "instock": false
+   },
+   {
+    "name": "آی سی FPGA XC6SLX9-2FTG256C",
+    "price": "ناموجود",
+    "shop": "",
+    "instock": false
+   },
+   {
+    "name": "XC6SLX9-2FTG256C",
+    "price": "ناموجود",
+    "shop": "",
+    "instock": false
+   },
+   {
+    "name": "XC6SLX9-2FTG256C",
+    "price": "ناموجود",
+    "shop": "",
+    "instock": false
+   }
+  ]
+ },
+ "XC6SLX16": {
+  "ok": true,
+  "hits": [
+   {
+    "name": "XC6SLX16-3CSG324C",
+    "price": "ناموجود",
+    "shop": "",
+    "instock": false
+   },
+   {
+    "name": "آی سی FPGA XC6SLX16-3FTG256I",
+    "price": "ناموجود",
+    "shop": "",
+    "instock": false
+   },
+   {
+    "name": "آی سی FPGA XC6SLX16-2FTG256I",
+    "price": "ناموجود",
+    "shop": "",
+    "instock": false
+   },
+   {
+    "name": "XC6SLX16-2FTG256C",
+    "price": "ناموجود",
+    "shop": "",
+    "instock": false
+   },
+   {
+    "name": "آی سی FPGA XC6SLX16-3CSG324I",
+    "price": "ناموجود",
+    "shop": "",
+    "instock": false
+   },
+   {
+    "name": "آی سی FPGA XC6SLX16-3CSG324C",
+    "price": "ناموجود",
+    "shop": "",
+    "instock": false
+   },
+   {
+    "name": "XC6SLX16-2FTG256I",
+    "price": "ناموجود",
+    "shop": "",
+    "instock": false
+   },
+   {
+    "name": "آی سی FPGA XC6SLX16-2FTG256C",
+    "price": "ناموجود",
+    "shop": "",
+    "instock": false
+   }
+  ]
+ },
+ "XC7A35T": {
+  "ok": true,
+  "hits": [
+   {
+    "name": "آی سی XC7A35T-1FTG256C",
+    "price": "ناموجود",
+    "shop": "",
+    "instock": false
+   },
+   {
+    "name": "آی سی XC7A35T-2FGG484I",
+    "price": "ناموجود",
+    "shop": "",
+    "instock": false
+   },
+   {
+    "name": "آی سی XC7A35T-2FGG484C",
+    "price": "ناموجود",
+    "shop": "",
+    "instock": false
+   },
+   {
+    "name": "آی سی XC7A35T-2CSG325C",
+    "price": "ناموجود",
+    "shop": "",
+    "instock": false
+   },
+   {
+    "name": "XC7A35T-2FGG484C",
+    "price": "ناموجود",
+    "shop": "",
+    "instock": false
+   }
+  ]
+ },
+ "LFE5U": {
+  "ok": true,
+  "hits": []
+ },
+ "ICE40HX8K": {
+  "ok": true,
+  "hits": []
+ },
+ "GW1NR": {
+  "ok": true,
+  "hits": [
+   {
+    "name": "برد توسعه Tang Nano 9K FPGA با تراشه GW1NR-LV9",
+    "price": "ناموجود",
+    "shop": "",
+    "instock": false
+   }
+  ]
+ },
+ "GW2A": {
+  "ok": true,
+  "hits": []
+ },
+ "FPGA Cyclone IV board": {
+  "ok": true,
+  "hits": [
+   {
+    "name": "برد توسعه FPGA مدل CoreEP4CE6 با تراشه ALTERA Cyclone IV",
+    "price": "۷٫۸۰۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "برد پروژه FPGA های EP4CE22) ALTERA) از سری Cyclone4 کد 152",
+    "price": "۳۱٫۰۰۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "برد توسعه FPGA مدل Cyclone IV (EP4CE6)",
+    "price": "ناموجود",
+    "shop": "",
+    "instock": false
+   },
+   {
+    "name": "ماژول برد الترا سایکلون ALTERA CYCLONE IV FPGA",
+    "price": "ناموجود",
+    "shop": "",
+    "instock": false
+   },
+   {
+    "name": "برد FPGA آلترا سایکلون Altera Cyclone IV",
+    "price": "ناموجود",
+    "shop": "",
+    "instock": false
+   }
+  ]
+ },
+ "AD9744": {
+  "ok": true,
+  "hits": []
+ },
+ "AD9708": {
+  "ok": true,
+  "hits": [
+   {
+    "name": "AD9708ARU",
+    "price": "۱٫۷۷۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   }
+  ]
+ },
+ "AD9764": {
+  "ok": true,
+  "hits": []
+ },
+ "DAC904": {
+  "ok": true,
+  "hits": []
+ },
+ "AD9957": {
+  "ok": true,
+  "hits": [
+   {
+    "name": "AD9957BSVZ",
+    "price": "۱۰٫۶۲۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   }
+  ]
+ },
+ "FT2232H": {
+  "ok": true,
+  "hits": [
+   {
+    "name": "ای سی ft2232hl-tray",
+    "price": "۱٫۷۰۱٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "آی سی اینترفیس FT2232HL",
+    "price": "از ۱٫۲۹۰٫۲۲۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "آی سی مبدل SMD FT2232HL",
+    "price": "۳٫۶۱۲٫۵۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "تراشه FT2232HL",
+    "price": "از ۱٫۴۹۷٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "آی سی FT2232HL USB 2.0 High Speed",
+    "price": "۲٫۶۵۹٫۳۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "ای سی ft2232hl-tray",
+    "price": "۱٫۷۰۱٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "FT2232HL",
+    "price": "۱٫۳۷۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "ماژول مبدل USB به UART/FIFO/SPI/I2C/JTAG/RS232 با چیپ FT2232HL",
+    "price": "ناموجود",
+    "shop": "",
+    "instock": false
+   }
+  ]
+ },
+ "FT232H": {
+  "ok": true,
+  "hits": [
+   {
+    "name": "ماژول مبدل USB چند منظوره پرسرعت با آی سی FT232H",
+    "price": "۲٫۸۲۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "ماژول مبدل USB به سریال CJMCU-FT232H",
+    "price": "ناموجود",
+    "shop": "",
+    "instock": false
+   },
+   {
+    "name": "ماژول مبدل چند کاره USB به UART / FIFO SPI / I2C دارای چیپ FT232H",
+    "price": "ناموجود",
+    "shop": "",
+    "instock": false
+   }
+  ]
+ },
+ "FT601": {
+  "ok": true,
+  "hits": []
+ },
+ "CYUSB3014": {
+  "ok": true,
+  "hits": []
+ },
+ "CY7C68013": {
+  "ok": true,
+  "hits": [
+   {
+    "name": "CY7C68013A-56PVXC",
+    "price": "۳٫۸۳۵٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "آي سي CY7C68013A-56PVXC SMD / ORIGINAL",
+    "price": "۱٫۹۷۴٫۸۰۱ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "CY7C68013A-100AXC",
+    "price": "۲٫۰۰۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "CY7C68013A-128AXI",
+    "price": "۲٫۹۵۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "CY7C68013A-56PVXI",
+    "price": "۲٫۹۵۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "CY7C68013-56PVXC",
+    "price": "۱٫۳۵۷٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "CY7C68013A",
+    "price": "ناموجود",
+    "shop": "",
+    "instock": false
+   },
+   {
+    "name": "CY7C68013A",
+    "price": "ناموجود",
+    "shop": "",
+    "instock": false
+   },
+   {
+    "name": "CY7C68013A",
+    "price": "ناموجود",
+    "shop": "",
+    "instock": false
+   },
+   {
+    "name": "آی سی رابط SMD CY7C68013A-100AXC USB 2.0",
+    "price": "ناموجود",
+    "shop": "",
+    "instock": false
+   },
+   {
+    "name": "CY7C68013A",
+    "price": "ناموجود",
+    "shop": "",
+    "instock": false
+   },
+   {
+    "name": "CY7C68013A",
+    "price": "ناموجود",
+    "shop": "",
+    "instock": false
+   },
+   {
+    "name": "CY7C68013A",
+    "price": "ناموجود",
+    "shop": "",
+    "instock": false
+   },
+   {
+    "name": "CY7C68013A",
+    "price": "ناموجود",
+    "shop": "",
+    "instock": false
+   },
+   {
+    "name": "CY7C68013A",
+    "price": "ناموجود",
+    "shop": "",
+    "instock": false
+   },
+   {
+    "name": "CY7C68013A",
+    "price": "ناموجود",
+    "shop": "",
+    "instock": false
+   }
+  ]
+ },
+ "USB3300": {
+  "ok": true,
+  "hits": [
+   {
+    "name": "USB3300-EZK IC, USB 2.0 ULPI PHY W/OTG, 32VQFN",
+    "price": "۴۴۱٫۷۰۰ تومان",
+    "shop": "",
+    "instock": true
+   }
+  ]
+ },
+ "W5500": {
+  "ok": true,
+  "hits": [
+   {
+    "name": "ماژول اترنت W5500 با ارتباط SPI",
+    "price": "از ۱٫۰۱۸٫۶۱۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "ماژول شبکه W5500 با ارتباط SPI مناسب آردوینو",
+    "price": "از ۶۹۵٫۶۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "Embedded Ethernet on STM32 Using W5500 for IoT Applications | آموزش راه اندازی ا",
+    "price": "۴۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "برد کاربردی و حرفه ای STM32F103C8T6 ساپورت السیدی MCU -40PIN پین EWB-STM32F103C8",
+    "price": "۳٫۷۲۶٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "آی سی کنترلر شبکه W5500 پکیج SMD",
+    "price": "۵۴۵٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "ماژول شبکه اترنت W5500 دارای ارتباط SPI به LAN پروتکل TCP - IP سازگار با WIZ820i",
+    "price": "۱٫۴۲۵٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "بلندگو (Speaker) تلویزیون KDL-40W5500",
+    "price": "۵۵۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "ماژول اترنت W5500 مدل USR-ES1",
+    "price": "۱٫۲۰۴٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "آی سی شبکه اترنت W5500",
+    "price": "از ۳۸۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "برد تغذیه/پاور ال سی دی سونی آکبند Sony 46W5500 46V550",
+    "price": "۱٫۸۰۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   }
+  ]
+ },
+ "LAN8720": {
+  "ok": true,
+  "hits": [
+   {
+    "name": "LAN8720A-CP-TR",
+    "price": "۲۷۴٫۴۴۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "LAN8720 MODULE",
+    "price": "از ۵۲۸٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "برد کاربردی و حرفه ای STM32F407VGT6 ساپورت السیدی40PIN MCUپین EWB-STM32F407VG-LA",
+    "price": "۶٫۳۷۸٫۸۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "LAN8720A-CP-TR",
+    "price": "۹۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "ماژول شبکه LAN8720",
+    "price": "۶۱۴٫۲۵۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "تراشه شبکه LAN8720A پکیج QFN",
+    "price": "۹۵٫۲۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "آیسی LAN8720A-CP-TR /آیسی شبکه/اورجینال",
+    "price": "۱۸۹٫۴۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "آی سی اترنت LAN8720AI-CP-TR",
+    "price": "۲۲۳٫۷۵۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "برد کاربردی و حرفه ای STM32F107VCT6 ساپورت السیدی40پین EWB-STM32F107VC-LAN8720-V",
+    "price": "۵٫۸۹۲٫۸۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "تراشه شبکه LAN8720A",
+    "price": "۱۱۴٫۲۴۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "تراشه شبکه LAN8720A پکیج QFN",
+    "price": "۹۷٫۷۵۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "آی سی فرستنده و گیرنده اترنت LAN8720AI-CP-TR",
+    "price": "۲۷۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "LAN8720AI-CP-TR",
+    "price": "۱۵۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "آی سی اترنت LAN8720AI-CP-TR",
+    "price": "۱۷۹٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "خرید ماژول شبکه LAN8720 با رابط RMII",
+    "price": "۶۹۲٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "ماژول شبکه LAN8720 Waveshare",
+    "price": "ناموجود",
+    "shop": "",
+    "instock": false
+   },
+   {
+    "name": "ماژول شبکه LAN8720 Ethernet Board",
+    "price": "ناموجود",
+    "shop": "",
+    "instock": false
+   },
+   {
+    "name": "LAN8720 ماژول اترنت",
+    "price": "ناموجود",
+    "shop": "",
+    "instock": false
+   },
+   {
+    "name": "ماژول شبکه مدل LAN8720",
+    "price": "ناموجود",
+    "shop": "",
+    "instock": false
+   }
+  ]
+ },
+ "TLV320AIC3204": {
+  "ok": true,
+  "hits": []
+ },
+ "AK4619": {
+  "ok": true,
+  "hits": []
+ },
+ "CS4270": {
+  "ok": true,
+  "hits": []
+ },
+ "ADAU1761": {
+  "ok": true,
+  "hits": []
+ },
+ "PCM1865": {
+  "ok": true,
+  "hits": [
+   {
+    "name": "PCM1865",
+    "price": "۳۲۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "آی سی صوتی PCM1865",
+    "price": "ناموجود",
+    "shop": "",
+    "instock": false
+   }
+  ]
+ },
+ "STM32H743": {
+  "ok": true,
+  "hits": [
+   {
+    "name": "برد توسعه STM32H743",
+    "price": "۱۳٫۵۸۹٫۲۹۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "STM32H743VIH6",
+    "price": "۲٫۴۱۷٫۳۹۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "میکروکنترلر STM32H743IIT6",
+    "price": "از ۲٫۳۸۹٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "میکروکنترلر STM32H743ZIT6 پکیج LQFP-144",
+    "price": "۱٫۶۹۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "میکروکنترلر STM32H743VIT6 ۳۲ بیتی",
+    "price": "از ۲٫۴۳۱٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "برد توسعه میکرو کنترلر EV board STM32H743IIT6",
+    "price": "۲۸٫۴۹۲٫۴۲۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "میکروکنترلر STM32H743ZIT6",
+    "price": "۲٫۸۳۲٫۹۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "میکروکنترلر 32 بیتی (STM32H743BIT6) Microcontroller 32BIT",
+    "price": "از ۲٫۶۰۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "میکروکنترلر stm32h743xih6 اورجینال-New and original+گارانتی",
+    "price": "۶٫۶۸۸٫۸۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "میکروکنترلر STM32H743IIT6 ARM 400MHz",
+    "price": "۲٫۵۲۵٫۳۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "میکروکنترلرSTM32H743IIT6 - اورجینال",
+    "price": "۲٫۳۹۵٫۲۴۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "میکروکنترلر STM32H743BGT6 - اورجینال-New and original+گارانتی",
+    "price": "۲٫۶۳۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "STM32H743ZGT6",
+    "price": "۴٫۳۱۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "آی سی STM32H743ZIT6",
+    "price": "۶٫۴۶۴٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "برد کاربردی و حرفه ای نانو EWB-STM32-NANO-FULL -STM32H743IIT6-V6.0 (جدید) امکانا",
+    "price": "۱۳٫۶۰۸٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "برد هسته میکروکنترلر STM32H743IIT6 CoreH743I - Waveshare",
+    "price": "۳۲٫۴۵۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "آي سي STM32H743VIT6 SMD",
+    "price": "ناموجود",
+    "shop": "",
+    "instock": false
+   },
+   {
+    "name": "STM32H743VGT6",
+    "price": "ناموجود",
+    "shop": "",
+    "instock": false
+   },
+   {
+    "name": "میکروکنترلر STM32H743IIT6 اورجینال",
+    "price": "ناموجود",
+    "shop": "",
+    "instock": false
+   },
+   {
+    "name": "STM32H743XIH6",
+    "price": "ناموجود",
+    "shop": "",
+    "instock": false
+   },
+   {
+    "name": "STM32H743BIT6",
+    "price": "ناموجود",
+    "shop": "",
+    "instock": false
+   },
+   {
+    "name": "STM32H743ZIT6",
+    "price": "ناموجود",
+    "shop": "",
+    "instock": false
+   },
+   {
+    "name": "STM32H743ZGT6",
+    "price": "ناموجود",
+    "shop": "",
+    "instock": false
+   },
+   {
+    "name": "STM32H743XIH6",
+    "price": "ناموجود",
+    "shop": "",
+    "instock": false
+   }
+  ]
+ },
+ "STM32F723": {
+  "ok": true,
+  "hits": [
+   {
+    "name": "STM32F723ZET6",
+    "price": "۲٫۶۰۹٫۹۷۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "STM32F723ZET6",
+    "price": "ناموجود",
+    "shop": "",
+    "instock": false
+   }
+  ]
+ },
+ "RP2040": {
+  "ok": true,
+  "hits": [
+   {
+    "name": "برد توسعه میکروپایتون RP2040 منطبق بر Raspberry Pi Pico",
+    "price": "۸۷۷٫۹۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "برد رزبری پای پیکو RP2040-Zero برند Waveshare",
+    "price": "از ۱٫۰۲۲٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "خرید برد توسعه RP2040-LCD دارای هسته رزبری پای پیکو با نمایشگر 0,96 اینچ تولید W",
+    "price": "از ۲٫۴۲۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "برد Raspberry Pi RP2040-Zero",
+    "price": "۳۹۱٫۶۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "برد رزبری پای پیکو RP2040-Zero برند Waveshare",
+    "price": "۱٫۴۱۲٫۵۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "برد توسعه RP2040 Zero Raspberry Pi Family",
+    "price": "۵۶۶٫۸۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "Raspberry Pi Pico W: برنامه‌ریزی، ساخت و تسلط بر 60 پروژه با Wireless RP2040",
+    "price": "۶۸٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "دانلود کتاب Raspberry Pi Pico Essentials: Program, Build, and Master Over 50 Pro",
+    "price": "۱۰۸٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "برد Raspberry Pi RP2040-Zero",
+    "price": "۴۳۰٫۷۶۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "برد توسعه Maker Pi RP2040 برند Cytron",
+    "price": "۴٫۵۳۶٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "برد Raspberry Pi RP2040 با حافظه 4MB",
+    "price": "۵۴۵٫۷۱۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "RP2040 Assembly Language Programming",
+    "price": "۱٫۰۲۹٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "دانلود کتاب RP2040 Assembly Language Programming: ARM Cortex-M0+ on the Raspberr",
+    "price": "۱۰۸٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "دانلود کتاب RP2040 Assembly Language Programming: ARM Cortex-M0+ on the Raspberr",
+    "price": "۱۰۸٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "مودچیپ کپی Picofly RP2040 DH04 برای نینتندو سوییچ",
+    "price": "از ۳٫۱۵۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "میکروکنترلر RP2040 پکیج LQFN-56",
+    "price": "از ۳۳۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "برد RP2040 PICO-Cam-A",
+    "price": "۵٫۵۰۸٫۳۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "برد ویوشیر | WAVESHARE مدل RP2040-GEEK با نمایشگر رنگی 1.14 اینچی",
+    "price": "۸٫۹۳۵٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "برد RP2040-Tiny",
+    "price": "۲٫۱۱۱٫۳۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "برد توسعه Maker Pi RP2040 برند Cytron",
+    "price": "۴٫۵۳۶٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "برد آداپتور BIGTREETECH EBB SB2209 CAN V1.0 (RP2040)",
+    "price": "۱۰٫۳۲۴٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "کامل ترین نسخه کتاب Raspberry Pi Pico Essentials: Program, build, and master ove",
+    "price": "از ۶۲٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "مودچیپ Picofly RP2040 برای Nintendo Switch",
+    "price": "۱٫۱۰۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "برد RP2040-PiZero",
+    "price": "۳٫۸۳۱٫۳۰۰ تومان",
+    "shop": "",
+    "instock": true
+   }
+  ]
+ },
+ "ترانزیستور J310": {
+  "ok": true,
+  "hits": [
+   {
+    "name": "میکروفن سامسونگ Samsung J310 / J510 / J710 (پک ۵ عددی)",
+    "price": "۲۸۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   }
+  ]
+ },
+ "آی سی AD8307": {
+  "ok": true,
+  "hits": []
+ },
+ "FST3253MTC": {
+  "ok": true,
+  "hits": [
+   {
+    "name": "آی سی مالتی پلکسر / دی مالتی پلکسر SMD FST3253",
+    "price": "۵۱۶٫۲۵۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "آی سی مالتی پلکسر / دی مالتی پلکسر SMD FST3253",
+    "price": "۴۱۳٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   }
+  ]
+ },
+ "هسته توروئید": {
+  "ok": true,
+  "hits": [
+   {
+    "name": "خرید وقیمت هسته فریت حلقوی تروئید (18×23×43) SENDUST-AS184-125A",
+    "price": "۱٫۱۰۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "دانلود کتاب The theory of toroidallly confined plasmas - نظریه پلاسماهای محدود ت",
+    "price": "۱۰۸٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "دانلود کتاب The theory of toroidallly confined plasmas - نظریه پلاسماهای محدود ت",
+    "price": "۳۰۸٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "هسته فرریت U 120/80/40-30",
+    "price": "۸٫۹۰۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "هسته فرریت EE 33/27",
+    "price": "۲۰۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "هسته فرریت EE 160",
+    "price": "۴٫۷۵۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "هسته فرریت تروئید (حلقوی) H 63/38/21",
+    "price": "۸۰۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "هسته فرریت تروئید (حلقوی) H 50/32/20",
+    "price": "۳۵۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "هسته فرریت تروئید (حلقوی) H 45/26/12",
+    "price": "۲۵۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "بادام شکن آپارتمانی چند منظوره چوب گردو",
+    "price": "از ۵۶۵٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "سلف تروئیدی 100 میکرو هانری 10 آمپر-هسته 7×13×21 میلی متر",
+    "price": "۲۸۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "خرید وقیمت هسته فریت حلقوی تروئید (18×23×43) SENDUST-AS184-125A",
+    "price": "۱٫۱۰۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "هسته فریت EE42/42/15",
+    "price": "۳۲۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "هسته فرریت U 93/76/30-28",
+    "price": "۵٫۵۰۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "هسته فرریت تروئید (حلقوی) H 102/65/20",
+    "price": "۱٫۷۰۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "هسته سلف اینورتر سینوسی ۳۳ میلی متری اورجینال مناسب برای ساخت یا تعمیر اینورتر س",
+    "price": "۷۱۵٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "هسته فریت تیروئید (Toroidal) حلقوی 15*30*45 میلیمتر",
+    "price": "۴۹۹٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "هسته فرریت U 120/118/40-30",
+    "price": "۱۰٫۶۵۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "هسته آمورف ترانسفورماتور مدلETACC-800A",
+    "price": "۳۴٫۵۶۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "هسته فرریت EE 240",
+    "price": "۹٫۹۰۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "هسته فرریت ETD 39/40",
+    "price": "۴۵۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "هسته یونیورسال E4 (یورو ۴)",
+    "price": "۲۰٫۰۰۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "هسته فرریت EE 210",
+    "price": "۸٫۱۵۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "هسته فریت EE55/55/21 با قرقره 12 پین افقی",
+    "price": "۱٫۰۱۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "مویز بدون هسته ۱ کیلوگرم",
+    "price": "از ۲۳۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "ماژول وای فای و بلوتوث ESP32-S3-WROOM-1",
+    "price": "از ۱٫۳۰۵٫۹۱۱ تومان",
+    "shop": "",
+    "instock": true
+   }
+  ]
+ },
+ "هسته فریت حلقه ای": {
+  "ok": true,
+  "hits": [
+   {
+    "name": "خرید وقیمت هسته فریت حلقوی تروئید (18×23×43) SENDUST-AS184-125A",
+    "price": "۱٫۱۰۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "خرید وقیمت هسته فریت حلقوی تروئید (18×23×43) SENDUST-AS184-125A",
+    "price": "۱٫۱۰۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "هسته فریت تیروئید (Toroidal) حلقوی 15*30*45 میلیمتر",
+    "price": "۴۹۹٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "هسته فریت EE42/42/15",
+    "price": "۳۲۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "هسته فریت EE55/55/21 با قرقره 12 پین افقی",
+    "price": "۱٫۰۱۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "هسته فریت 19*16 EE و قرقره 7 پین",
+    "price": "۱۴٫۳۰۲ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "هسته فریت PC40EI22-Z",
+    "price": "۱۷۲٫۵۵۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "هسته فریت EE42/43/20 با قرقره 12 پین عمودی",
+    "price": "۵۲۴٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "هسته فریت PQ20/20",
+    "price": "۱۷۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "هسته فریت 28*20 EI با قرقره 10 پین",
+    "price": "۱۸٫۷۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "سفارش خدمات گپ زنی هسته فریت (Air Gap) | گلف الکترونیک",
+    "price": "۴٫۲۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "هسته ترانس فریت EE۴۲.۴۲.۲۰ ایستاده یا خوابیده متناسب موجودی/هسته ترانس مناسب ساخ",
+    "price": "۱٫۰۹۵٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "خرید هسته فریت EE19",
+    "price": "۲۴٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "هسته فریت EE33",
+    "price": "۳۶۲٫۹۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "هسته فریت 13*12 EE با قرقره 10 پین",
+    "price": "۲۹۳٫۲۵۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "هسته فریت 7*15*30 EE با قرقره 12 پین",
+    "price": "۴۵٫۹۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "هسته فریت EE۵۵.۵۵",
+    "price": "۴۵۸٫۹۱۵ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "هسته فریت 42*15 EE با قرقره 18 پین",
+    "price": "۱۴۴٫۵۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "هسته فریت EI 22mm Transformer clip",
+    "price": "۳۹٫۱۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "هسته فریت RM8",
+    "price": "۲۵۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "چوک آبی هسته فریت خارجی",
+    "price": "۱۴۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "هسته فریت EFD15",
+    "price": "۱۰۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "هسته فریت PQ26/20",
+    "price": "۲۲۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "هسته فریت EE28",
+    "price": "۲۰۳٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "هسته فریت EE25",
+    "price": "۵۴٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "هسته فریت EE16",
+    "price": "۲۱٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   }
+  ]
+ },
+ "توروئید آمیدون": {
+  "ok": true,
+  "hits": [
+   {
+    "name": "دانلود کتاب The theory of toroidallly confined plasmas - نظریه پلاسماهای محدود ت",
+    "price": "۱۰۸٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "دانلود کتاب The theory of toroidallly confined plasmas - نظریه پلاسماهای محدود ت",
+    "price": "۱۰۸٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "فایل Word کامل قابل ویرایش پرسشنامه نگرش صميمانه اميدون و همكاران (فرم تجديد نظر",
+    "price": "۲۹۹٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "فایل ورد پرسشنامه نگرش صميمانه اميدون و همكاران (فرم تجديد نظر شده، 1983)",
+    "price": "۱۴۹٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "دانلود کتاب The theory of toroidallly confined plasmas - نظریه پلاسماهای محدود ت",
+    "price": "۳۰۸٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "دانلود کتاب The theory of toroidallly confined plasmas - نظریه پلاسماهای محدود ت",
+    "price": "۴۲٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   }
+  ]
+ },
+ "فریت دو سوراخ": {
+  "ok": true,
+  "hits": [
+   {
+    "name": "خرید وقیمت هسته فریت حلقوی تروئید (18×23×43) SENDUST-AS184-125A",
+    "price": "۱٫۱۰۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "آهنربای حلقه فریت ۸*۴۵ با سوراخ ۲۲mm",
+    "price": "از ۵۸٫۶۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "آهنربا حلقه فریت سایز ۱۰×۳۲×۶۰ میلی‌متر",
+    "price": "از ۱۳۸٫۶۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "آهنربا گرد بدون سوراخ فریت سایز 7×22 میلی متر",
+    "price": "۱۷٫۴۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "آهنربا فریت مکعب (سرامیکی) سایز 24x14x5 و سوراخ 5 میلیمتر یک عددی",
+    "price": "۷۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "آهنربا گرد سوراخ دار فریت سایز 6×18×32 میلی متر",
+    "price": "از ۲۴٫۶۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "آهنربای حلقه فریت ۱۰*۷۰ با سوراخ ۳۲mm",
+    "price": "از ۱۷۵٫۵۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "آهنربا اهنربا حلقه ای واشری گرد دایره ای سوراخ دار فریت فریتی 17*3",
+    "price": "۴٫۳۳۳ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "فریت بید SMD مدل MPZ1608S181ATAH0",
+    "price": "۴۹٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "هسته فریت مدل EE19-16 بسته 2 عددی",
+    "price": "۲۴۷٫۴۸۵ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "سفارش خدمات گپ زنی هسته فریت (Air Gap) | گلف الکترونیک",
+    "price": "۴٫۲۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "فریت تروئید RCC32.6/10.7-2P50 33MM PHILIPS",
+    "price": "۲۱۷٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "فریت بید RH3.5*9*0.8*2-T-G YOTO",
+    "price": "۷٫۲۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "هسته فریت مدل EE19-16 بسته 2 عددی",
+    "price": "۲۴۷٫۴۸۵ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "فریت تروئید TN33/20/11-2P50 33MM",
+    "price": "۲۱۷٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "هسته فریت آبی قطر 2 سانت بسته 2 عددی",
+    "price": "۲۶۴٫۰۲۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "پودر فریت مغناطیسی بسته یک عددی",
+    "price": "۱۵۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "خرید وقیمت هسته فریت حلقوی تروئید (18×23×43) SENDUST-AS184-125A",
+    "price": "۱٫۱۰۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "هسته فریت تیروئید (Toroidal) حلقوی 15*30*45 میلیمتر",
+    "price": "۴۹۹٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "RFC FB 1206 بید فریت اس ام دی",
+    "price": "۴٫۳۴۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "هسته فریت EE42/42/15",
+    "price": "۳۲۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "فریت (Polyethylene Frits (PE",
+    "price": "۲٫۱۵۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "فریت خوابیده EER 42-35-10 (5عددی) ژاپنی",
+    "price": "۲٫۵۰۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "هسته فریت EE55/55/21 با قرقره 12 پین افقی",
+    "price": "۱٫۰۱۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "فریت بید 6M",
+    "price": "۳٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "فریت میله ای 50*10",
+    "price": "۳۱٫۰۴۹ تومان",
+    "shop": "",
+    "instock": true
+   }
+  ]
+ },
+ "سیم لاکی": {
+  "ok": true,
+  "hits": [
+   {
+    "name": "سیم لاکی 0.1mm برای سیم کشی",
+    "price": "۱۳۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "سیم لاکی مسی راما سایز ۰.۷۵",
+    "price": "از ۴٫۷۰۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "سیم لاکی راما سایز ۰.۸۵ میلیمتر از پلی آمید",
+    "price": "از ۴٫۷۰۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "سیم مسی لاکی ۰.۱ میلی متر طول ۱۰ متر",
+    "price": "۵۴٫۱۶۴ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "سیم لاکی راما سایز ۱.۳۵ میلی متر مسی",
+    "price": "از ۴٫۷۰۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "سیم لاکی مسی ۰.۵ میلیمتر",
+    "price": "۲۹۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "سیم لاکی مسی راما سایز ۰.۶۰",
+    "price": "از ۴٫۷۰۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "سیم لاکی مسی قطر ۱.۲۰",
+    "price": "۴٫۷۰۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "سیم لاکی مسی قطر 1.50 راما",
+    "price": "از ۴٫۷۰۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "سیم لاکی راما سایز 0.70",
+    "price": "۴٫۸۰۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "سیم لحیم آساهی 0.8 میلی متر 100 گرم",
+    "price": "از ۸۶۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "سیم لاکی راما سایز ۱.۸ میلیمتر",
+    "price": "۴٫۸۰۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "سیم لحیم آساهی 0.8 میلی متر 100 گرم",
+    "price": "از ۸۶۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "سیم برق افشان البرز افشان ۱ در ۲.۵ متر ۱۰۰ متری با روکش PVC",
+    "price": "از ۱٫۹۱۹٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "سیم برق افشان البرز الکتریک ۲ در ۱.۵ نایلون طول ۹۰ متر",
+    "price": "از ۳۳٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "سیم برق افشان زر کابل مدل Z1-2.5 سایز ۲.۵ میلیمتر طول ۱۰۰ متر",
+    "price": "از ۷٫۹۴۸٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "سیم برق افشان البرز برتر مدل 1 در 2.5 طول ۱۰۰ متر",
+    "price": "۱٫۹۹۵٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "سیم برق افشان ۱.۵ تک رشته ۹۰ متر با روکش PVC",
+    "price": "از ۱٫۲۷۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "سیم برق افشان جفتی ۱.۵ و ۲.۵ تمام مس آرین",
+    "price": "از ۱۰٫۴۰۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "سیم برق البرز افشان ۱ در ۱.۵ متر رنگ آبی",
+    "price": "از ۱٫۴۰۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "سیم برق افشان دو رشته ۲ در ۲.۵ متر نایلون",
+    "price": "۴۲٫۹۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "سیم برق افشان تمام مس استاندارد البرز سایز2.5*1",
+    "price": "۷٫۵۰۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "سیم برق افشان ۱.۵ و ۲.۵ هادی نور البرز دو بسته صدمتری",
+    "price": "۳٫۴۹۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "سیم افشان 2.5*1زرتافته کرمان حلقه 100متری",
+    "price": "از ۴٫۶۷۳٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "سیم افشان افشار نژاد خراسان سطح مقطع 2.۵",
+    "price": "از ۱۰۳٫۳۵۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "سیم برق افشان ۲.۵*۱ تمام مس خالص البرز نیرو طول ۱ متر",
+    "price": "از ۶٫۶۹۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   }
+  ]
+ },
+ "WM8960": {
+  "ok": true,
+  "hits": [
+   {
+    "name": "ماژول پخش و ضبط صدا WM8960 تولید Waveshare",
+    "price": "ناموجود",
+    "shop": "",
+    "instock": false
+   }
+  ]
+ },
+ "ES8388": {
+  "ok": true,
+  "hits": [
+   {
+    "name": "ES8388",
+    "price": "۱۷۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "آی سی کدک صوتی ES8388",
+    "price": "۳۰۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "ES8388",
+    "price": "ناموجود",
+    "shop": "",
+    "instock": false
+   }
+  ]
+ },
+ "PCM1802": {
+  "ok": true,
+  "hits": []
+ },
+ "CS5361": {
+  "ok": true,
+  "hits": [
+   {
+    "name": "CS5361-KZZR",
+    "price": "۱٫۲۵۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "آی سی کانورتر صوتی CS5361-KZZR",
+    "price": "ناموجود",
+    "shop": "",
+    "instock": false
+   }
+  ]
+ },
+ "TLV320AIC23": {
+  "ok": true,
+  "hits": [
+   {
+    "name": "TLV320AIC23PW",
+    "price": "۱٫۷۷۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "TLV320AIC23BIPWR",
+    "price": "۶۷۸٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   }
+  ]
+ },
+ "OPA2228": {
+  "ok": true,
+  "hits": []
+ },
+ "AD797": {
+  "ok": true,
+  "hits": [
+   {
+    "name": "آی سی AD797AN DIP-8PIN",
+    "price": "۱٫۵۵۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "AD797ARZ",
+    "price": "۲٫۰۶۵٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "تقویت کننده AD797",
+    "price": "ناموجود",
+    "shop": "",
+    "instock": false
+   }
+  ]
+ },
+ "OPA2350": {
+  "ok": true,
+  "hits": []
+ },
+ "RD30HVF1": {
+  "ok": true,
+  "hits": []
+ },
+ "RD100HHF1": {
+  "ok": true,
+  "hits": []
+ },
+ "IRF530": {
+  "ok": true,
+  "hits": [
+   {
+    "name": "ماسفت (IRF530N) Mosfet",
+    "price": "۸۵٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "ترانزیستور ماسفت IRF530FI 100V-11A-40W MOSFET N_CHANNEL ST",
+    "price": "از ۴۷٫۴۱۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "ماسفت IRF530 پکیج TO-220",
+    "price": "۹۹٫۹۸۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "ترانزیستور ماسفت IRF530 - معمولی",
+    "price": "۵۳٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "ماسفت قدرت IRF530 N-Channel",
+    "price": "۸۹٫۷۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "ترانزیستور IRF530 TO-220 ORG",
+    "price": "۶۶٫۵۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "ماسفت مدل irf530 بسته 2 عددی",
+    "price": "۲۷۶٫۴۶۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "IRF530 X193",
+    "price": "۶۳٫۲۵۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "ماسفت (IRF530N) Mosfet",
+    "price": "۸۵٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "ماسفت قدرت IRF530 N-Channel",
+    "price": "۱۰۷٫۶۲۵ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "ترانزیستور پاور ماسفت IRF530NPBF CH",
+    "price": "۶۱٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "ماسفت کد IRF530 بسته 3 عددی",
+    "price": "۳۴۵٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "ماسفت قدرت IRF530N N-Channel کپی",
+    "price": "۸۵٫۷۵۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "IRF530NPBF--- Mosfet TO220 IR",
+    "price": "ناموجود",
+    "shop": "",
+    "instock": false
+   },
+   {
+    "name": "IRF530NPBF",
+    "price": "ناموجود",
+    "shop": "",
+    "instock": false
+   },
+   {
+    "name": "MTP12N10=IRF530 --- Mosfet TO220 MOTOROLA",
+    "price": "ناموجود",
+    "shop": "",
+    "instock": false
+   },
+   {
+    "name": "ترانزیستور IRF530 (غیر اورجینال)",
+    "price": "ناموجود",
+    "shop": "",
+    "instock": false
+   },
+   {
+    "name": "ماسفت IRF530 نوع N-channel پکیج TO-220",
+    "price": "ناموجود",
+    "shop": "",
+    "instock": false
+   },
+   {
+    "name": "ماسفت IRF530NPBF Original",
+    "price": "ناموجود",
+    "shop": "",
+    "instock": false
+   }
+  ]
+ },
+ "2SC1969": {
+  "ok": true,
+  "hits": [
+   {
+    "name": "2SC1969",
+    "price": "ناموجود",
+    "shop": "",
+    "instock": false
+   }
+  ]
+ },
+ "2N3866": {
+  "ok": true,
+  "hits": [
+   {
+    "name": "ترانزیستور مدل 2N3866",
+    "price": "۹۵۸٫۸۳۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "2N3866",
+    "price": "۹۰۱٫۹۵۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "ترانزیستور 2SC1001=2N3866 40V-0.5A-5W 500MHZ NPN",
+    "price": "۱٫۵۵۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "ترانزیستور 2N3866 VHF 55V-400MA-3.5W 500MHZ NPN",
+    "price": "۱٫۵۵۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   }
+  ]
+ },
+ "TQ2-L2-5V": {
+  "ok": true,
+  "hits": [
+   {
+    "name": "رله مینی مخابراتی لچ نایس دوبوبین 5 ولت 1 آمپر 10 پایه NAIS TQ2-L2-5V",
+    "price": "۶۳۲٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "رله مینی مخابراتی لچ نایس دوبوبین 24 ولت 1 آمپر 10 پایه NAIS TQ2-L2-24V",
+    "price": "۶۳۲٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "رله مینی مخابراتی لچ نایس دوبوبین 12 ولت 1 آمپر 10 پایه NAIS TQ2-L2-12V",
+    "price": "۶۳۲٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "رله مینی مخابراتی نایس 5 ولت 1 آمپر 10 پایه Panasonic TQ2-5V",
+    "price": "۲۹۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "رله اس ام دی لچ دو بوبین نایس 5 ولت 10 پایه TQ2SA-L2-5V SMD",
+    "price": "ناموجود",
+    "shop": "",
+    "instock": false
+   },
+   {
+    "name": "رله مخابراتی ۵ ولت ۱۰ پایه ۱ آمپر دو کنتاکت TQ2-5V برند NAIS",
+    "price": "۳۶۸٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "سلف DLW5BTM251TQ2L",
+    "price": "۱۸۳٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "سلف DLW5BTZ251TQ2L",
+    "price": "۱۲۹٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "TQ2-4.5V",
+    "price": "۴۴۲٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "TQ2-12V K281",
+    "price": "۳۸۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "TQ2SA-5V-Z",
+    "price": "ناموجود",
+    "shop": "",
+    "instock": false
+   },
+   {
+    "name": "آی سی UZ1085L-ADJ-TQ2-R",
+    "price": "۶۱٫۲۶۳ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "رله RELAY TQ2-5V 5VDC 2C 10PIN NAIS",
+    "price": "۵۲۷٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "پودر جرم گیر ماشین ظرفشویی و لباسشویی کد TQ2 وزن 40 گرم بسته 5 عددی",
+    "price": "۴۳۷٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   }
+  ]
+ },
+ "رله لچ نایس": {
+  "ok": true,
+  "hits": [
+   {
+    "name": "دو رله پاور 433 لرن ( بدون ریموت )",
+    "price": "۱٫۵۰۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "رله مینی مخابراتی لچ نایس دوبوبین 24 ولت 1 آمپر 10 پایه NAIS TQ2-L2-24V",
+    "price": "۶۳۲٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "رله SMD لچ تک بوبین نایس 4.5 ولت 1 آمپر 8 پایه NAIS TX2SA-L-4/5VDC",
+    "price": "۳۱۶٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "رله مینی مخابراتی لچ نایس دوبوبین 5 ولت 1 آمپر 10 پایه NAIS TQ2-L2-5V",
+    "price": "۶۳۲٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "رله مخابراتی لچ نایس دو بوبین 5 ولت 5 آمپر 8 پایه NAIS DSP1-L2-DC5V",
+    "price": "۱٫۰۳۲٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "رله مینی مخابراتی لچ نایس دوبوبین 12 ولت 1 آمپر 10 پایه NAIS TQ2-L2-12V",
+    "price": "۶۳۲٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "رله مینی مخابراتی لچ تک بوبین نایس 4.5 ولت 1 آمپر 8 پایه NAIS AGN2104H",
+    "price": "۳۱۶٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "رله مینی مخابراتی لچ نایس دوبوبین 1.5 ولت 0.5 آمپر 16 پایه NAIS DS4E-SL2",
+    "price": "ناموجود",
+    "shop": "",
+    "instock": false
+   },
+   {
+    "name": "رله اس ام دی لچ دو بوبین نایس 5 ولت 10 پایه TQ2SA-L2-5V SMD",
+    "price": "ناموجود",
+    "shop": "",
+    "instock": false
+   },
+   {
+    "name": "رله امرون G2R-1-E ۱۲ ولت ظرفیت ۱۰ آمپر",
+    "price": "از ۴۵۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "برد رله ۱۲ ولت تریگر دار تک کانال",
+    "price": "۱٫۱۱۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "رله 12 ولت 10 آمپر 4 پین مدل HRS3FNH-S برند HKE",
+    "price": "از ۹۹٫۳۹۷ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "رله لچ 12 ولت 40 آمپر HFE10-1/12-ZT-L1",
+    "price": "۶۱۲٫۸۷۵ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "رله صنعتی لچ ان سی ار تک بوبین 24 ولت 40 آمپر NCR NRL709M-24S",
+    "price": "۱٫۳۹۱٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "رله لچ 12 ولت تک کنتاک 8 پایه 16 آمپر شراک",
+    "price": "۶۷۹٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "رله مخابراتی لچ دو بوبین امرون 5 ولت 10 پایه OMRON G6SK-2",
+    "price": "۴۳۵٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "رله مخابراتی لچ تک بوبین امرون 9 ولت 8 پایه G6AU-234P",
+    "price": "۵۰۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "رله کتابی ۲۴ ولت لچ ۸ پایه ۱۶ آمپری تک کنتاکت RT314A24",
+    "price": "۱٫۴۰۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "رله مخابراتی لچ دو بوبین امرون 12 ولت 5 آمپر 6 پایه OMRON G6BK-1114P-US",
+    "price": "۱٫۲۵۲٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "رله لچ 2 بوبین پاناسونیک 5 ولت 16 آمپر 5 پایه PANASONIC ADW1205HT",
+    "price": "۶۷۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "رله لچ فوجیتسو دو بوبین 5 ولت 16 آمپر 7 پایه FUJITSU K1LDAK005T",
+    "price": "۲۵۳٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "رله مینی مخابراتی لچ سانگ چوآن 5 ولت 1 آمپر 10 پایه SONG CHUAN 702U-2C-S",
+    "price": "۱۹۲٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "رله مینی لچ 5 ولت 1 کنتاکت 10 آمپر HONGFA | HFE7-5-1HST-L2-5VDC",
+    "price": "۴۱۵٫۲۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "رله مینیاتوری لچ دو بوبین امرون 5 ولت 3 آمپر 6 پایه OMRON G6EK-134P-1-US",
+    "price": "۷۵۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "رله شیشه ای مخابراتی لچ 2 بوبین ماتسوشیتا 12 ولت 4 آمپر 12 پایه MATSUSHITA S2E-L",
+    "price": "۲٫۷۰۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "رله مینی مخابراتی لچ ماتسوشیتا دو بوبین 12ولت 2 آمپر 10 پایه MATSUSHITA TX2-L2-1",
+    "price": "۳۶۶٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   }
+  ]
+ },
+ "گازی برقگیر GDT": {
+  "ok": true,
+  "hits": [
+   {
+    "name": "کپسول GDT اسپارک گپ 230 ولت",
+    "price": "۹۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "کپسول GDT اسپارک گپ",
+    "price": "۱۱۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "کپسول GDT اسپارک گپ 75 ولت",
+    "price": "۱۵۲٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "سری باد لاستیک تراست مدل GDT",
+    "price": "۴۴۷٫۹۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "ساعت هوشمند هاینو تکو مدل GDT LOPENI ST ONE BT LOMENI 1",
+    "price": "۱۰٫۰۸۲٫۶۱۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "سری باد 2 راهی مدلGDT تراستTRUST",
+    "price": "۵۲۲٫۴۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "پایه مانیتور ARES WING دوگانه مدل GDT1003P-2BK - مناسب 17 تا 49 اینچ، عمودی و جک",
+    "price": "۷۰٫۷۹۹٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "شال زنانه ابریشم گل‌دار مدل Gdt678sf",
+    "price": "۱٫۱۹۵٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "سری باد دوراهی تراست مدل GDT",
+    "price": "۶۸۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "قالب یخ مدل gdt۸۷۵۶۳۴ اصل",
+    "price": "۵۵۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "قطعات یدکی لوازم خانگی بزرگ GDT 2050 اورجینال Grundig",
+    "price": "۷٫۸۳۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "سویشرت مردانه رنگارنگ ال سی وایکیکی | W5M047Z8-GDT اورجینال",
+    "price": "۱۵٫۳۰۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "آغاز جنبش حق‌الامتیاز موسیقی در آلمان: مطالعه مسیر طولانی تا تأسیس انجمن آهنگساز",
+    "price": "۶۷٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "قطعات یدکی لوازم خانگی بزرگ GDT 2050 اورجینال Grundig",
+    "price": "۷٫۶۷۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "قالب یخ مدل gdt875634",
+    "price": "۲۸۵٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "قالب یخ مدل gdt۸۷۵۶۳۴ اصل",
+    "price": "۵۵۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "فنر خودرو KIA CEED PRO 1.0T GDT 1.4CVVT 1.6GDI XT SPORT SPRING 30MM بین 2012 201",
+    "price": "۱۴۶٫۳۰۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   }
+  ]
+ },
+ "GDT 90V": {
+  "ok": true,
+  "hits": [
+   {
+    "name": "کپسول GDT اسپارک گپ 230 ولت",
+    "price": "۹۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "کپسول GDT اسپارک گپ",
+    "price": "۱۱۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "کپسول GDT اسپارک گپ 75 ولت",
+    "price": "۱۵۲٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "سری باد لاستیک تراست مدل GDT",
+    "price": "۴۴۷٫۹۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "ساعت هوشمند هاینو تکو مدل GDT LOPENI ST ONE BT LOMENI 1",
+    "price": "۱۰٫۰۸۲٫۶۱۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "سری باد 2 راهی مدلGDT تراستTRUST",
+    "price": "۵۲۲٫۴۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "شال زنانه ابریشم گل‌دار مدل Gdt678sf",
+    "price": "۱٫۱۹۵٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "سری باد دوراهی تراست مدل GDT",
+    "price": "۶۸۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "قطعات یدکی لوازم خانگی بزرگ GDT 2050 اورجینال Grundig",
+    "price": "۷٫۸۳۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "سویشرت مردانه رنگارنگ ال سی وایکیکی | W5M047Z8-GDT اورجینال",
+    "price": "۱۵٫۳۰۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "آغاز جنبش حق‌الامتیاز موسیقی در آلمان: مطالعه مسیر طولانی تا تأسیس انجمن آهنگساز",
+    "price": "۶۷٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "قطعات یدکی لوازم خانگی بزرگ GDT 2050 اورجینال Grundig",
+    "price": "۷٫۶۷۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "قالب یخ مدل gdt875634",
+    "price": "۲۸۵٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "قالب یخ مدل gdt۸۷۵۶۳۴ اصل",
+    "price": "۵۵۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "فنر خودرو KIA CEED PRO 1.0T GDT 1.4CVVT 1.6GDI XT SPORT SPRING 30MM بین 2012 201",
+    "price": "۱۴۶٫۳۰۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   }
+  ]
+ },
+ "AO3401": {
+  "ok": true,
+  "hits": [
+   {
+    "name": "ترانزیستور AO3401A ماسفت P-CH ۳۰ ولت ۴ آمپر با پکیج SOT-23",
+    "price": "از ۲٫۸۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "ماسفت AO3401A P-Channel SOT-23",
+    "price": "۳٫۵۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "ماسفت A19T _ AO3401 کانال (P)",
+    "price": "۲٫۷۵۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "AO3401.",
+    "price": "از ۷٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "AO3401A smd",
+    "price": "۴٫۸۱۵ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "AO3401A",
+    "price": "۳۲٫۵۸۲ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "ماسفت مدل AO3401A بسته 5 عددی",
+    "price": "۱۷۷٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "ماسفت AO3401",
+    "price": "۳٫۵۵۳ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "ماسفت AO3401",
+    "price": "۵٫۱۴۸ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "ماسفت SMD AO3401A P-Channel کپی",
+    "price": "۳٫۳۱۲ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "AO3401",
+    "price": "۶٫۸۹۵ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "آی جی بی تی AO3401A",
+    "price": "۳٫۲۹۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "ماسفت AO3401 پکیج SOT23 (A19T)",
+    "price": "ناموجود",
+    "shop": "",
+    "instock": false
+   },
+   {
+    "name": "AO3401 - SMD",
+    "price": "ناموجود",
+    "shop": "",
+    "instock": false
+   },
+   {
+    "name": "ماسفت AO3401A نوع P-channel پکیج SOT-23",
+    "price": "ناموجود",
+    "shop": "",
+    "instock": false
+   },
+   {
+    "name": "ترانزیستور TR AO3401 4/2A SOT23 SMD",
+    "price": "ناموجود",
+    "shop": "",
+    "instock": false
+   },
+   {
+    "name": "AO3401A smd",
+    "price": "ناموجود",
+    "shop": "",
+    "instock": false
+   },
+   {
+    "name": "AO3401A smd",
+    "price": "ناموجود",
+    "shop": "",
+    "instock": false
+   },
+   {
+    "name": "ماسفت AO3401 پکیج SOT-23 (A19T)",
+    "price": "ناموجود",
+    "shop": "",
+    "instock": false
+   }
+  ]
+ },
+ "سلف SMD 1210": {
+  "ok": true,
+  "hits": [
+   {
+    "name": "سلف 4.7µH میکروهانری SMD (4×4.5×2 میلی‌متر)",
+    "price": "۱۲٫۳۲۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "سلف 470 نانو هانری سایز 1210",
+    "price": "از ۵٫۵۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "سلف اس ام دی 10UH (1210) TDK",
+    "price": "از ۵٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "سلف 68 میکرو هانری سایز Inductor 68uH 80mA SMD 1210 (Original)",
+    "price": "۳۳٫۳۶۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "سلف 10 میکرو هانری SMD 1210",
+    "price": "۹٫۸۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "سلف 33 میکرو هانری SMD پکیج 1210",
+    "price": "۱۸٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "100uH 1210 SMD",
+    "price": "از ۱۹٫۷۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "سلف 100 میکرو هانری SMD 1210",
+    "price": "۱۳٫۷۵۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "سلف 2.2 میکرو هانری SMD پکیج 1210",
+    "price": "۱۳٫۴۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "سلف 100 میکرو هانری SMD 1210",
+    "price": "۹٫۸۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "سلف 1.5 ميکرو هانری SELF-INDUCTOR 1.5 UH SMD",
+    "price": "۱۹٫۸۳۵ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "سلف 47 میکرو هانری 1210 SMD",
+    "price": "۱۸٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "سلف 3.3 میکرو هانری SMD 1210",
+    "price": "۱۲٫۹۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "سلف 10 میکرو هانری SMD 1210",
+    "price": "۱۰٫۷۶۲ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "سلف 22 میکرو هانری SMD پکیج 1210",
+    "price": "۱۸٫۵۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "سلف 10 میکرو هانری SMD پکیج 1210",
+    "price": "۹٫۸۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "سلف 1 میکرو هانری SMD 1210",
+    "price": "۱۳٫۴۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "سلف 4.7 میکرو هانری SMD پکیج 1210",
+    "price": "۱۳٫۴۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "سلف SMD 100µh سایز 1210",
+    "price": "۱۲٫۶۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "سلف 560 میکرو هانری سایز Inductor 560uH 40mA SMD 1210 (Original)",
+    "price": "۲۷٫۸۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "سلف SELF 22MH 1210 SMD",
+    "price": "ناموجود",
+    "shop": "",
+    "instock": false
+   },
+   {
+    "name": "سلف SMD 100µh سایز 1210",
+    "price": "ناموجود",
+    "shop": "",
+    "instock": false
+   },
+   {
+    "name": "سلف 330 نانو هانری سایز 1210",
+    "price": "۵٫۵۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "سلف سیم پیچ سرامیکی پکیج 1210 اندازه 280 نانو هانری",
+    "price": "۱۱٫۸۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "سلف 4.7میکروهانری 4.7UH 1210",
+    "price": "از ۷٫۸۸۳ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "سلف 47 میکرو هانری سایز 1210",
+    "price": "۵٫۵۰۰ تومان",
+    "shop": "",
+    "instock": true
+   }
+  ]
+ },
+ "سلف SMD 0805 سیم پیچی": {
+  "ok": true,
+  "hits": [
+   {
+    "name": "سلف 4.7µH میکروهانری SMD (4×4.5×2 میلی‌متر)",
+    "price": "۱۲٫۳۲۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "سلف 82 نانو هانری 0805 سیم پیچی ظاهری SMD",
+    "price": "۱۶٫۷۲۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "سلف RF سیم‌پیچی SMD مقدار 18nH سایز 1008",
+    "price": "۱۱۸٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "سلف 27 نانوهانری پکیچ 0805",
+    "price": "از ۲٫۶۷۳ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "سلف 270نانوهانری 270NH 0805",
+    "price": "از ۲٫۱۸۹ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "سلف SMD 10UH پکیج 0805",
+    "price": "از ۲٫۰۶۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "سلف 120 نانو هانری 0805 SMD",
+    "price": "از ۱٫۹۹۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "سلف 180نانوهانری 180NH 0805",
+    "price": "از ۲٫۱۸۹ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "سلف SMD 33NH پکیج 0805",
+    "price": "از ۱٫۹۹۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "سلف SMD 5.6UH پکیج 0805",
+    "price": "از ۳٫۰۴۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "سلف 1.5 ميکرو هانری SELF-INDUCTOR 1.5 UH SMD",
+    "price": "۱۹٫۸۳۵ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "سلف 3.3 میکرو هانری SMD 0805",
+    "price": "۵٫۳۸۷ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "سلف 120 نانو هانری SMD 0805",
+    "price": "۴٫۳۳۷ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "کیت سلف SMD سایز 0603-0805 Murata",
+    "price": "۱۰٫۲۹۰٫۱۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "سلف 100 نانو هانری 0805 SMD",
+    "price": "۲٫۶۱۸ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "سلف 4.7 میکرو هانری SMD 0805",
+    "price": "۳٫۴۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "سلف 33 میکرو هانری SMD 0805",
+    "price": "۶٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "سلف 3.3 میکرو هانری SMD 0805",
+    "price": "۳٫۴۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "سلف 2.7 میکرو هانری SMD 0805",
+    "price": "۸٫۹۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "سلف 330 نانو هانری SMD 0805",
+    "price": "۸٫۹۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "سلف 470 نانو هانری 0805 SMD",
+    "price": "۲٫۱۸۹ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "سلف SMD 47UH پکیج 0805",
+    "price": "۵٫۰۲۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "سلف 47 میکرو هانری SMD 0805",
+    "price": "۵٫۷۰۹ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "سلف SMD 15NH پکیج 0805",
+    "price": "۱٫۹۹۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "سلف 3.3 میکرو هانری 0805 SMD",
+    "price": "۳٫۳۷۷ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "سلف 390نانوهانری 390NH 0805",
+    "price": "از ۲٫۱۸۹ تومان",
+    "shop": "",
+    "instock": true
+   }
+  ]
+ },
+ "ADT1-1WT": {
+  "ok": true,
+  "hits": [
+   {
+    "name": "ترانسفورمر RF مدل ADT1-1WT+",
+    "price": "۲٫۱۵۵٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "ADT1-1WT",
+    "price": "۱٫۱۳۸٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "ترانسفورماتور ADT1-1WT-1+",
+    "price": "ناموجود",
+    "shop": "",
+    "instock": false
+   },
+   {
+    "name": "ADT1-1WT Transformer",
+    "price": "ناموجود",
+    "shop": "",
+    "instock": false
+   },
+   {
+    "name": "ADT1-1WT",
+    "price": "ناموجود",
+    "shop": "",
+    "instock": false
+   }
+  ]
+ },
+ "TC1-1T": {
+  "ok": true,
+  "hits": []
+ },
+ "ADT4-1WT": {
+  "ok": true,
+  "hits": [
+   {
+    "name": "ترانسفورمر RF مدل ADT4-1WT+",
+    "price": "۲٫۵۶۸٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "ADT4-1WT+",
+    "price": "۱٫۱۳۸٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "ترانسفورمر RF نسبت 1:4 فرکانس 2 تا 775MHz مدل ADT4-1WT+",
+    "price": "۲٫۵۶۸٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "ADT4-1WT Transformer",
+    "price": "ناموجود",
+    "shop": "",
+    "instock": false
+   },
+   {
+    "name": "ترانسفورماتور ADT4-1WT+",
+    "price": "ناموجود",
+    "shop": "",
+    "instock": false
+   },
+   {
+    "name": "ترانسفورماتور ADT4-6WT+",
+    "price": "ناموجود",
+    "shop": "",
+    "instock": false
+   },
+   {
+    "name": "ترانسفورماتور ADT4-5WT+",
+    "price": "ناموجود",
+    "shop": "",
+    "instock": false
+   }
+  ]
+ },
+ "ETC1-1": {
+  "ok": true,
+  "hits": [
+   {
+    "name": "دستگاه چسب کش دستی مدل ETC-1 وزن ۱۰۰ گرم",
+    "price": "از ۲۸٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "دستگاه چسب کش دستی مدل ETC-1 وزن ۱۰۰ گرم",
+    "price": "از ۲۸٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "کفش کلاسیک مردانه حاتم اوغلو راسته | Hatemoğlu 13162025ETC1",
+    "price": "۲۶٫۱۶۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "کفش کلاسیک مردانه حاتم اوغلو راسته | Hatemoğlu 13162025ETC1",
+    "price": "۲۶٫۱۶۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "کفش کلاسیک مردانه حاتم اوغلو راسته | Hatemoğlu 13162025ETC1",
+    "price": "۲۶٫۱۶۰٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "سنسور اکسیژن پایین موتور دنا پلاس توربو EF7 ETC کروز مدل 1Y",
+    "price": "۵٫۹۶۷٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "سنسور اکسیژن پایین موتور دنا پلاس توربو EF7 ETC کروز مدل 1Y",
+    "price": "۵٫۹۶۷٫۰۰۰ تومان",
+    "shop": "",
+    "instock": true
+   },
+   {
+    "name": "دستگاه چسب پهن مدل ETC-1",
+    "price": "۱۷۷٫۹۳۰ تومان",
+    "shop": "",
+    "instock": true
+   }
+  ]
+ }
+}
