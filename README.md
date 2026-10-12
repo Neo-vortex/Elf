@@ -23,8 +23,10 @@ parts are selected for availability in the Iranian electronics market.
 - Switchable low-noise preamplifier (BFR92A, active bias) with relay bypass
 - Switchable 20 dB attenuator
 - 5 V bias-T for active antennas, gas discharge tube and diode limiter at the input
-- Four-phase Tayloe detector (FST3253) with direct quadrature clocking from 3.2 MHz and a
-  divide-by-four path below
+- Four-phase Tayloe detector (FST3253) clocked by an Si5351C: direct quadrature from 4.8 MHz
+  (the limit of its phase register) and a 74LVC74 divide-by-four path below, selected by a
+  74LVC157
+- Built-in calibration tone (Si5351 output through a -70 dB pad) for software self-calibration
 - Low-noise instrumentation baseband (LM4562) into a CS5361 audio ADC
 - Muted safe state with all relays released
 
@@ -51,6 +53,10 @@ parts are selected for availability in the Iranian electronics market.
 - Digital twin in Python: scenarios with imaginary stations and noise, rendered to I/Q, run
   through the shipping C# DSP and decoded by real FT8 and CW decoders
 - Single-command reports: `make hw` for the circuits, `make sim` for the twin
+- Simulation results cached by netlist content: an unchanged block is not re-simulated
+  (`make hw-fresh` re-runs everything)
+- Si5351 frequency planner (the reference for the firmware) with an exact plan for every LO
+  from 0.1 to 54 MHz
 
 ## Simulated performance
 
@@ -113,7 +119,7 @@ make sim       # digital twin scenarios and FT8 sweep; report in build/sim/repor
 - [x] 11-filter band-pass bank
 - [x] Preamplifier with bypass
 - [x] Tayloe mixer, baseband amplifier and ADC input
-- [ ] Clock generation: Si5351C, divide-by-four, path selection
+- [x] Clock generation: Si5351C, divide-by-four, path selection
 - [ ] ADC digital interface (CS5361, I2S)
 - [ ] Controller and USB: ESP32-S3, USB-C, ESD protection
 - [ ] Power: source selection, boost converter, low-noise regulators
