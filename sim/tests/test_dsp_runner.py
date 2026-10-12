@@ -25,3 +25,16 @@ def test_run_dsp_passes_arguments(monkeypatch, tmp_path):
     args = log.read_text().split()
     assert args[args.index("--mode") + 1] == "cw"
     assert args[args.index("--tune-offset") + 1] == "-15000.000"
+
+
+def test_run_dsp_passes_the_iq_correction_only_when_given(monkeypatch, tmp_path):
+    log = tmp_path / "args.txt"
+    fake = tmp_path / "neoradio-dsp"
+    fake.write_text(f'#!/bin/sh\necho "$@" > {log}\n')
+    fake.chmod(fake.stat().st_mode | stat.S_IXUSR)
+    monkeypatch.setenv("NEOSIM_DSP_CLI", str(fake))
+    run_dsp(tmp_path / "x.sigmf-meta", tmp_path / "x.wav", "usb", 0.0)
+    assert "--iq-gain-db" not in log.read_text()
+    run_dsp(tmp_path / "x.sigmf-meta", tmp_path / "x.wav", "usb", 0.0, iq=(0.1608, -0.4273))
+    args = log.read_text().split()
+    assert args[args.index("--iq-gain-db") + 1] == "0.1608" and args[args.index("--iq-phase-deg") + 1] == "-0.4273"

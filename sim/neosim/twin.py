@@ -72,7 +72,9 @@ def run_scenario(scenario: Scenario, workdir: Path, hw: hardware.Hardware | None
     receives = []
     for rx in scenario.receive:
         wav = workdir / f"{rx.id}.wav"
-        run_dsp(meta, wav, rx.mode, rx.dial_hz - scenario.lo_hz)
+        # the hardware path passes the known imbalance (automatic estimation is a firmware task)
+        iq = None if hw_stats is None else (hw_stats.imbalance.gain_db, hw_stats.imbalance.phase_deg)
+        run_dsp(meta, wav, rx.mode, rx.dial_hz - scenario.lo_hz, iq)
         receives.append(_evaluate(rx, wav))
 
     freqs, psd = welch(iq_q, fs=FS_HZ, nperseg=8192, return_onesided=False)
