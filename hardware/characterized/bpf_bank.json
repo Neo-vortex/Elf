@@ -2,7 +2,7 @@
  "schema_version": 1,
  "block": "bpf_bank",
  "status": "pass",
- "generated_by": "4ea0d66",
+ "generated_by": "fa3e0fc",
  "ripple_db": 0.02,
  "q_assumed": 30.0,
  "selection_rule": "filter n with lo_n <= f < hi_n; f = 54 MHz -> 10",
