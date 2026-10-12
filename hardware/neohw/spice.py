@@ -56,6 +56,29 @@ class Source:
 
 
 @dataclass(frozen=True)
+class QuadratureLO:
+    """Two 50 % square waves driving the mixer selects: S0 at f_hz, S1 a quarter period later
+    (+ skew_s). The FST3253 decodes (S1, S0) = 00, 01, 11, 10 into four 25 % phases."""
+    s0: object
+    s1: object
+    f_hz: float
+    skew_s: float = 0.0
+    edge_s: float = 1e-9
+    high_v: float = 3.3
+
+    @property
+    def nets(self) -> tuple:
+        return (self.s0, self.s1)
+
+    def lines(self) -> list[str]:
+        t = 1 / self.f_hz
+        w = t / 2 - self.edge_s
+        return [f"VLO_s0 {node_name(self.s0)} 0 dc 0 pulse(0 {self.high_v:g} 0 {self.edge_s:g} {self.edge_s:g} {w:.12g} {t:.12g})",
+                f"VLO_s1 {node_name(self.s1)} 0 dc 0 pulse(0 {self.high_v:g} {t / 4 + self.skew_s:.12g} "
+                f"{self.edge_s:g} {self.edge_s:g} {w:.12g} {t:.12g})"]
+
+
+@dataclass(frozen=True)
 class Load:
     net: object
     name: str = "out"
@@ -122,13 +145,16 @@ class Noise:
 
 @dataclass(frozen=True)
 class Tran:
-    """Transient on a uniform grid (`linearize`), saved from `start_s`."""
+    """Transient saved from `start_s` on a uniform `step_s` grid (`linearize`); the solver's
+    internal step is capped at `max_step_s` (default: `step_s`)."""
     step_s: float
     stop_s: float
     start_s: float = 0.0
+    max_step_s: float | None = None
 
     def command(self) -> str:
-        return f"tran {self.step_s:g} {self.stop_s:g} {self.start_s:g} {self.step_s:g}\nlinearize"
+        return (f"tran {self.step_s:g} {self.stop_s:g} {self.start_s:g} {self.max_step_s or self.step_s:g}"
+                f"\nlinearize")
 
 
 def _canonical(net):
@@ -148,7 +174,7 @@ def node_name(net) -> str:
 
 def _check_nets(circuit, ports: list[Port]) -> None:
     """Reject what KiCad and SPICE would read differently, or a part cut out of the circuit."""
-    port_nets = {id(_canonical(p.net)) for p in ports}
+    port_nets = {id(_canonical(n)) for p in ports for n in (p.nets if hasattr(p, "nets") else (p.net,))}
     pins_on: dict[int, int] = {}
     nets: dict[int, object] = {}
     for part in circuit.parts:
