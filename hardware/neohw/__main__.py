@@ -9,8 +9,10 @@ from pathlib import Path
 
 from neohw.checks import attenuator as attenuator_check
 from neohw.checks import bias_tee as bias_tee_check
+from neohw.checks import board as board_check
 from neohw.checks import bpf as bpf_check
 from neohw.checks import clock as clock_check
+from neohw.checks import controller as controller_check
 from neohw.checks import mixer as mixer_check
 from neohw.checks import power as power_check
 from neohw.checks import preamp as preamp_check
@@ -24,7 +26,8 @@ from neohw.tools import ToolNotFoundError
 # signal-chain order
 CHECKS = {"bias_tee": bias_tee_check.run, "attenuator": attenuator_check.run,
           "protection": protection_check.run, "bpf_bank": bpf_check.run, "preamp": preamp_check.run,
-          "clock": clock_check.run, "mixer": mixer_check.run, "power": power_check.run}
+          "clock": clock_check.run, "mixer": mixer_check.run, "power": power_check.run,
+          "controller": controller_check.run, "board": board_check.run}
 
 
 def main(argv: list[str]) -> int:
