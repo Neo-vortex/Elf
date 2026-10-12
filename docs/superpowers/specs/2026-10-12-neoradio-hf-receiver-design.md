@@ -142,6 +142,8 @@ Build the best HF receiver we can, from parts buyable in the Iranian market, con
 
 ## 8. Raspberry Pi software
 
+**Host independence (requirement added 2026-10-12):** the board must work with any Linux host, not only the Raspberry Pi. It is a standard USB composite device (UAC2 + CDC-ACM) served by the kernel's `snd-usb-audio` and `cdc_acm`. All host software builds and runs on desktop Linux (linux-x64) as well as the Pi (linux-arm64); nothing may depend on Pi-only features (GPIO, Pi audio, Pi boot configuration). Tests run on x64 desktop Linux.
+
 **Language:** **C# on .NET 10 (LTS)**, self-contained linux-arm64 deployment.
 
 **Solution layout:**
