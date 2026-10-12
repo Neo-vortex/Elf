@@ -15,7 +15,7 @@ The receiver's RF and baseband circuits are written as Python code (SKiDL). From
 1. Every block check in §4–§5 passes, including Monte Carlo (≥ 95 % of runs passing).
 2. In the twin, with the hardware model, the **FT8 implementation loss is ≤ 1 dB** against the audio-only reference. The sweep uses the same method as phase 1: 1 dB steps, 20 trials, 95 % intervals shown.
 3. **Blocker scenario:** an FT8 signal at −15 dB SNR on 20 m still decodes with a +60 dB (relative to the band noise in 2500 Hz) carrier at 15.4 MHz. That carrier lies inside the 12–16 MHz filter. The report shows the decode result and the measured degradation.
-4. **MDS ≈ −130 dBm in 500 Hz** (parent §5), ±3 dB, measured in the twin with only thermal noise at the antenna (−174 dBm/Hz), preamp on, at 14.1 MHz and 50.1 MHz. MDS is the CW level that gives 3 dB (S+N)/N in a 500 Hz bandwidth.
+4. **MDS ≤ −130 dBm in 500 Hz** (parent §5), measured in the twin with only thermal noise at the antenna (−174 dBm/Hz), preamp on, at 14.1 MHz and 50.1 MHz, and within ±1 dB of the MDS predicted by the twin's noise budget. MDS is the CW level that gives 3 dB (S+N)/N in a 500 Hz bandwidth. (Amended 2026-10-12, plan 2.5 prototype: the earlier "≈ −130 ±3 dB" would fail a receiver that meets the 8 dB system-NF target, which gives about −139 dBm; the prototype's budget predicts −141 dBm.)
 5. A KiCad 9 netlist, a BOM with Iranian availability flags and an SVG diagram are generated for every block.
 
 ## 2. Decisions (agreed)
@@ -87,7 +87,16 @@ Amended 2026-10-12 from the plan 2.4 prototype.
 - **Baseband**: per channel, one LM4562 as the front half of an instrumentation amplifier (Rf 2.2 kΩ, Rg 240 Ω, gain 19.3 = 25.7 dB), passing the 2.5 V common mode to the CS5361 (VQ); anti-alias 100 Ω + 2.7 nF differential; CS5361 input 7.5 kΩ differential.
   - LM4562 model: datasheet macromodel (`hardware/models/lm4562.lib`; TI's PSpice model could not be fetched by script and is reported to have swapped inputs). **On 5 V the LM4562 is at its minimum supply (±2.5 V) and swings about ±1 V per output: it, not the ADC, sets full scale** (≈ −20 dBm at the mixer input, about 3 dB below ADC full scale). Phase 3 power must deliver ≥ 5.0 V at the op-amps. No rail-to-rail low-noise op-amp (AD8656, OPA2350, LT6231) was in stock on Torob.
 - **Analyses:** transient, 1 ms window after a 30 µs settle, output on a 0.25 µs grid, solver step ≤ T_LO/280, **Gear integration** (trapezoidal integration rings on the switched capacitors and the run time explodes). Tones on a 3 kHz offset grid, Hann window.
-- **Mixer NF** (conversion loss with the baseband noise) moves to plan 2.5, where the receiver noise budget for the twin and the MDS check are built: AC `.noise` cannot run through the switching mixer.
+- **Mixer NF** (amended 2026-10-12, plan 2.5 prototype). AC `.noise` cannot run through the switching mixer, so the noise run uses a linear stand-in: the FST3253 is replaced by four branches from the RF node (held at the 2.5 V bias) to the sampling caps, each 4·R_source (noiseless) in series with 4·R_on (noisy; a conductance on 25 % of the time has the noise of a 4·R_on resistor). R_on is measured from the FST3253 model at the 2.5 V bias: **7.6 Ω** (the model comment's 13 Ω was wrong). Op-amp voltage noise (the macromodel's 440 Ω), Rf, Rg, the anti-alias R and the CS5361 7.5 kΩ are noisy.
+  - Definition (SSB, referred to the 50 Ω input; harmonic folding of the source noise excluded, because the filters and the twin handle 3f/5f separately): a tone of available power P gives |z|² = 2·R·G²·P in z = I − jQ (G = conversion gain, linear). The source's noise at the fundamental gives each channel 2·R·G²·k·T0 per Hz, and an I/Q receiver's noise factor is that of one channel: **F = 1 + (N_I + N_Q) / (4·R·G²·k·T0)**, with N_I, N_Q the added one-sided output noise densities averaged over 1–40 kHz. (A planning note had 2·R·G² in the denominator, which counts the excess noise twice.)
+  - Consistency check: with the source made noisy, the stand-in's source noise is 1.35× the fundamental-only value. That is π²/8 = 1.23 (odd-harmonic folding of white noise in a sampling mixer) times the 0.47 dB by which the transient conversion gain falls below ideal sampling theory. The check gates this ratio within ±1 dB of π²/8.
+  - Prototype result: **mixer NF 7.2 dB** (14.2 MHz conversion gain). The CS5361's own noise is not in this figure: the twin adds it from the datasheet (108 dB dynamic range in 40 kHz, double-speed mode, typical).
+- **Receive-chain interfaces** (plan 2.5 prototype, full transients of filter bank → mixer at every band centre and preamp → mixer at 14.2 and 46.5 MHz). The mixer was characterised from a 50 Ω resistive source. The Tayloe switch also draws current at the LO harmonics, and a band-pass filter's output impedance there is reactive. With the preamp bypassed, the filter → mixer cascade therefore runs **1.1–1.75 dB below** the product of the filter's S21 and the mixer's conversion gain on bands 3–11 (0.6 dB on band 2, 0 on band 1), with band 1's in-window flatness rising from 0.44 to 1.29 dB. The preamp's broadband ~55 Ω output keeps preamp → mixer within ±0.35 dB of the product. Correcting the product for the preamp's output impedance did not help consistently, so it is not used. Consequences:
+  - `make hw` runs the bank → mixer cascade at every band centre and writes the complex ratio of the cascade's response to the product model, per baseband offset, into `mixer.json` (`bypass_correction`). The twin applies it whenever the preamp is bypassed and adds it to the noise budget as a noiseless loss in front of the mixer.
+  - Harmonic responses through the cascade are **not** usable from these transients. A 5f tone through filter 7 appeared at −67.6 dBc, but this is integration error at the switch edges on filter nodes carrying a large 5f voltage: it scales with the tone, and drops to −87 dBc at reltol 1e-6 and to −83 dBc with half the time step, while the filter alone gives the AC value (−111 dB) in transient. System 2f/3f rejection stays the product of the filter's S21 and the mixer's harmonic response, as in plan 2.4. Plan 2.6 re-checks the mixer IIP3 (IMD3 at −85 dBc, slope 1.81 dB/dB) at reltol 1e-6.
+  - With the preamp on (bands 8–11), the system 2f/3f check still ignores the preamp: its gain falls by 0.02–1.6 dB from f to 2f/3f/5f (0.1–300 MHz grid), so leaving it out is conservative.
+  - Cost: the 11 bank → mixer transients raise `make hw` from about 15 to about 40 minutes (20 cores).
+  - The preamp + mixer transient converges only with `.options method=gear maxord=2 rshunt=1e9`. The bank + preamp + mixer transient still fails (time step too small in the BFR92A) at 25.7 and 46.5 MHz, so no chain with the preamp is in `make hw`.
 
 | Check | Target |
 |---|---|
@@ -105,9 +114,9 @@ Amended 2026-10-12 from the plan 2.4 prototype.
 |---|---|
 | `bpf_<n>.s2p` | Touchstone S-parameters, 0.05–200 MHz, from ngspice `.sp` (nominal values) |
 | `bpf_bank.json` | Band edges per filter, selection rule (LO → filter index) |
-| `preamp.json` | Frequency grid with gain_db and nf_db; oip3_dbm; bypass_loss_db |
+| `preamp.json` | Frequency grid with gain_db and nf_db (nominal corner; 0.1–300 MHz since plan 2.5, so the twin can fold the preamp's output noise at 3f and 5f; the checks stay on 1–54 MHz); oip3_dbm; bypass_loss_db |
 | `attenuator.json` | Attenuation and bypass loss |
-| `mixer.json` | conv_gain_db; baseband response H(f) over ±60 kHz (complex samples); harmonic responses {1, 2, 3, 5} as complex gain including sign and sideband; iip3_dbm; image_rejection_db {median, p95} with the corresponding gain/phase error; dc_offset; adc_full_scale_dbm |
+| `mixer.json` | conv_gain_db; baseband response H(f) over ±60 kHz (complex samples); harmonic responses {1, 2, 3, 5} as complex gain including sign and sideband; iip3_dbm; image_rejection_db {median, p5} with the corresponding gain/phase error; dc_offset; adc_full_scale_dbm. Plan 2.5 adds: nf_db with its definition, ron_ohms and the stand-in noise densities; `bypass_correction` per band; adc_fs_peak_v (CS5361 full scale), clip_peak_v (op-amp swing, ±1 V per output) and adc_noise (dynamic range and its bandwidth) |
 | `lo_phase_noise.json` | Si5351 phase-noise curve (dBc/Hz vs offset), hand-entered from the datasheet with the source noted |
 
 Every file carries `schema_version`, the generating git commit and the block's check status. The twin refuses files whose `schema_version` it does not support.
@@ -130,6 +139,15 @@ Every file carries `schema_version`, the generating git commit and the block's c
   - Receiver noise = kT·(F − 1) at the antenna, from the cascaded NF (preamp, mixer, baseband).
 - **ADC:** full-scale mapping from `adc_full_scale_dbm`; real clipping.
 - The window rule and exclusion list from phase 1 still apply to everything not covered above.
+
+**Amended 2026-10-12 (plan 2.5 prototype):**
+- Plan 2.5 builds the in-window path, LO-harmonic folding, the noise budget, the ADC and the I/Q imbalance. Plan 2.6 adds IMD3, reciprocal mixing, `lo_phase_noise.json`, the C# `IqCorrector`, the blocker and MDS scenarios and the ideal-vs-hardware sweep. Until then, out-of-window stations are excluded with a reason, as in phase 1.
+- Signals are complex envelopes in volts (|x| = sqrt(2·50·P)), and the ADC works in volts: clip at the op-amp swing, then the CS5361's noise, full scale and 24-bit quantisation.
+- Noise budget: Friis over attenuator (or its bypass), filter (passive at T0), preamp (or bypass loss), the bypass correction (preamp off) and mixer NF. With the preamp on, its output noise at k·LO is folded in through the mixer's k-th harmonic response. Prototype: NF 5.9 dB at 14.1 MHz with the preamp (0.4·kT0 of it folded in from 3f/5f) and 8.7 dB without it (before the bypass correction). The twin's output noise floor matched this budget within 0.1 dB at 14.1 and 50.1 MHz.
+- The image uses the 5th-percentile Monte Carlo run's gain and phase error for the LO path in use (direct ≥ 3.2 MHz, ÷4 below), in neohw's convention: q = −Im(z·e^{jφ})/g.
+- Stations near k·LO are folded with the product model; the filter data ends at 208 MHz, so a harmonic station beyond it is excluded with a reason.
+- Scenarios: `noise.dbm_per_hz` makes a scenario absolute (stations then need `level_dbm`, the power while active). The hardware model requires absolute levels and rejects `adc` settings; the ideal model converts absolute levels to SNR in 2500 Hz.
+- The twin refuses characterisation files that are missing, carry another schema_version, or have status `fail` (naming the failed checks).
 
 **C# DSP addition:**
 - `NeoRadio.Dsp.IqCorrector`: amplitude and phase correction, applied before demodulation.
