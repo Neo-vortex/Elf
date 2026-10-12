@@ -118,7 +118,7 @@ Build the best HF receiver we can, from parts buyable in the Iranian market, con
 | `radio` | Frequency → Si5351 settings, LO path (direct/÷4), filter and preamp selection |
 | `hal` | Drivers: Si5351C, I/O expander, INA219, LM75, GPIO |
 | `supervisor` | Power source detection, bias-T over-current cut-off, USB under-voltage warning (<4.75 V), temperature, watchdog |
-| `calib` | Frequency and I/Q calibration data in NVS |
+| `calib` | Software self-calibration and self-test at startup (decided 2026-10-12, user: no variable components on the board): with the Si5351 CLK3 tone injected through the −70 dB pad ahead of the filter bank it measures I/Q gain/phase imbalance (from the tone's image), each filter's response (tone swept across the band and its edges), preamp gain, attenuator value and relay function; it reads DC offsets, rail voltages, bias-T current and temperature; the frequency (crystal) correction is set once against an external known carrier. Results are stored in NVS and applied digitally (I/Q correction, per-band gain/flatness equalisation, Si5351 frequency correction) and reported over CAT |
 
 **Startup:** self-test (I2C devices present, PLL lock, ADC clocks running) → result reported over CAT and on the LED.
 **Firmware update:** from the Pi over the same USB using `esptool`, wrapped by a Pi script.
