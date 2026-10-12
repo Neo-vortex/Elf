@@ -27,8 +27,8 @@ CHOKES = (
 DAMPING_OHMS = {1: "2.2k"}   # index into CHOKES -> parallel resistor
 
 
-def build() -> Block:
-    ckt = Circuit()
+def build(ckt: Circuit | None = None) -> Block:
+    ckt = ckt or Circuit()   # a shared circuit when the board netlist builds every block
     with ckt:
         rf_in, rf_out, gnd, feed = Net("ant"), Net("rf_out"), Net("GND"), Net("bias_feed")
         g = parts.gdt()

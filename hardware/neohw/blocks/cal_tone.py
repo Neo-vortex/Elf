@@ -14,8 +14,8 @@ R_IN, R_SHUNT, R_SERIES = "100", "51", "22k"
 C_PAR_0805 = 0.1e-12
 
 
-def build() -> Block:
-    ckt = Circuit()
+def build(ckt: Circuit | None = None) -> Block:
+    ckt = ckt or Circuit()   # a shared circuit when the board netlist builds every block
     with ckt:
         clk, p, rf, gnd = Net("cal_clk"), Net("cal_p"), Net("rf_line"), Net("GND")
         a = parts.resistor(R_IN)

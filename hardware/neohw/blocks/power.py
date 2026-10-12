@@ -72,8 +72,8 @@ def _sense(node, out, gnd):
     _c("100n", out, gnd, "X7R ADC filter")
 
 
-def build() -> Block:
-    ckt = Circuit()
+def build(ckt: Circuit | None = None) -> Block:
+    ckt = ckt or Circuit()   # a shared circuit when the board netlist builds every block
     with ckt:
         gnd = Net("GND")
         vbus, vbus_f, main = Net("VBUS"), Net("vbus_f"), Net("+5V_MAIN")

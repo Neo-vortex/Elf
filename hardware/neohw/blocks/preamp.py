@@ -30,12 +30,12 @@ def _c(value, a: Net, b: Net, note: str = "X7R") -> None:
     c[2] += b
 
 
-def build(state: str = "amp", bf: float | None = None) -> Block:
+def build(state: str = "amp", bf: float | None = None, ckt: Circuit | None = None) -> Block:
     """`bf` overrides the BFR92A model's current gain (hFE corner runs)."""
     if state not in STATES:
         raise ValueError(f"preamp state must be one of {STATES}, got {state!r}")
     v = VALUES
-    ckt = Circuit()
+    ckt = ckt or Circuit()   # a shared circuit when the board netlist builds every block
     with ckt:
         rf_in, rf_out, gnd, vcc = Net("rf_in"), Net("rf_out"), Net("GND"), Net("+5V_A")
         amp_in, amp_out, bypass = Net("pre_in"), Net("pre_out"), Net("pre_bypass")

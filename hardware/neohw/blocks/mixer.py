@@ -50,8 +50,8 @@ def _channel(plus: Net, minus: Net, ain_p: Net, ain_n: Net, name: str, vcc: Net,
     _c(C_AA, ain_p, ain_n, "C0G")
 
 
-def build() -> Block:
-    ckt = Circuit()
+def build(ckt: Circuit | None = None) -> Block:
+    ckt = ckt or Circuit()   # a shared circuit when the board netlist builds every block
     with ckt:
         rf_in, gnd, vcc, s0, s1 = Net("rf_in"), Net("GND"), Net("+5V_A"), Net("lo_s0"), Net("lo_s1")
         a, vb = Net("mix_a"), Net("mix_vb")

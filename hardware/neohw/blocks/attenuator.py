@@ -10,8 +10,8 @@ SHUNT_OHMS = "61.9"   # E96, ideal 61.11 Ω for 20 dB at 50 Ω
 SERIES_OHMS = "249"   # E96, ideal 247.5 Ω
 
 
-def build(state: str) -> Block:
-    ckt = Circuit()
+def build(state: str, ckt: Circuit | None = None) -> Block:
+    ckt = ckt or Circuit()   # a shared circuit when the board netlist builds every block
     with ckt:
         rf_in, rf_out, gnd = Net("rf_in"), Net("rf_out"), Net("GND")
         bypass, pad_a, pad_b = Net("bypass"), Net("pad_a"), Net("pad_b")

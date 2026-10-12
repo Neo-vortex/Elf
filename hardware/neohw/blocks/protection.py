@@ -11,8 +11,8 @@ from neohw import parts
 from neohw.blocks import Block
 
 
-def build() -> Block:
-    ckt = Circuit()
+def build(ckt: Circuit | None = None) -> Block:
+    ckt = ckt or Circuit()   # a shared circuit when the board netlist builds every block
     with ckt:
         rf, gnd = Net("rf"), Net("GND")
         up = parts.diode_pair_bav99()

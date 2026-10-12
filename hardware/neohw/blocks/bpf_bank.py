@@ -6,11 +6,11 @@ from skidl import Circuit, Net
 from neohw.blocks import Block, bpf
 
 
-def build(selected: int | None, q_ref: str = "centre") -> Block:
+def build(selected: int | None, q_ref: str = "centre", ckt: Circuit | None = None) -> Block:
     """`selected` is the one energised filter, or None for the muted safe state."""
     if selected is not None and not 1 <= selected <= len(bpf.BANDS):
         raise ValueError(f"selected must be 1..{len(bpf.BANDS)} or None, got {selected}")
-    ckt = Circuit()
+    ckt = ckt or Circuit()   # a shared circuit when the board netlist builds every block
     with ckt:
         rf_in, rf_out, gnd = Net("rf_in"), Net("rf_out"), Net("GND")
         for index in range(1, len(bpf.BANDS) + 1):
