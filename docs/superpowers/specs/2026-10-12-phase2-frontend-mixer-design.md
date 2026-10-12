@@ -94,8 +94,9 @@ Amended 2026-10-12 from the plan 2.4 prototype.
 | Conversion gain | Reported (≈ 36 dB per-channel differential at the ADC pins vs the matched source amplitude); flatness within ±0.5 dB of the mean across ±40 kHz at every test point |
 | IIP3 (preamp bypassed) | ≥ +25 dBm, measured on the mixer core (sampling capacitors) with the IMD3 slope reported (2 dB/dB = third order); the op-amp model is linear |
 | Raw image rejection (Monte Carlo of cap mismatch + LO skew, 40 runs per LO path, 5th percentile) | ≥ 30 dB |
-| 3f / 5f response | Within 1 dB of ideal 1/3 and 1/5 (−9.5 / −14 dB) at every test point |
-| 2f response | ≤ −40 dBc at every test point |
+| 3f / 5f response | Within 1 dB of ideal 1/3 and 1/5 (−9.5 / −14 dB) at test points ≥ 1.7 MHz. Below ~1 MHz the sampling RC (≈ 1.2 µs) is no longer much shorter than T_LO and the response departs from ideal (band 1: 3f −5.2 dB, 5f −8.6 dB); bands 1–2 are reported in `mixer.json` and have no 3f filter target |
+| 2f response | Mixer alone reported (≤ −40 dBc up to 26 MHz; −37.9 dBc at 40 MHz, set by the 1 ns edges and the 1.5 V TTL threshold) |
+| System 2f and 3f rejection | ≥ 60 dB on bands 3–10: filter attenuation at k·f_LO (from `bpf_<n>.s2p`) plus the mixer's k-th harmonic response. This is the parent §4 3f target made concrete, extended to 2f |
 | Test frequencies | One per band (geometric centre of each filter): ÷4 below 3.2 MHz, direct above; plus 1.9 MHz on ÷4 |
 
 ## 6. Characterisation files (the contract between `neohw` and `neosim`)
