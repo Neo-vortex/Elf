@@ -232,6 +232,12 @@ expect: {ft8_decoded: ">= 2", cw_cer: "< 5%"}
 
 **Not available (drove design choices):** Amidon/Fair-Rite toroids, AD8307, RD16HHF1 (TX only — out of scope now), fast ADCs/FPGAs (rules out direct sampling).
 
+**Passives and front-end survey (2026-10-12, plan 2.5; raw results in `2026-10-12-parts-survey-passives-torob.json`).** Every value in the phase 2 BOMs was searched on Torob and matched by value and package.
+- In stock: BAV99, BC857B; all 0805 resistors, including the attenuator's 61.9 Ω and 249 Ω 1 % (one or two sellers); 100 nF, 1 µF and 10 µF decoupling; the user's own 1 mH radial choke and 180 pF C0G (HTMJ).
+- Filter capacitors (C0G, 0805): E12 values are mostly listed, but 18 E24 values are not: 4.3, 11, 16, 24, 36, 43, 75, 160, 240, 360 and 750 pF; 1.1, 1.3, 1.6, 2.4, 3.6, 7.5 and 11 nF. Many listings do not state the dielectric (C0G/NP0 must be confirmed with the seller).
+- Axial inductors in stock: 100 and 680 nH; 1, 1.2, 1.5, 2.2, 2.7, 3.3, 4.7, 5.6, 6.8, 8.2, 10, 18, 22, 33, 47 and 100 µH (generic and Taiyo Yuden LAL02/LAL03). Not found as axial: 120, 150, 180, 220, 270, 390, 470, 560 and 820 nH, 1.8, 12 and 39 µH. The nH values are all sold as 1008CS wirewound ceramic chips (higher Q than the assumed 30); 12 and 39 µH can be built as two series parts (10 + 2.2, 33 + 6.8).
+- **Decision (user, 2026-10-12):** keep the designed values for now. The board manufacturer sources the parts; any value that turns out to be unobtainable is swapped then (re-snapping the filter synthesis to obtainable values, with the 1008CS chips as the first substitute for nH inductors).
+
 ## 11. Repository layout (planned)
 
 ```
