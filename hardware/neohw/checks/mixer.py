@@ -11,11 +11,13 @@ from pathlib import Path
 import numpy as np
 
 from neohw import availability, charfile, export
-from neohw.blocks import bpf, mixer
+from neohw.blocks import bpf, bpf_bank, mixer
 from neohw.checks import BlockResult, CheckResult
-from neohw.ngspice import run_decks
-from neohw.parts import CS5361_FS_VPP
-from neohw.spice import QuadratureLO, Source, Supply, Tran, node_name, to_deck
+from neohw.ngspice import run_deck, run_decks
+from neohw.parts import CS5361_DR_40K_DB, CS5361_FS_VPP, model_text
+from neohw.rfmath import K_B, T0, T_SIM
+from neohw.spice import (Load, Noise, Port, QuadratureLO, Source, Sp, Stage, Supply, Tran, cascade_to_deck,
+                         node_name, to_deck)
 from neohw.touchstone import read_s2p
 
 DIRECT_MIN_HZ = 3.2e6          # below this the LO comes from the 74LVC74 ÷4 (parent §5)
@@ -46,6 +48,10 @@ BASEBAND_VALUES = ("2.2kΩ", "240Ω", "100Ω", "2.7nF")   # in-amp Rf, Rg, anti-
 LM4562_VOS_V = (0.1e-3, 0.7e-3)                   # input offset voltage typical, maximum (datasheet)
 OPAMP_SWING_V = 1.0           # LM4562 at 5 V: ±1 V per output around mid-supply (datasheet ~1.4 V from rails at ±15 V)
 ADC_FS_PEAK_V = CS5361_FS_VPP * 5.0 / 2
+R_SOURCE = 50.0
+V_BIAS = 2.5                  # RF node and sampling-cap bias (CS5361 VQ)
+NOISE_BAND_HZ = (1e3, 40e3)   # averaged baseband band for the noise figure
+STANDIN_TOL_DB = 1.0          # stand-in source noise vs π²/8 × fundamental (see standin_source_ratio)
 
 
 @dataclass(frozen=True)
@@ -248,6 +254,110 @@ def full_scale_dbm(gain: float) -> float:
     return 10 * math.log10(a ** 2 / (2 * 50) / 1e-3)
 
 
+def fst3253_ron(vcc: float = 5.0, v_in: float = V_BIAS) -> float:
+    """On-resistance of one FST3253 switch in its model at the signal bias (B0 selected,
+    1 mV across the switch)."""
+    pins = "0 0 b3 b2 b1 b a 0 a2 c0 c1 c2 c3 0 vcc vcc"   # /1OE S1 1B3..1B0 1A GND 2A 2B0..2B3 S0 /2OE VCC
+    deck = "\n".join([
+        "fst3253 ron", model_text("fst3253.lib"), f"VCC vcc 0 dc {vcc:g}", f"VA a 0 dc {v_in:g}",
+        f"VB b 0 dc {v_in + 1e-3:g}", f"X1 {pins} FST3253", "Rb3 b3 0 1e6", "Rb2 b2 0 1e6", "Rb1 b1 0 1e6",
+        ".control", "set filetype=ascii", "op", "write a0.raw all", ".endc", ".end", ""])
+    d = run_deck(deck, ["a0.raw"])["a0.raw"][0].data
+    return float(1e-3 / -d["i(vb)"][0].real)
+
+
+def noise_standin(ref: str, ron: float, source_noisy: bool = False):
+    """Linear stand-in for the FST3253 in a baseband .noise run (AC noise cannot run through the
+    switching mixer). Averaged over an LO period, each sampling cap sees the source through
+    4·R_source and the switch through 4·Ron: the switch noise is that of a 4·Ron resistor (a
+    conductance on 25 % of the time), the source's own noise is excluded (it is the noise-figure
+    reference; `source_noisy` adds it back for the consistency check). The RF node is held at the bias."""
+    def lines(n):
+        out = [f"V{ref}_bias {n['1A']} 0 dc {V_BIAS:g}"]
+        for k in range(4):
+            x = f"{ref}_x{k}"
+            out.append(f"R{ref}_s{k} {n['1A']} {x} {4 * R_SOURCE:g}" + ("" if source_noisy else " noisy=0"))
+            out.append(f"R{ref}_on{k} {x} {n[f'1B{k}']} {4 * ron:.6g}")
+        return out
+    return lines
+
+
+def noise_runs(blk, ron: float) -> dict:
+    """Output noise density (V²/Hz, one-sided) of the I and Q differential ADC inputs, averaged
+    over NOISE_BAND_HZ, with the source noiseless ("added") and noisy ("with_source")."""
+    sw = next(p for p in blk.circuit.parts if p.name == "FST3253")
+    src = Source(blk.ports["rf_in"], "rf")
+    ports = [src, Supply(blk.ports["vcc"], 5.0), Load(blk.ports["s0"], "s0", 1e6), Load(blk.ports["s1"], "s1", 1e6)]
+    decks = []
+    for noisy in (False, True):
+        for ch in ("ain_i", "ain_q"):
+            p, m = blk.ports[ch]
+            decks.append(to_deck(blk.circuit, f"mixer noise {ch}", ports,
+                                 [Noise(p, src, NOISE_BAND_HZ[0] / 2, NOISE_BAND_HZ[1] * 2, 40, ref_net=m)],
+                                 overrides={sw.ref: noise_standin(sw.ref, ron, noisy)}))
+    res = run_decks([d for d, _ in decks], decks[0][1])
+    out = {}
+    for (noisy, ch), r in zip([(n, c) for n in (False, True) for c in ("ain_i", "ain_q")], res):
+        d = r["a0.raw"][0].data
+        f, on = d["frequency"].real, d["onoise_spectrum"].real ** 2
+        band = (f >= NOISE_BAND_HZ[0]) & (f <= NOISE_BAND_HZ[1])
+        out.setdefault("with_source" if noisy else "added", {})[ch[-1]] = float(np.mean(on[band]))
+    return out
+
+
+def noise_figure_db(n_i: float, n_q: float, gain: float) -> float:
+    """SSB noise figure referred to the 50 Ω input (harmonic folding of the source noise excluded).
+    A tone of available power P gives |z|² = 2·R·G²·P in z = I − jQ, so the source's own noise
+    at the fundamental gives each channel 2·R·G²·k·T0 per Hz; the I/Q receiver's noise factor is
+    that of one channel: F = 1 + (N_I + N_Q) / (4·R·G²·k·T0)."""
+    return 10 * math.log10(1 + (n_i + n_q) / (4 * R_SOURCE * gain ** 2 * K_B * T0))
+
+
+def standin_source_ratio(noise: dict, gain: float) -> float:
+    """Source noise the stand-in produces (both channels) over the fundamental-only prediction
+    4·R·G²·k·T_sim. Expected π²/8 (odd-harmonic folding of white noise, 1.234) times the ratio of
+    the ideal sampling gain to the transient's: a check that the stand-in and the transient agree."""
+    src = sum(noise["with_source"].values()) - sum(noise["added"].values())
+    return src / (4 * R_SOURCE * gain ** 2 * K_B * T_SIM)
+
+
+CHAIN_NODES = ["mix_ain_i_p", "mix_ain_i_n", "mix_ain_q_p", "mix_ain_q_n"]
+
+
+def chain_deck(blk, band: int, f_lo: float) -> tuple[str, list[str]]:
+    """Filter bank (`band` selected) → mixer with the preamp bypassed: the multitone from a
+    50 Ω source at the bank input (spec §5, receive-chain interfaces)."""
+    bank = bpf_bank.build(band)
+    stages = [Stage(bank, "bank", {"rf_in": "chain_in", "rf_out": "chain_mid"}),
+              Stage(blk, "mix", {"rf_in": "chain_mid", node_name(blk.ports["vcc"]): "vcc_a"})]
+    ic = ".ic " + " ".join(f"v(mix_{node_name(n)})={V_BIAS:g}" for n in (blk.ports["a"], *blk.ports["b"]))
+    return cascade_to_deck(
+        stages, f"bank {band} -> mixer {f_lo:g}",
+        [Source("chain_in", "rf", tones=tuple(multitone_tones(f_lo))), Supply("vcc_a", 5.0),
+         QuadratureLO(f"mix_{node_name(blk.ports['s0'])}", f"mix_{node_name(blk.ports['s1'])}", f_lo)],
+        [Tran(OUT_STEP_S, SETTLE_S + WINDOW_S, SETTLE_S, 1 / f_lo / STEPS_PER_LO_PERIOD)],
+        extra_lines=[OPTIONS, ic, ".save " + " ".join(f"v({x})" for x in CHAIN_NODES)])
+
+
+def bank_s21_deck(band: int, f_lo: float) -> tuple[str, list[str]]:
+    """The selected filter's S21 on a fine grid across the window (the s2p grid is too coarse
+    for the phase inside the passband)."""
+    bank = bpf_bank.build(band)
+    span = max(abs(o) for o in OFFSETS_HZ)
+    return to_deck(bank.circuit, f"bank {band} s21", [Port(bank.ports["rf_in"], 1), Port(bank.ports["rf_out"], 2)],
+                   [Sp(f_lo - span, f_lo + span, 241, "lin")])
+
+
+def bypass_correction(h_chain: dict, h_alone: dict, s21_f, s21, f_lo: float) -> dict:
+    """Complex ratio, per baseband offset, of the bank → mixer response to the product of the
+    filter's S21 and the mixer's response from a 50 Ω source."""
+    k = {o: h_chain[o] / (complex(np.interp(f_lo + o, s21_f, s21.real) + 1j * np.interp(f_lo + o, s21_f, s21.imag))
+                          * h_alone[o]) for o in sorted(h_chain)}
+    mean = float(np.mean([abs(v) ** 2 for o, v in k.items() if abs(o) <= FLAT_SPAN_HZ]))
+    return {"offset_hz": sorted(k), "re": [float(k[o].real) for o in sorted(k)],
+            "im": [float(k[o].imag) for o in sorted(k)], "mean_db": 10 * math.log10(mean)}
+
+
 def _image_summary(runs: list[dict], p5: float) -> dict:
     """Median and 5th-percentile image rejection with the I/Q imbalance of the runs at those ranks."""
     order = sorted(runs, key=lambda x: x["image_db"])
@@ -262,10 +372,20 @@ def run(out_dir: Path, char_dir: Path, mc_runs: int = MC_RUNS, points=None) -> B
     blk = mixer.build()
     pts = list(points or test_points())
     decks = [_deck(blk, p.f_lo, multitone_tones(p.f_lo)) for p in pts]
-    results = run_decks([d for d, _, _ in decks], decks[0][1])
+    band_pts = list(enumerate(pts[:len(bpf.BANDS)], 1)) if points is None else []   # the chain needs the band centres
+    chains = [chain_deck(blk, band, p.f_lo) for band, p in band_pts]
+    # one parallel batch: the chain transients are the longest runs
+    results = run_decks([d for d, _, _ in decks] + [d for d, _ in chains], decks[0][1])
+    s21_runs = run_decks([bank_s21_deck(band, p.f_lo)[0] for band, p in band_pts], ["a0.raw"])
     per_point = []
     for p, (_, raws, names), res in zip(pts, decks, results):
         per_point.append((p, analyse_multitone(p.f_lo, *_spectrum(res, raws, names))))
+    bypass = {}
+    for (band, p), res, s21r, (_, alone) in zip(band_pts, results[len(decks):], s21_runs, per_point):
+        chain = analyse_multitone(p.f_lo, *_spectrum(res, ["a0.raw"], CHAIN_NODES))
+        sd = s21r["a0.raw"][0].data
+        bypass[band] = {"f_lo_hz": p.f_lo, "chain_flatness_db": chain["flatness_db"],
+                        **bypass_correction(chain["h"], alone["h"], sd["frequency"].real, sd["s_2_1"], p.f_lo)}
     mc = {path: image_monte_carlo(blk, path, mc_runs) for path in MC_POINTS}
     ip3 = iip3_dbm(blk)
     flat = max(r["flatness_db"] for _, r in per_point)
@@ -288,6 +408,10 @@ def run(out_dir: Path, char_dir: Path, mc_runs: int = MC_RUNS, points=None) -> B
     p5 = {path: float(np.percentile([x["image_db"] for x in v], 5)) for path, v in mc.items()}
     nominal = min(per_point, key=lambda pr: abs(pr[0].f_lo - MC_POINTS["direct"]))[1]
     gain = nominal["ref_gain"]
+    ron = fst3253_ron()
+    noise = noise_runs(blk, ron)
+    nf = noise_figure_db(noise["added"]["i"], noise["added"]["q"], gain)
+    standin_db = 10 * math.log10(standin_source_ratio(noise, gain) / (math.pi ** 2 / 8))
     checks = [
         CheckResult("flatness_max_dev_db", flat, f"≤ {FLATNESS_DB:g}", flat <= FLATNESS_DB),
         CheckResult("third_harmonic_dev_db", dev3, f"≤ {HARMONIC_TOL_DB:g}", dev3 <= HARMONIC_TOL_DB),
@@ -301,7 +425,15 @@ def run(out_dir: Path, char_dir: Path, mc_runs: int = MC_RUNS, points=None) -> B
         CheckResult("imd3_slope_db_per_db", ip3["imd3_slope_db_per_db"], "report (2 = third order)", True, ""),
         CheckResult("conversion_gain_db", 20 * math.log10(gain), "report", True),
         CheckResult("full_scale_input_dbm", full_scale_dbm(gain), "report", True, "dBm"),
+        CheckResult("noise_figure_db", nf, "report (SSB, 50 Ω source, ADC noise excluded)", True),
+        CheckResult("noise_standin_consistency_db", standin_db, f"|x| ≤ {STANDIN_TOL_DB:g}",
+                    abs(standin_db) <= STANDIN_TOL_DB),
     ]
+    if bypass:
+        worst = min(v["mean_db"] for v in bypass.values())
+        checks += [CheckResult("bypass_interface_loss_max_db", -worst, "report", True),
+                   CheckResult("bypass_chain_flatness_max_db", max(v["chain_flatness_db"] for v in bypass.values()),
+                               "report", True)]
     result = BlockResult("mixer", checks, plots={
         f"{p.f_lo / 1e6:.2f} MHz ({p.path})": (np.array(sorted(r["h"])), np.array(
             [20 * math.log10(abs(r["h"][o])) for o in sorted(r["h"])])) for p, r in per_point})
@@ -324,6 +456,16 @@ def run(out_dir: Path, char_dir: Path, mc_runs: int = MC_RUNS, points=None) -> B
             "dc_offset_v": dict(zip(("typical", "worst"), dc_offset_bound_v()),
                                 source="LM4562 input offset 0.1 mV typ / 0.7 mV max x in-amp gain (the model has none)"),
             "adc_full_scale_dbm": full_scale_dbm(gain),
+            "adc_fs_peak_v": ADC_FS_PEAK_V,
+            "clip_peak_v": 2 * OPAMP_SWING_V,
+            "adc_noise": {"dynamic_range_db": CS5361_DR_40K_DB, "bandwidth_hz": 40e3,
+                          "source": "CS5361 datasheet: double-speed mode, 40 kHz bandwidth, unweighted, typical"},
+            "nf_db": nf,
+            "nf_definition": "SSB, referred to the 50 Ω input, harmonic folding excluded: "
+                             "F = 1 + (N_I + N_Q) / (4 R G^2 k T0), N from the linear stand-in averaged over 1–40 kHz",
+            "ron_ohms": ron,
+            "noise_v2_per_hz": noise,
+            "bypass_correction": {str(b): v for b, v in bypass.items()},
             "full_scale_limit": "op-amp swing" if 2 * OPAMP_SWING_V < ADC_FS_PEAK_V else "ADC",
             "test_points": [{"f_lo_hz": p.f_lo, "path": p.path, "flatness_db": r["flatness_db"],
                              "image_min_db": r["image_min_db"], "conv_gain_db": 20 * math.log10(r["ref_gain"]),

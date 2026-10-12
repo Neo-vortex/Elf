@@ -2,7 +2,7 @@
 * switches are NMOS (level 1) fitted to the three datasheet RON points within ~15 %: 4 ohm at
 * VIN = 0 V / 64 mA / VCC 4.5 V, 8 ohm typ (15 max) at VIN = 2.4 V / 15 mA / VCC 4.5 V and 11 typ
 * (20 max) at VIN = 2.4 V / VCC 4.0 V (vto 0.3 V, kp*W/L = 59.5 mA/V^2, no body effect), so RON
-* rises as the signal nears VCC (13 ohm at the 2.5 V bias with VCC 5 V);
+* rises as the signal nears VCC (7.6 ohm at the 2.5 V bias with VCC 5 V, measured by neohw's fst3253_ron);
 * A port 13 pF, B ports 5 pF; select inputs TTL (threshold 1.5 V); /OE active low. The
 * 2-to-4 decoder is ideal fast switches (select-to-bus delay, 1-5.3 ns, is not modelled: only
 * its mismatch matters, and that is applied as LO skew). VCC must be 4.0-5.5 V.

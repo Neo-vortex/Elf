@@ -147,7 +147,8 @@ def inductor(value, q: float, q_freq_hz: float, tol: float = 0.03, trim: float =
 MODELS_DIR = Path(__file__).resolve().parents[1] / "models"
 
 
-def _model(name: str) -> str:
+def model_text(name: str) -> str:
+    """Contents of a committed SPICE model file (hardware/models/)."""
     path = MODELS_DIR / name
     if not path.exists():
         raise FileNotFoundError(f"SPICE model {path} is missing (it is committed in hardware/models/)")
@@ -165,7 +166,7 @@ def npn_bfr92a(mpn: str = "BFR92A", torob: str | None = "BFR92", bf: float | Non
     p = _tagged(_template("BFR92A", "Q", {"B": "1", "E": "2", "C": "3"},
                           "Package_TO_SOT_SMD:SOT-23")(value="BFR92A"))
     p.mpn, p.torob, p.tol = mpn, torob, 0.0
-    model, name = _model("bfr92p.lib"), "BFR92P"
+    model, name = model_text("bfr92p.lib"), "BFR92P"
     if bf is not None:
         name = f"BFR92P_bf{bf:g}"
         model = (model.replace("BF=94.733", f"BF={bf:g}").replace("BFR92P_chip", f"{name}_chip")
@@ -180,7 +181,7 @@ def pnp_bc857b(mpn: str = "BC857B", torob: str | None = None) -> Part:
     p = _tagged(_template("BC857B", "Q", {"B": "1", "E": "2", "C": "3"},
                           "Package_TO_SOT_SMD:SOT-23")(value="BC857B"))
     p.mpn, p.torob, p.tol = mpn, torob, 0.0
-    p.spice_models = (_model("bc857b.lib"),)
+    p.spice_models = (model_text("bc857b.lib"),)
     p.spice_lines = lambda n, k=1.0: [f"X{p.ref} {n['C']} {n['B']} {n['E']} BC857B"]
     return p
 
@@ -190,7 +191,7 @@ def diode_pair_bav99(mpn: str = "BAV99", torob: str | None = None) -> Part:
     p = _tagged(_template("BAV99", "D", {"A": "1", "K": "2", "COM": "3"},
                           "Package_TO_SOT_SMD:SOT-23")(value="BAV99"))
     p.mpn, p.torob, p.tol = mpn, torob, 0.0
-    p.spice_models = (_model("bav99.lib"),)
+    p.spice_models = (model_text("bav99.lib"),)
     p.nc_pins = ("COM",)   # as a two-diode series string the middle pin stays open
     p.spice_lines = lambda n, k=1.0: [f"D{p.ref}a {n['A']} {n['COM']} D1N4148",
                                       f"D{p.ref}b {n['COM']} {n['K']} D1N4148"]
@@ -219,7 +220,7 @@ def fst3253(mpn: str = "74FST3253", torob: str | None = "FST3253") -> Part:
     stay unconnected except /2OE."""
     p = _tagged(_template("FST3253", "U", FST3253_PINS, "Package_SO:SOIC-16_3.9x9.9mm_P1.27mm")(value="FST3253"))
     p.mpn, p.torob, p.tol = mpn, torob, 0.0
-    p.spice_models = (_model("fst3253.lib"),)
+    p.spice_models = (model_text("fst3253.lib"),)
     p.nc_pins = ("2A", "2B0", "2B1", "2B2", "2B3")
     order = ["/1OE", "S1", "1B3", "1B2", "1B1", "1B0", "1A", "GND", "2A", "2B0", "2B1", "2B2", "2B3",
              "S0", "/2OE", "VCC"]
@@ -234,7 +235,7 @@ def lm4562_dual(mpn: str = "LM4562MAX", torob: str | None = "LM4562") -> Part:
     """TI LM4562 dual op-amp, SOIC-8 (datasheet macromodel, models/lm4562.lib)."""
     p = _tagged(_template("LM4562", "U", LM4562_PINS, "Package_SO:SOIC-8_3.9x4.9mm_P1.27mm")(value="LM4562"))
     p.mpn, p.torob, p.tol = mpn, torob, 0.0
-    p.spice_models = (_model("lm4562.lib"),)
+    p.spice_models = (model_text("lm4562.lib"),)
     p.spice_lines = lambda n, k=1.0: [
         f"X{p.ref}a {n['+INA']} {n['-INA']} {n['OUTA']} {n['V+']} {n['V-']} LM4562",
         f"X{p.ref}b {n['+INB']} {n['-INB']} {n['OUTB']} {n['V+']} {n['V-']} LM4562"]
@@ -247,6 +248,7 @@ CS5361_PINS = {"RST": "1", "M/S": "2", "LRCK": "3", "SCLK": "4", "MCLK": "5", "V
                "AINR+": "21", "VQ": "22", "REFGND": "23", "FILT+": "24"}
 CS5361_ZIN_DIFF = 7.5e3      # datasheet minimum differential input impedance
 CS5361_FS_VPP = 1.13         # full-scale differential input, x VA (Vpp)
+CS5361_DR_40K_DB = 108.0     # dynamic range, double-speed mode, 40 kHz bandwidth unweighted, typical (DS467)
 
 
 def cs5361(mpn: str = "CS5361-KZZ", torob: str | None = "CS5361") -> Part:
