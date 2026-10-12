@@ -131,8 +131,8 @@ Build the best HF receiver we can, from parts buyable in the Iranian market, con
 
   | Rail | Source | Loads |
   |---|---|---|
-  | 5V_A | 5 V → small boost to 7 V → LC → low-noise LDO 5.0 V | CS5361 VA, LM4562 |
-  | 3V3_RF | separate LDO | Si5351C, FST3253, 74LVC74, mux |
+  | 5V_A | 5 V → small boost to 7 V → LC → low-noise LDO 5.0 V | CS5361 VA, LM4562 (needs ≥ 5.0 V: it is at its minimum supply), FST3253 |
+  | 3V3_RF | separate LDO | Si5351C, 74LVC74, mux (the FST3253 needs 4.0–5.5 V and runs from 5V_A; amended 2026-10-12) |
   | 3V3_D | AMS1117-3.3 | ESP32-S3, I/O expander, CS5361 VL/VD |
   | 5V main | power mux output | relays, bias-T, boost input |
 
