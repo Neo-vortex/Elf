@@ -2,7 +2,7 @@
  "schema_version": 1,
  "block": "attenuator",
  "status": "pass",
- "generated_by": "c426d43",
+ "generated_by": "4ea0d66",
  "freq_hz": [
   100000.0,
   369500.0,
