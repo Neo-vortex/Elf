@@ -2,10 +2,22 @@
  "schema_version": 1,
  "block": "bpf_bank",
  "status": "pass",
- "generated_by": "fa3e0fc",
- "ripple_db": 0.02,
+ "generated_by": "0ae5d26",
+ "ripple_db": [
+  0.02,
+  0.02,
+  0.02,
+  0.02,
+  0.02,
+  0.02,
+  0.02,
+  0.02,
+  0.01,
+  0.005,
+  0.01
+ ],
  "q_assumed": 30.0,
- "selection_rule": "filter n with lo_n <= f < hi_n; f = 54 MHz -> 10",
+ "selection_rule": "filter n with lo_n <= f < hi_n; f = 54 MHz -> 11",
  "filters": [
   {
    "index": 1,
@@ -13,10 +25,10 @@
    "hi_hz": 500000.0,
    "hpf_order": 5,
    "lpf_order": 9,
-   "il_db": 1.8526477956349587,
-   "rl_db": 18.521926532754456,
+   "il_db": 1.8526542188299029,
+   "rl_db": 18.51986991522303,
    "rej3f_db": null,
-   "il_worst_q_db": 3.9920187358375756,
+   "il_worst_q_db": 3.992028821405282,
    "mc_runs": 200,
    "mc_passed": 200,
    "s2p": "bpf_1.s2p",
@@ -113,10 +125,10 @@
    "hi_hz": 1700000.0,
    "hpf_order": 5,
    "lpf_order": 9,
-   "il_db": 1.7262418578377274,
-   "rl_db": 20.2428100304072,
+   "il_db": 1.7262650611961523,
+   "rl_db": 20.23527762635205,
    "rej3f_db": null,
-   "il_worst_q_db": 3.1180774645193394,
+   "il_worst_q_db": 3.1181217100469274,
    "mc_runs": 200,
    "mc_passed": 200,
    "s2p": "bpf_2.s2p",
@@ -213,10 +225,10 @@
    "hi_hz": 2500000.0,
    "hpf_order": 5,
    "lpf_order": 9,
-   "il_db": 1.9143705095270491,
-   "rl_db": 18.058920690228963,
-   "rej3f_db": 73.70593113151659,
-   "il_worst_q_db": 2.313736475467481,
+   "il_db": 1.9144694743033108,
+   "rl_db": 18.039137243086664,
+   "rej3f_db": 73.70999899301134,
+   "il_worst_q_db": 2.313839462442819,
    "mc_runs": 200,
    "mc_passed": 200,
    "s2p": "bpf_3.s2p",
@@ -313,10 +325,10 @@
    "hi_hz": 4500000.0,
    "hpf_order": 5,
    "lpf_order": 9,
-   "il_db": 1.6986527674659686,
-   "rl_db": 20.367765756334208,
-   "rej3f_db": 54.90454457528653,
-   "il_worst_q_db": 2.2711522639350057,
+   "il_db": 1.6987222651624665,
+   "rl_db": 20.334873119167668,
+   "rej3f_db": 54.908957406777816,
+   "il_worst_q_db": 2.271233357737841,
    "mc_runs": 200,
    "mc_passed": 200,
    "s2p": "bpf_4.s2p",
@@ -413,10 +425,10 @@
    "hi_hz": 7500000.0,
    "hpf_order": 5,
    "lpf_order": 9,
-   "il_db": 1.7929445255631637,
-   "rl_db": 17.685998906379762,
-   "rej3f_db": 62.957479270628944,
-   "il_worst_q_db": 2.3074892972948704,
+   "il_db": 1.793175657381796,
+   "rl_db": 17.63812276813086,
+   "rej3f_db": 62.96734135160027,
+   "il_worst_q_db": 2.3077358666493826,
    "mc_runs": 200,
    "mc_passed": 200,
    "s2p": "bpf_5.s2p",
@@ -509,10 +521,10 @@
    "hi_hz": 12000000.0,
    "hpf_order": 5,
    "lpf_order": 9,
-   "il_db": 1.87853979844329,
-   "rl_db": 17.463407298440885,
-   "rej3f_db": 67.77978428168241,
-   "il_worst_q_db": 2.3683417944126606,
+   "il_db": 1.8790814374215734,
+   "rl_db": 17.383418053314703,
+   "rej3f_db": 67.79834920085774,
+   "il_worst_q_db": 2.3689034266251787,
    "mc_runs": 200,
    "mc_passed": 200,
    "s2p": "bpf_6.s2p",
@@ -605,12 +617,12 @@
    "hi_hz": 16000000.0,
    "hpf_order": 5,
    "lpf_order": 7,
-   "il_db": 1.5149443892321788,
-   "rl_db": 17.009978464925947,
-   "rej3f_db": 60.740234185091694,
-   "il_worst_q_db": 1.7462798008522555,
+   "il_db": 1.515523049344249,
+   "rl_db": 16.91547870926534,
+   "rej3f_db": 60.77509857173479,
+   "il_worst_q_db": 1.746878965618891,
    "mc_runs": 200,
-   "mc_passed": 198,
+   "mc_passed": 197,
    "s2p": "bpf_7.s2p",
    "inductors": [
     {
@@ -687,12 +699,12 @@
    "hi_hz": 22000000.0,
    "hpf_order": 5,
    "lpf_order": 7,
-   "il_db": 1.5076973943153307,
-   "rl_db": 17.170814481624,
-   "rej3f_db": 58.940687968786165,
-   "il_worst_q_db": 1.7627859714393332,
+   "il_db": 1.5090480320915503,
+   "rl_db": 17.03773757787713,
+   "rej3f_db": 58.98998975847938,
+   "il_worst_q_db": 1.7641470613704309,
    "mc_runs": 200,
-   "mc_passed": 199,
+   "mc_passed": 196,
    "s2p": "bpf_8.s2p",
    "inductors": [
     {
@@ -769,12 +781,12 @@
    "hi_hz": 30000000.0,
    "hpf_order": 5,
    "lpf_order": 7,
-   "il_db": 1.5115987700631957,
-   "rl_db": 16.359475660624238,
-   "rej3f_db": 59.97098875287872,
-   "il_worst_q_db": 1.7602675193260455,
+   "il_db": 1.3878745318992265,
+   "rl_db": 18.840260060687324,
+   "rej3f_db": 56.49541163115024,
+   "il_worst_q_db": 1.6162253898846664,
    "mc_runs": 200,
-   "mc_passed": 198,
+   "mc_passed": 200,
    "s2p": "bpf_9.s2p",
    "inductors": [
     {
@@ -788,7 +800,7 @@
       1.8000000000000002e-07,
       1.0000000000000001e-07
      ],
-     "target_h": 2.7702600590098715e-07,
+     "target_h": 2.855082371548409e-07,
      "select": "sum within \u00b13 % of target_h"
     },
     {
@@ -802,7 +814,7 @@
       1.8000000000000002e-07,
       1.0000000000000001e-07
      ],
-     "target_h": 2.7702600590098725e-07,
+     "target_h": 2.8550823715484094e-07,
      "select": "sum within \u00b13 % of target_h"
     },
     {
@@ -813,10 +825,10 @@
       "L90"
      ],
      "buy_h": [
-      2.7e-07,
-      1.0000000000000001e-07
+      1.8000000000000002e-07,
+      1.8000000000000002e-07
      ],
-     "target_h": 3.661327121420947e-07,
+     "target_h": 3.5859499017815515e-07,
      "select": "sum within \u00b13 % of target_h"
     },
     {
@@ -830,7 +842,7 @@
       2.7e-07,
       1.5000000000000002e-07
      ],
-     "target_h": 4.216250879589889e-07,
+     "target_h": 4.205841672994455e-07,
      "select": "sum within \u00b13 % of target_h"
     },
     {
@@ -841,10 +853,10 @@
       "L94"
      ],
      "buy_h": [
-      2.7e-07,
-      1.0000000000000001e-07
+      1.8000000000000002e-07,
+      1.8000000000000002e-07
      ],
-     "target_h": 3.661327121420949e-07,
+     "target_h": 3.585949901781553e-07,
      "select": "sum within \u00b13 % of target_h"
     }
    ]
@@ -852,99 +864,159 @@
   {
    "index": 10,
    "lo_hz": 30000000.0,
-   "hi_hz": 54000000.0,
+   "hi_hz": 40000000.0,
    "hpf_order": 5,
-   "lpf_order": 9,
-   "il_db": 1.7251238744531003,
-   "rl_db": 17.03163922852258,
-   "rej3f_db": 57.74536675185018,
-   "il_worst_q_db": 2.292887980899111,
+   "lpf_order": 7,
+   "il_db": 1.3064083158099415,
+   "rl_db": 18.317847748706345,
+   "rej3f_db": 59.7488990106138,
+   "il_worst_q_db": 1.505184376239829,
    "mc_runs": 200,
-   "mc_passed": 198,
+   "mc_passed": 200,
    "s2p": "bpf_10.s2p",
    "inductors": [
     {
      "filter": 10,
      "group": "f10_p2",
      "refs": [
-      "L95",
-      "L96"
+      "L95"
      ],
      "buy_h": [
-      1.0000000000000001e-07,
-      1.0000000000000001e-07
+      2.2e-07
      ],
-     "target_h": 2.0315240432739057e-07,
+     "target_h": 2.1763840264699713e-07,
      "select": "sum within \u00b13 % of target_h"
     },
     {
      "filter": 10,
      "group": "f10_p4",
      "refs": [
-      "L97",
-      "L98"
+      "L96"
      ],
      "buy_h": [
-      1.0000000000000001e-07,
-      1.0000000000000001e-07
+      2.2e-07
      ],
-     "target_h": 2.0315240432739062e-07,
+     "target_h": 2.1763840264699715e-07,
      "select": "sum within \u00b13 % of target_h"
     },
     {
      "filter": 10,
      "group": "f10_p7",
      "refs": [
-      "L99",
-      "L100"
+      "L97"
      ],
      "buy_h": [
-      1.0000000000000001e-07,
-      1.0000000000000001e-07
+      2.7e-07
      ],
-     "target_h": 2.0375570096663602e-07,
+     "target_h": 2.613624276883922e-07,
      "select": "sum within \u00b13 % of target_h"
     },
     {
      "filter": 10,
      "group": "f10_p9",
      "refs": [
-      "L101",
-      "L102"
+      "L98",
+      "L99"
      ],
      "buy_h": [
-      1.2000000000000002e-07,
-      1.2000000000000002e-07
+      2.2e-07,
+      1.0000000000000001e-07
      ],
-     "target_h": 2.393204673211657e-07,
+     "target_h": 3.122548538894392e-07,
      "select": "sum within \u00b13 % of target_h"
     },
     {
      "filter": 10,
      "group": "f10_p11",
      "refs": [
-      "L103",
-      "L104"
+      "L100"
      ],
      "buy_h": [
-      1.2000000000000002e-07,
-      1.2000000000000002e-07
+      2.7e-07
      ],
-     "target_h": 2.393204673211658e-07,
+     "target_h": 2.6136242768839243e-07,
+     "select": "sum within \u00b13 % of target_h"
+    }
+   ]
+  },
+  {
+   "index": 11,
+   "lo_hz": 40000000.0,
+   "hi_hz": 54000000.0,
+   "hpf_order": 5,
+   "lpf_order": 7,
+   "il_db": 1.418620761097704,
+   "rl_db": 16.839197757800722,
+   "rej3f_db": 61.01299813034399,
+   "il_worst_q_db": 1.6413550426656172,
+   "mc_runs": 200,
+   "mc_passed": 199,
+   "s2p": "bpf_11.s2p",
+   "inductors": [
+    {
+     "filter": 11,
+     "group": "f11_p2",
+     "refs": [
+      "L101"
+     ],
+     "buy_h": [
+      1.5000000000000002e-07
+     ],
+     "target_h": 1.5702953043516247e-07,
      "select": "sum within \u00b13 % of target_h"
     },
     {
-     "filter": 10,
-     "group": "f10_p13",
+     "filter": 11,
+     "group": "f11_p4",
      "refs": [
-      "L105",
-      "L106"
+      "L102"
+     ],
+     "buy_h": [
+      1.5000000000000002e-07
+     ],
+     "target_h": 1.570295304351625e-07,
+     "select": "sum within \u00b13 % of target_h"
+    },
+    {
+     "filter": 11,
+     "group": "f11_p7",
+     "refs": [
+      "L103",
+      "L104"
      ],
      "buy_h": [
       1.0000000000000001e-07,
       1.0000000000000001e-07
      ],
-     "target_h": 2.0375570096663613e-07,
+     "target_h": 1.9921943898786399e-07,
+     "select": "sum within \u00b13 % of target_h"
+    },
+    {
+     "filter": 11,
+     "group": "f11_p9",
+     "refs": [
+      "L105",
+      "L106"
+     ],
+     "buy_h": [
+      1.2000000000000002e-07,
+      1.2000000000000002e-07
+     ],
+     "target_h": 2.336578707219142e-07,
+     "select": "sum within \u00b13 % of target_h"
+    },
+    {
+     "filter": 11,
+     "group": "f11_p11",
+     "refs": [
+      "L107",
+      "L108"
+     ],
+     "buy_h": [
+      1.0000000000000001e-07,
+      1.0000000000000001e-07
+     ],
+     "target_h": 1.9921943898786407e-07,
      "select": "sum within \u00b13 % of target_h"
     }
    ]
@@ -953,14 +1025,14 @@
  "checks": [
   {
    "name": "bpf1_il_db",
-   "value": 1.8526477956349587,
+   "value": 1.8526542188299029,
    "limit": "\u2264 3",
    "passed": true,
    "unit": "dB"
   },
   {
    "name": "bpf1_rl_db",
-   "value": 18.521926532754456,
+   "value": 18.51986991522303,
    "limit": "\u2265 14",
    "passed": true,
    "unit": "dB"
@@ -974,14 +1046,14 @@
   },
   {
    "name": "bpf2_il_db",
-   "value": 1.7262418578377274,
+   "value": 1.7262650611961523,
    "limit": "\u2264 3",
    "passed": true,
    "unit": "dB"
   },
   {
    "name": "bpf2_rl_db",
-   "value": 20.2428100304072,
+   "value": 20.23527762635205,
    "limit": "\u2265 14",
    "passed": true,
    "unit": "dB"
@@ -995,21 +1067,21 @@
   },
   {
    "name": "bpf3_il_db",
-   "value": 1.9143705095270491,
+   "value": 1.9144694743033108,
    "limit": "\u2264 3",
    "passed": true,
    "unit": "dB"
   },
   {
    "name": "bpf3_rl_db",
-   "value": 18.058920690228963,
+   "value": 18.039137243086664,
    "limit": "\u2265 14",
    "passed": true,
    "unit": "dB"
   },
   {
    "name": "bpf3_rej3f_db",
-   "value": 73.70593113151659,
+   "value": 73.70999899301134,
    "limit": "\u2265 50",
    "passed": true,
    "unit": "dB"
@@ -1023,21 +1095,21 @@
   },
   {
    "name": "bpf4_il_db",
-   "value": 1.6986527674659686,
+   "value": 1.6987222651624665,
    "limit": "\u2264 3",
    "passed": true,
    "unit": "dB"
   },
   {
    "name": "bpf4_rl_db",
-   "value": 20.367765756334208,
+   "value": 20.334873119167668,
    "limit": "\u2265 14",
    "passed": true,
    "unit": "dB"
   },
   {
    "name": "bpf4_rej3f_db",
-   "value": 54.90454457528653,
+   "value": 54.908957406777816,
    "limit": "\u2265 50",
    "passed": true,
    "unit": "dB"
@@ -1051,21 +1123,21 @@
   },
   {
    "name": "bpf5_il_db",
-   "value": 1.7929445255631637,
+   "value": 1.793175657381796,
    "limit": "\u2264 3",
    "passed": true,
    "unit": "dB"
   },
   {
    "name": "bpf5_rl_db",
-   "value": 17.685998906379762,
+   "value": 17.63812276813086,
    "limit": "\u2265 14",
    "passed": true,
    "unit": "dB"
   },
   {
    "name": "bpf5_rej3f_db",
-   "value": 62.957479270628944,
+   "value": 62.96734135160027,
    "limit": "\u2265 50",
    "passed": true,
    "unit": "dB"
@@ -1079,21 +1151,21 @@
   },
   {
    "name": "bpf6_il_db",
-   "value": 1.87853979844329,
+   "value": 1.8790814374215734,
    "limit": "\u2264 3",
    "passed": true,
    "unit": "dB"
   },
   {
    "name": "bpf6_rl_db",
-   "value": 17.463407298440885,
+   "value": 17.383418053314703,
    "limit": "\u2265 14",
    "passed": true,
    "unit": "dB"
   },
   {
    "name": "bpf6_rej3f_db",
-   "value": 67.77978428168241,
+   "value": 67.79834920085774,
    "limit": "\u2265 50",
    "passed": true,
    "unit": "dB"
@@ -1107,119 +1179,147 @@
   },
   {
    "name": "bpf7_il_db",
-   "value": 1.5149443892321788,
+   "value": 1.515523049344249,
    "limit": "\u2264 3",
    "passed": true,
    "unit": "dB"
   },
   {
    "name": "bpf7_rl_db",
-   "value": 17.009978464925947,
+   "value": 16.91547870926534,
    "limit": "\u2265 14",
    "passed": true,
    "unit": "dB"
   },
   {
    "name": "bpf7_rej3f_db",
-   "value": 60.740234185091694,
+   "value": 60.77509857173479,
    "limit": "\u2265 50",
    "passed": true,
    "unit": "dB"
   },
   {
    "name": "bpf7_mc_pass_pct",
-   "value": 99.0,
+   "value": 98.5,
    "limit": "\u2265 95",
    "passed": true,
    "unit": "%"
   },
   {
    "name": "bpf8_il_db",
-   "value": 1.5076973943153307,
+   "value": 1.5090480320915503,
    "limit": "\u2264 2",
    "passed": true,
    "unit": "dB"
   },
   {
    "name": "bpf8_rl_db",
-   "value": 17.170814481624,
+   "value": 17.03773757787713,
    "limit": "\u2265 14",
    "passed": true,
    "unit": "dB"
   },
   {
    "name": "bpf8_rej3f_db",
-   "value": 58.940687968786165,
+   "value": 58.98998975847938,
    "limit": "\u2265 50",
    "passed": true,
    "unit": "dB"
   },
   {
    "name": "bpf8_mc_pass_pct",
-   "value": 99.5,
+   "value": 98.0,
    "limit": "\u2265 95",
    "passed": true,
    "unit": "%"
   },
   {
    "name": "bpf9_il_db",
-   "value": 1.5115987700631957,
+   "value": 1.3878745318992265,
    "limit": "\u2264 2",
    "passed": true,
    "unit": "dB"
   },
   {
    "name": "bpf9_rl_db",
-   "value": 16.359475660624238,
+   "value": 18.840260060687324,
    "limit": "\u2265 14",
    "passed": true,
    "unit": "dB"
   },
   {
    "name": "bpf9_rej3f_db",
-   "value": 59.97098875287872,
+   "value": 56.49541163115024,
    "limit": "\u2265 50",
    "passed": true,
    "unit": "dB"
   },
   {
    "name": "bpf9_mc_pass_pct",
-   "value": 99.0,
+   "value": 100.0,
    "limit": "\u2265 95",
    "passed": true,
    "unit": "%"
   },
   {
    "name": "bpf10_il_db",
-   "value": 1.7251238744531003,
+   "value": 1.3064083158099415,
    "limit": "\u2264 2",
    "passed": true,
    "unit": "dB"
   },
   {
    "name": "bpf10_rl_db",
-   "value": 17.03163922852258,
+   "value": 18.317847748706345,
    "limit": "\u2265 14",
    "passed": true,
    "unit": "dB"
   },
   {
    "name": "bpf10_rej3f_db",
-   "value": 57.74536675185018,
+   "value": 59.7488990106138,
    "limit": "\u2265 50",
    "passed": true,
    "unit": "dB"
   },
   {
    "name": "bpf10_mc_pass_pct",
-   "value": 99.0,
+   "value": 100.0,
+   "limit": "\u2265 95",
+   "passed": true,
+   "unit": "%"
+  },
+  {
+   "name": "bpf11_il_db",
+   "value": 1.418620761097704,
+   "limit": "\u2264 2",
+   "passed": true,
+   "unit": "dB"
+  },
+  {
+   "name": "bpf11_rl_db",
+   "value": 16.839197757800722,
+   "limit": "\u2265 14",
+   "passed": true,
+   "unit": "dB"
+  },
+  {
+   "name": "bpf11_rej3f_db",
+   "value": 61.01299813034399,
+   "limit": "\u2265 50",
+   "passed": true,
+   "unit": "dB"
+  },
+  {
+   "name": "bpf11_mc_pass_pct",
+   "value": 99.5,
    "limit": "\u2265 95",
    "passed": true,
    "unit": "%"
   },
   {
    "name": "bank_mute_isolation_db",
-   "value": 188.64109353844515,
+   "value": 183.6355134298069,
    "limit": "\u2265 40",
    "passed": true,
    "unit": "dB"
