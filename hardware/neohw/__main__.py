@@ -6,14 +6,19 @@ import sys
 from pathlib import Path
 
 from neohw.checks import attenuator as attenuator_check
+from neohw.checks import bias_tee as bias_tee_check
 from neohw.checks import bpf as bpf_check
+from neohw.checks import preamp as preamp_check
+from neohw.checks import protection as protection_check
 from neohw.checks import BlockResult, CheckResult
 from neohw.ngspice import NgspiceError
 from neohw.report import write_report
 from neohw.spice import SpiceError
 from neohw.tools import ToolNotFoundError
 
-CHECKS = {"attenuator": attenuator_check.run, "bpf_bank": bpf_check.run}
+# signal-chain order
+CHECKS = {"bias_tee": bias_tee_check.run, "attenuator": attenuator_check.run,
+          "protection": protection_check.run, "bpf_bank": bpf_check.run, "preamp": preamp_check.run}
 
 
 def main(argv: list[str]) -> int:

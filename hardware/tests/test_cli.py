@@ -44,3 +44,7 @@ def test_cli_spice_error_is_exit_2_and_other_blocks_still_reported(tmp_path, mon
     assert "unconnected" in capsys.readouterr().err
     html = report.read_text()
     assert "fake" in html and "broken" in html and "ERROR" in html
+
+
+def test_checks_run_in_signal_chain_order():
+    assert list(cli.CHECKS) == ["bias_tee", "attenuator", "protection", "bpf_bank", "preamp"]
