@@ -100,6 +100,27 @@
   - **Rail voltages at minimum input:** USB at 4.75 V, at full load.
   - **Power budget table**, from datasheet currents.
 
+**Amended 2026-10-13 (plan 3.2 prototype):**
+- **Input switch-over, changed after simulation:**
+  - The USB path uses **two AO3401 back to back** (common source), gated by the external-supply node. The single MOSFET of the first draft let USB supply the board through its body diode whenever the external supply was a little lower.
+  - The external input's reverse-polarity MOSFET comes **before** the SMBJ5.0A. With the TVS first, a reversed plug drew 19 A through it until the fuse blew.
+  - Results:
+    - USB draws 0.03 mA when external power is present, even with USB at 5.25 V and external at 4.75 V.
+    - A reversed plug draws 0 mA, and the board keeps running on USB.
+    - Fuses are 1 A, 1206 fast.
+- **Rails** at minimum input and maximum load all hold, over 6 DC scenarios: 5V_A ≥ 4.995 V; 3V3_RF ≥ 3.297 V; 3V3_D ≥ 3.162 V. The last is AMS1117 at its 1.1 V worst-case dropout from 4.27 V (external 4.75 V through the Schottky), still above the CS5361 VD minimum of 3.135 V.
+- **Current budget** (datasheet currents):
+  - USB-only typical **426 mA**, within USB 2.0's 500 mA.
+  - Maximum 719 mA, with the active antenna's 100 mA and ESP32 peaks. **An active antenna needs the barrel jack or a USB-C host offering 1.5 A** (read from CC in plan 3.3); the firmware enforces this before enabling the bias-T.
+- **Junction temperatures at 50 °C ambient, maximum load:** MIC5205-5.0 97 °C (7.0 → 5.0 V at 110 mA), AMS1117 87 °C, MIC5205-3.3 64 °C (limit 125 °C).
+- **Conducted boost ripple:**
+  - Sources: the MT3608's diode-current pulses and inductor current, driven into the simulated filter network. Coupling paths: preamp supply (−84 dB at 14 MHz), mixer bias (−185 dB) and bias-T feed to the antenna line (−39 dB).
+  - Worst spur over all bands is −253 dBm against a gate of −160.5 dBm (MDS − 20 dB). Without the bias-T feed LC it would be about −180 dBm.
+  - Conducted ripple is therefore not a risk with this filtering. Radiated and layout coupling are not modelled and belong to the layout phase.
+  - The bias-T feed LC is kept: it costs little and isolates the antenna feed from 5V_MAIN transients (relays, boost start-up).
+  - Assumption: MIC5205 PSRR 75 dB at 100 Hz (datasheet), then −20 dB/decade from 1 kHz to a 15 dB floor.
+- **Pending (user away 2026-10-13):** confirm the SS34 Schottky on Torob (a very common part).
+
 ### 3.3 Controller, USB, ADC interface, relay drive, monitoring (plan 3.3)
 
 - **ESP32-S3-WROOM-1-N16R8** on 3V3_D. Native USB goes on GPIO19/20 to the USB-C receptacle, with 5.1 kΩ CC pull-downs and a USBLC6-2SC6.
