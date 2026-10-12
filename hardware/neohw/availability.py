@@ -9,7 +9,8 @@ from neohw.tools import REPO_ROOT
 
 SPECS = REPO_ROOT / "docs" / "superpowers" / "specs"
 DEFAULT_PATH = SPECS / "2026-10-12-parts-availability-torob.json"
-SURVEYS = (DEFAULT_PATH, SPECS / "2026-10-12-parts-survey-phase3-torob.json")
+SURVEYS = (DEFAULT_PATH, SPECS / "2026-10-12-parts-survey-passives-torob.json",
+           SPECS / "2026-10-12-parts-survey-phase3-torob.json")
 
 
 def load(path: Path | None = None) -> dict:

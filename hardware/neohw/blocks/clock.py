@@ -48,8 +48,8 @@ def _c(value, a, b, note="X7R decoupling"):
     c[2] += b
 
 
-def build() -> Block:
-    ckt = Circuit()
+def build(ckt: Circuit | None = None) -> Block:
+    ckt = ckt or Circuit()   # a shared circuit when the board netlist builds every block
     with ckt:
         vcc, gnd = Net("+3V3_RF"), Net("GND")
         sda, scl, lo_path = Net("i2c_sda"), Net("i2c_scl"), Net("lo_path")
@@ -76,8 +76,8 @@ def build() -> Block:
         si["CLK2"] += clk2
         si["CLK3"] += cal
         x = parts.crystal_25mhz()
-        x["1"] += xa
-        x["2"] += xb
+        x["X1"] += xa
+        x["X2"] += xb
         x["GND1"] += gnd
         x["GND2"] += gnd
         _c("10u", vcc, gnd, "X5R bulk")

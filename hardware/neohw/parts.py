@@ -193,7 +193,7 @@ def npn_bfr92a(mpn: str = "BFR92A", torob: str | None = "BFR92", bf: float | Non
     return p
 
 
-def pnp_bc857b(mpn: str = "BC857B", torob: str | None = None) -> Part:
+def pnp_bc857b(mpn: str = "BC857B", torob: str | None = "BC857B") -> Part:
     """Nexperia BC857B general-purpose PNP, SOT-23 (pin 1 base, 2 emitter, 3 collector)."""
     p = _tagged(_template("BC857B", "Q", {"B": "1", "E": "2", "C": "3"},
                           "Package_TO_SOT_SMD:SOT-23")(value="BC857B"))
@@ -203,7 +203,7 @@ def pnp_bc857b(mpn: str = "BC857B", torob: str | None = None) -> Part:
     return p
 
 
-def diode_pair_bav99(mpn: str = "BAV99", torob: str | None = None) -> Part:
+def diode_pair_bav99(mpn: str = "BAV99", torob: str | None = "BAV99") -> Part:
     """BAV99, SOT-23: pin 1 anode of D1, pin 3 = D1 cathode + D2 anode, pin 2 cathode of D2."""
     p = _tagged(_template("BAV99", "D", {"A": "1", "K": "2", "COM": "3"},
                           "Package_TO_SOT_SMD:SOT-23")(value="BAV99"))
@@ -319,7 +319,8 @@ def crystal_25mhz() -> Part:
     the load capacitance internally (6/8/10 pF, register 183), so the crystal's CL must be one of
     those: buy CL ≤ 10 pF (generic 3225 crystals are often 12–20 pF, which pulls the frequency by
     tens of ppm)."""
-    p = _ic("25MHz", {"1": "1", "GND1": "2", "2": "3", "GND2": "4"}, "Crystal:Crystal_SMD_3225-4Pin_3.2x2.5mm",
+    # pin names must not be digits: SKiDL resolves x["2"] as pad number 2 (a case-ground pad)
+    p = _ic("25MHz", {"X1": "1", "GND1": "2", "X2": "3", "GND2": "4"}, "Crystal:Crystal_SMD_3225-4Pin_3.2x2.5mm",
             "25MHz 3225 CL=8pF", "کریستال 25MHZ 3225")
     p.torob_match = crystal_25mhz_hit
     p.bom_note = "CL ≤ 10 pF (Si5351 internal load 6/8/10 pF); confirm CL with the seller"
@@ -447,3 +448,100 @@ def _ldo_lines(ref: str, n: dict, v_out: float, dropout: float, byp: str | None 
     if byp:
         out += [f"R{ref}_byp {n[byp]} {n['GND']} 1e9", f"R{ref}_en {n['EN']} {n['GND']} 1e7"]
     return out
+
+
+# --- controller, USB, ADC interface, relay drive (phase 3 spec §3.3) -----------------------
+
+# ESP32-S3-WROOM-1 pads, from the KiCad 9 RF_Module symbol (IO19/IO20 are USB D−/D+;
+# IO35–IO37 carry the octal PSRAM on the N16R8 and are not brought out for use)
+ESP32S3_PADS = {"GND": "1", "3V3": "2", "EN": "3", "IO4": "4", "IO5": "5", "IO6": "6", "IO7": "7", "IO15": "8",
+                "IO16": "9", "IO17": "10", "IO18": "11", "IO8": "12", "IO19": "13", "IO20": "14", "IO3": "15",
+                "IO46": "16", "IO9": "17", "IO10": "18", "IO11": "19", "IO12": "20", "IO13": "21", "IO14": "22",
+                "IO21": "23", "IO47": "24", "IO48": "25", "IO45": "26", "IO0": "27", "IO35": "28", "IO36": "29",
+                "IO37": "30", "IO38": "31", "IO39": "32", "IO40": "33", "IO41": "34", "IO42": "35", "RXD0": "36",
+                "TXD0": "37", "IO2": "38", "IO1": "39", "GND2": "40", "EPAD": "41"}
+ESP32S3_PSRAM_PINS = ("IO35", "IO36", "IO37")
+ESP32S3_STRAPPING_PINS = ("IO0", "IO3", "IO45", "IO46")
+
+
+def esp32s3_wroom1(nc=()) -> Part:
+    """Espressif ESP32-S3-WROOM-1-N16R8 module (16 MB flash, 8 MB octal PSRAM)."""
+    return _ic("ESP32-S3-WROOM-1", ESP32S3_PADS, "RF_Module:ESP32-S3-WROOM-1", "ESP32-S3-WROOM-1-N16R8",
+               "ESP32-S3-WROOM-1 N16R8", nc)
+
+
+USB_C_PADS = {p: p for p in ("A1", "A4", "A5", "A6", "A7", "A8", "A9", "A12", "B1", "B4", "B5", "B6", "B7", "B8",
+                             "B9", "B12", "S1")}
+
+
+def usb_c_16p() -> Part:
+    """USB Type-C receptacle, 16 pins (USB 2.0), HRO TYPE-C-31-M-12 footprint: A1/A12/B1/B12 GND,
+    A4/A9/B4/B9 VBUS, A5 CC1, B5 CC2, A6/B6 D+, A7/B7 D−, A8/B8 SBU (unused), S1 shell."""
+    return _ic("USB-C 16P", USB_C_PADS, "Connector_USB:USB_C_Receptacle_HRO_TYPE-C-31-M-12", "TYPE-C-31-M-12",
+               "USB TYPE-C 16PIN", nc=("A8", "B8"))
+
+
+def usblc6() -> Part:
+    """ST USBLC6-2SC6 ESD array, SOT-23-6: 1 I/O1, 2 GND, 3 I/O2, 4 I/O2, 5 VBUS, 6 I/O1 (flow-through)."""
+    return _ic("USBLC6-2SC6", {"IO1A": "1", "GND": "2", "IO2A": "3", "IO2B": "4", "VBUS": "5", "IO1B": "6"},
+               "Package_TO_SOT_SMD:SOT-23-6", "USBLC6-2SC6", "USBLC6-2SC6")
+
+
+def lm75a() -> Part:
+    """NXP LM75A temperature sensor, SO-8: 1 SDA, 2 SCL, 3 OS, 4 GND, 5 A2, 6 A1, 7 A0, 8 VCC."""
+    return _ic("LM75A", {"SDA": "1", "SCL": "2", "OS": "3", "GND": "4", "A2": "5", "A1": "6", "A0": "7", "VCC": "8"},
+               "Package_SO:SOIC-8_3.9x4.9mm_P1.27mm", "LM75AD", "LM75AD", nc=("OS",))
+
+
+HC595_PINS = {"QB": "1", "QC": "2", "QD": "3", "QE": "4", "QF": "5", "QG": "6", "QH": "7", "GND": "8", "QHS": "9",
+              "/SRCLR": "10", "SRCLK": "11", "RCLK": "12", "/OE": "13", "SER": "14", "QA": "15", "VCC": "16"}
+
+
+def hc595(nc=()) -> Part:
+    """74HC595 8-bit shift register with output latch, SO-16 (TI SN74HC595 pinout)."""
+    return _ic("74HC595", HC595_PINS, "Package_SO:SOIC-16_3.9x9.9mm_P1.27mm", "74HC595D", "74HC595 SMD", nc)
+
+
+ULN2803_PINS = {**{f"I{k}": str(k) for k in range(1, 9)}, "GND": "9", "COM": "10",
+                **{f"O{k}": str(19 - k) for k in range(1, 9)}}
+
+
+def uln2803(nc=()) -> Part:
+    """ULN2803A Darlington array, SO-18W: inputs 1–8, GND 9, COM 10 (flyback diodes' common, to
+    the coil supply), outputs 18–11 (O1 = 18 … O8 = 11)."""
+    return _ic("ULN2803", ULN2803_PINS, "Package_SO:SOIC-18W_7.5x11.6mm_P1.27mm", "ULN2803ADWR", "ULN2803", nc)
+
+
+def sy6280(r_set: float) -> Part:
+    """Silergy SY6280AAC current-limited load switch, SOT-23-5: 1 OUT, 2 GND, 3 ISET, 4 EN, 5 IN;
+    I_LIM = 6800 / R_SET (0.4 A minimum), R_on 80 mΩ, EN high ≥ 2.4 V (VIN 4.2–5.5 V), no body
+    diode (reverse blocking), thermal auto-retry (datasheet). Behavioural model (smooth, for Newton):
+    IN→OUT current I_LIM·tanh(((V_IN − V_OUT)/80 mΩ) / I_LIM) gated by a logistic step at EN = 1.6 V;
+    nothing flows backwards."""
+    p = _ic("SY6280", {"OUT": "1", "GND": "2", "ISET": "3", "EN": "4", "IN": "5"},
+            "Package_TO_SOT_SMD:SOT-23-5", "SY6280AAC", "SY6280")
+    i_lim = 6800.0 / r_set
+    p.spice_lines = lambda n, k=1.0: [
+        f"B{p.ref}_sw {n['IN']} {n['OUT']} I = 1 / (1 + exp(-20 * (v({n['EN']}) - 1.6))) * "
+        f"{i_lim:.4g} * tanh(max(0, v({n['IN']}) - v({n['OUT']})) / 0.08 / {i_lim:.4g})",
+        f"R{p.ref}_en {n['EN']} {n['GND']} 1e9", f"R{p.ref}_off {n['OUT']} {n['GND']} 1e6"]
+    return p
+
+
+def oscillator_24m576() -> Part:
+    """24.576 MHz 3.3 V CMOS crystal oscillator, 3.2 × 2.5 mm 4-pad (1 EN/tri-state, 2 GND, 3 OUT, 4 VDD):
+    the CS5361's master clock (master mode, MDIV = 1 → 96 kHz double speed). Torob availability to
+    confirm (pending, user away 2026-10-13)."""
+    p = _ic("24.576MHz", {"EN": "1", "GND": "2", "OUT": "3", "VDD": "4"},
+            "Oscillator:Oscillator_SMD_Abracon_ASE-4Pin_3.2x2.5mm", "24.576MHz 3.3V CMOS XO", "اسیلاتور 24.576")
+    p.bom_note = "Torob availability not yet confirmed"
+    return p
+
+
+def led_0805(colour: str = "green") -> Part:
+    p = _ic(f"LED {colour}", {"K": "1", "A": "2"}, "LED_SMD:LED_0805_2012Metric", f"LED 0805 {colour}", None)
+    return p
+
+
+def button() -> Part:
+    return _ic("button", {"1": "1", "2": "2"}, "Button_Switch_SMD:SW_SPST_SKQG_WithoutStem", "SKQG tactile", None)

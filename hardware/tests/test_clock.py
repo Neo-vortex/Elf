@@ -106,3 +106,15 @@ def test_crystal_bom_row_is_available_and_states_the_load_capacitance():
     x = next(p for p in clock.build().circuit.parts if p.value == "25MHz")
     assert availability.lookup(x.torob, availability.load(), x.torob_match) == "available"
     assert "CL ≤ 10 pF" in x.bom_note
+
+
+def test_crystal_pads_go_to_xa_and_xb_and_its_case_pads_to_ground():
+    """Regression: with pins named "1"/"2", x["2"] resolved to pad number 2 (a case-ground pad), which
+    shorted XB to ground and left pad 3 open."""
+    blk = clock.build()
+    x = next(p for p in blk.circuit.parts if p.value == "25MHz")
+    si = next(p for p in blk.circuit.parts if p.value == "Si5351C")
+    by_pad = {pin.num: pin.net.name if pin.net is not None else None for pin in x.pins}
+    assert by_pad["1"] == si["XA"].net.name and by_pad["3"] == si["XB"].net.name
+    assert by_pad["2"] == by_pad["4"] == "GND"
+    assert si["XB"].net.name != "GND"
