@@ -20,7 +20,6 @@ SCHEMA_VERSION = 1
 K_B = 1.380649e-23
 T0 = 290.0
 R0 = 50.0
-DIRECT_MIN_HZ = 3.2e6        # below this the LO comes from the ÷4 counter (mixer.json "div4")
 DEFAULT_DIR = Path(__file__).resolve().parents[2] / "hardware" / "characterized"
 
 
@@ -29,7 +28,7 @@ class HardwareModelError(RuntimeError):
 
 
 # fields the twin reads beyond the plan 2.4 contract (spec §6, plan 2.5)
-REQUIRED = {"mixer": ("nf_db", "adc_fs_peak_v", "clip_peak_v", "adc_noise", "bypass_correction", "iip3_dbm",
+REQUIRED = {"mixer": ("nf_db", "direct_min_hz", "adc_fs_peak_v", "clip_peak_v", "adc_noise", "bypass_correction", "iip3_dbm",
                        "adc_full_scale_dbm"),
             "lo_phase_noise": ("reference_hz", "offset_hz", "dbc_per_hz", "source"),
             "preamp": ("freq_hz", "gain_db", "nf_db", "bypass_loss_db")}
@@ -199,7 +198,7 @@ class Hardware:
 
     def imbalance(self, f_lo: float) -> Imbalance:
         """The 5th-percentile Monte Carlo run's I/Q imbalance for the LO path in use."""
-        ir = self.mixer["image_rejection_db"]["direct" if f_lo >= DIRECT_MIN_HZ else "div4"]
+        ir = self.mixer["image_rejection_db"]["direct" if f_lo >= self.mixer["direct_min_hz"] else "div4"]
         return Imbalance(ir["p5_gain_err_db"], ir["p5_phase_err_deg"])
 
     # --- noise -----------------------------------------------------------------------------

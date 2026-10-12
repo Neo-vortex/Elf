@@ -11,7 +11,8 @@ from pathlib import Path
 import numpy as np
 
 from neohw import availability, charfile, export
-from neohw.blocks import bpf, bpf_bank, mixer
+from neohw import lo_plan
+from neohw.blocks import bpf, bpf_bank, clock, mixer
 from neohw.checks import BlockResult, CheckResult
 from neohw.ngspice import run_deck, run_decks
 from neohw.parts import CS5361_DR_40K_DB, CS5361_FS_VPP, model_text
@@ -20,7 +21,7 @@ from neohw.spice import (Load, Noise, Port, QuadratureLO, Source, Sp, Stage, Sup
                          node_name, to_deck)
 from neohw.touchstone import read_s2p
 
-DIRECT_MIN_HZ = 3.2e6          # below this the LO comes from the 74LVC74 ÷4 (parent §5)
+DIRECT_MIN_HZ = lo_plan.DIRECT_MIN_HZ   # below this the LO comes from the 74LVC74 ÷4 (90° phase-register limit)
 TONE_DBM = -40.0
 # baseband offsets on a 3 kHz grid (Hann window, 1 kHz bins: products stay >= 3 bins apart)
 OFFSETS_HZ = (3e3, 12e3, 21e3, 30e3, 39e3, 48e3, 57e3, -6e3, -15e3, -24e3, -33e3, -42e3, -51e3, -60e3)
@@ -38,7 +39,8 @@ IMAGE_MIN_DB = 30.0
 IIP3_MIN_DBM = 25.0
 MC_RUNS = 40
 MC_POINTS = {"direct": 14.2e6, "div4": 1.9e6}
-LO_SKEW_S = {"direct": 0.2e-9, "div4": 0.5e-9}   # uniform ±: Si5351 output skew / 74LVC74 flop mismatch
+# S1-vs-S0 skew: the sum of independent uniform ± stages (blocks/clock.py: Si5351 or 74LVC74, then the 74LVC157)
+LO_SKEW_STAGES_S = clock.SKEW_STAGES_S
 # uniform ± error of each select's high time: Si5351 rise/fall asymmetry (its 45–55 % duty spec is
 # at 160 MHz, where the edges are a large part of the period) / 74LVC74 propagation mismatch
 LO_DUTY_S = {"direct": 0.5e-9, "div4": 0.3e-9}
@@ -182,7 +184,7 @@ def mc_variation(blk, rng, path: str):
         if p.value in BASEBAND_VALUES:
             var[p.ref] = 1 + rng.uniform(-p.tol, p.tol)
     duty = tuple(rng.uniform(-LO_DUTY_S[path], LO_DUTY_S[path]) for _ in range(2))
-    skew = rng.uniform(-LO_SKEW_S[path], LO_SKEW_S[path])
+    skew = sum(rng.uniform(-s, s) for s in LO_SKEW_STAGES_S[path])
     return var, duty, skew
 
 
@@ -456,6 +458,7 @@ def run(out_dir: Path, char_dir: Path, mc_runs: int = MC_RUNS, points=None) -> B
             "dc_offset_v": dict(zip(("typical", "worst"), dc_offset_bound_v()),
                                 source="LM4562 input offset 0.1 mV typ / 0.7 mV max x in-amp gain (the model has none)"),
             "adc_full_scale_dbm": full_scale_dbm(gain),
+            "direct_min_hz": DIRECT_MIN_HZ,
             "adc_fs_peak_v": ADC_FS_PEAK_V,
             "clip_peak_v": 2 * OPAMP_SWING_V,
             "adc_noise": {"dynamic_range_db": CS5361_DR_40K_DB, "bandwidth_hz": 40e3,

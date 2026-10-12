@@ -19,7 +19,8 @@ def tools():
 def test_test_points_cover_every_band_and_the_div4_crossover():
     pts = check.test_points()
     assert len(pts) == 12
-    assert [p.path for p in pts[:3]] == ["div4"] * 3 and all(p.path == "direct" for p in pts[3:11])
+    # ÷4 below 4.8 MHz (the Si5351 phase register's 90° limit): bands 1–4 and the 1.9 MHz point
+    assert [p.path for p in pts[:4]] == ["div4"] * 4 and all(p.path == "direct" for p in pts[4:11])
     assert pts[-1].f_lo == 1.9e6 and pts[-1].path == "div4"
 
 
@@ -65,7 +66,7 @@ def test_monte_carlo_varies_sampling_caps_and_baseband_parts():
     varied = {values[r] for r in var}
     assert {"5.6nF", "2.2kΩ", "240Ω", "100Ω", "2.7nF"} <= varied
     assert sum(1 for r in var if values[r] == "5.6nF") == 4
-    assert abs(skew) <= check.LO_SKEW_S["direct"] and all(abs(d) <= check.LO_DUTY_S["direct"] for d in duty)
+    assert abs(skew) <= sum(check.LO_SKEW_STAGES_S["direct"]) and all(abs(d) <= check.LO_DUTY_S["direct"] for d in duty)
 
 
 def test_iq_imbalance_fit_recovers_known_errors():

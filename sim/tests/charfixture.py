@@ -45,7 +45,7 @@ def write_char(d, *, il_db=1.0, pre_gain_db=14.0, pre_nf_db=4.0, mixer_nf_db=7.0
             (1e6, 60e6), tp_gain_db or (conv_gain_db, conv_gain_db), tp_harmonics or (harmonics or {}, harmonics or {}))],
         baseband_response={"offset_hz": offs, "re": [1.0] * 4, "im": [0.0] * 4},
         harmonic_responses=harm, image_rejection_db={"direct": ir, "div4": ir},
-        nf_db=mixer_nf_db, adc_fs_peak_v=2.825, clip_peak_v=2.0, iip3_dbm=iip3_dbm, adc_full_scale_dbm=-20.0,
+        nf_db=mixer_nf_db, direct_min_hz=4.8e6, adc_fs_peak_v=2.825, clip_peak_v=2.0, iip3_dbm=iip3_dbm, adc_full_scale_dbm=-20.0,
         adc_noise={"dynamic_range_db": adc_dr_db, "bandwidth_hz": 40e3},
         dc_offset_v={"typical": dc, "worst": dc},
         bypass_correction={str(i): {"offset_hz": offs, "re": [bypass] * 4, "im": [0.0] * 4,
