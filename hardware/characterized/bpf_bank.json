@@ -2,7 +2,7 @@
  "schema_version": 1,
  "block": "bpf_bank",
  "status": "pass",
- "generated_by": "0e6737f",
+ "generated_by": "6bef3d2",
  "ripple_db": [
   0.02,
   0.02,
