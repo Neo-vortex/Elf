@@ -7,53 +7,9 @@ import pytest
 from neosim import hardware, sources
 from neosim.hardware import Hardware, HardwareModelError, Imbalance
 from neosim.scenario import FS_HZ, WINDOW_HZ, parse_scenario
+from tests.charfixture import write_char
 
 K_T0 = hardware.K_B * hardware.T0
-
-
-def _doc(block, **payload):
-    return {"schema_version": 1, "block": block, "status": "pass", "generated_by": "test", **payload}
-
-
-def write_char(d, *, il_db=1.0, pre_gain_db=14.0, pre_nf_db=4.0, mixer_nf_db=7.0, conv_gain_db=36.0,
-               harmonics=None, imbalance=(0.0, 0.0), adc_dr_db=108.0, dc=0.0, bypass=1.0,
-               tp_gain_db=None, tp_harmonics=None):
-    """`tp_gain_db` / `tp_harmonics`: (value at the 1 MHz test point, value at 60 MHz); default
-    both equal to the top-level (nominal) values."""
-    """Flat synthetic characterisation: two filters (1–10 MHz, 10–60 MHz) with S21 = −il_db in
-    band and −80 dB outside, flat preamp and attenuator, flat mixer response."""
-    d.mkdir(parents=True, exist_ok=True)
-    filters = [{"index": 1, "lo_hz": 1e6, "hi_hz": 10e6}, {"index": 2, "lo_hz": 10e6, "hi_hz": 60e6}]
-    (d / "bpf_bank.json").write_text(json.dumps(_doc("bpf_bank", filters=filters)))
-    for flt in filters:
-        lines = ["# Hz S RI R 50"]
-        for f in np.geomspace(0.05e6, 400e6, 400):
-            inside = flt["lo_hz"] * 0.9 <= f <= flt["hi_hz"] * 1.1
-            s21 = 10 ** ((-il_db if inside else -80.0) / 20)
-            lines.append(f"{f:.6g} 0 0 {s21:.9g} 0 {s21:.9g} 0 0 0")
-        (d / f"bpf_{flt['index']}.s2p").write_text("\n".join(lines) + "\n")
-    grid = list(np.geomspace(0.1e6, 300e6, 50))
-    (d / "preamp.json").write_text(json.dumps(_doc(
-        "preamp", freq_hz=grid, gain_db=[pre_gain_db] * 50, nf_db=[pre_nf_db] * 50,
-        bypass_loss_db=0.0, oip3_dbm=24.0)))
-    (d / "attenuator.json").write_text(json.dumps(_doc(
-        "attenuator", freq_hz=[0.1e6, 54e6], pad_db=[-20.0, -20.0], bypass_db=[0.0, 0.0])))
-    offs = [-60e3, -3e3, 3e3, 60e3]
-    harm = {"1": {"db": 0.0, "phase_deg": 0.0, "sideband": "upper"}}
-    harm.update(harmonics or {})
-    ir = {"p5_gain_err_db": imbalance[0], "p5_phase_err_deg": imbalance[1]}
-    (d / "mixer.json").write_text(json.dumps(_doc(
-        "mixer", conv_gain_db=conv_gain_db,
-        test_points=[{"f_lo_hz": f, "conv_gain_db": g, "harmonics": h} for f, g, h in zip(
-            (1e6, 60e6), tp_gain_db or (conv_gain_db, conv_gain_db), tp_harmonics or (harmonics or {}, harmonics or {}))],
-        baseband_response={"offset_hz": offs, "re": [1.0] * 4, "im": [0.0] * 4},
-        harmonic_responses=harm, image_rejection_db={"direct": ir, "div4": ir},
-        nf_db=mixer_nf_db, adc_fs_peak_v=2.825, clip_peak_v=2.0,
-        adc_noise={"dynamic_range_db": adc_dr_db, "bandwidth_hz": 40e3},
-        dc_offset_v={"typical": dc, "worst": dc},
-        bypass_correction={str(i): {"offset_hz": offs, "re": [bypass] * 4, "im": [0.0] * 4,
-                                    "mean_db": 20 * math.log10(bypass)} for i in (1, 2)})))
-    return d
 
 
 def scenario(lo, stations=(), preamp=False, att=0, noise=-174.0, duration=1.0):
@@ -159,7 +115,7 @@ def test_out_of_window_station_is_excluded_with_a_reason(tmp_path):
     hw = Hardware.load(write_char(tmp_path))
     st = {"id": "far", "mode": "carrier", "rf_hz": 15.4e6, "level_dbm": -30.0}
     _, excluded, _ = run(scenario(14e6, [st]), hw)
-    assert excluded[0][0] == "far" and "plan 2.6" in excluded[0][1]
+    assert excluded[0][0] == "far" and "reciprocal mixing and IMD3" in excluded[0][1]
 
 
 @pytest.mark.parametrize("imb", [Imbalance(0.16, 0.43), Imbalance(-0.3, -1.0), Imbalance(0.0, 2.0)])
@@ -262,3 +218,103 @@ def test_budget_total_includes_the_adc_noise_and_matches_the_twin_floor(tmp_path
     density = 2 * 50 * K_T0 * 10 ** (b["nf_total_db"] / 10) * 10 ** ((36 - 1) / 10) / 2.825 ** 2
     measured = np.mean(np.abs(iq) ** 2) / FS_HZ
     assert 10 * math.log10(measured / density) == pytest.approx(0.0, abs=0.1)
+
+
+def density_dbm_hz(iq, f_lo_bb, f_hi_bb, hw, lo, preamp=False):
+    """Average output density between two baseband offsets, referred to the antenna (dBm/Hz)."""
+    spec = np.abs(np.fft.fft(iq)) ** 2 / (len(iq) * FS_HZ)
+    f = np.fft.fftfreq(len(iq), 1 / FS_HZ)
+    band = (f >= f_lo_bb) & (f <= f_hi_bb)
+    v2 = np.mean(spec[band]) * 2.825 ** 2
+    g2 = abs(hw.front_gain(lo + (f_lo_bb + f_hi_bb) / 2, lo, preamp, 0)) ** 2 * hw.conv_gain(lo) ** 2
+    return 10 * math.log10(v2 / g2 / (2 * 50) / 1e-3)
+
+
+def test_phase_noise_curve_scales_with_the_lo(tmp_path):
+    pn = {"offset_hz": [100.0, 1e3, 1e4, 1e5, 1e6], "dbc_per_hz": [-103.0, -128.0, -136.0, -138.0, -144.0]}
+    hw = Hardware.load(write_char(tmp_path, pn=pn))
+    assert hw.phase_noise_dbc_hz(1e4, 9e6) == pytest.approx(-136.0)
+    assert hw.phase_noise_dbc_hz(1e4, 18e6) == pytest.approx(-136.0 + 20 * math.log10(2))
+    assert hw.phase_noise_dbc_hz(10.0, 9e6) == pytest.approx(-103.0)        # clamped below 100 Hz
+    assert hw.phase_noise_dbc_hz(5e6, 9e6) == pytest.approx(-144.0)         # floor beyond 1 MHz
+    assert hw.phase_noise_dbc_hz(math.sqrt(1e3 * 1e4), 9e6) == pytest.approx(-132.0)   # log-offset interpolation
+
+
+def test_reciprocal_mixing_raises_the_floor_by_station_power_times_phase_noise(tmp_path):
+    pn = {"offset_hz": [100.0, 1e6], "dbc_per_hz": [-110.0, -110.0]}     # flat −110 dBc/Hz
+    hw = Hardware.load(write_char(tmp_path, pn=pn, adc_dr_db=200.0))
+    lo = 9e6        # the curve's reference frequency: no 20·log(f/9 MHz) scaling
+    blocker = {"id": "b", "mode": "carrier", "rf_hz": lo + 300e3, "level_dbm": -30.0}
+    iq, excluded, _ = run(scenario(lo, [blocker], noise=-200.0, duration=2.0), hw)
+    # −30 dBm (−1 dB filter: −31 dBm at the mixer) × −110 dBc/Hz = −141 dBm/Hz at the mixer, −140 at the antenna
+    assert density_dbm_hz(iq, 5e3, 20e3, hw, lo) == pytest.approx(-140.0, abs=0.3)
+    assert excluded[0][0] == "b" and "reciprocal mixing" in excluded[0][1]
+
+
+def test_imd3_of_an_out_of_window_pair_lands_in_the_window(tmp_path):
+    hw = Hardware.load(write_char(tmp_path, adc_dr_db=200.0, iip3_dbm=30.0))
+    lo = 14e6
+    st = [{"id": "a", "mode": "carrier", "rf_hz": lo + 100e3, "level_dbm": -20.0},
+          {"id": "c", "mode": "carrier", "rf_hz": lo + 170e3, "level_dbm": -20.0}]
+    iq, _, stats = run(scenario(lo, st, noise=-200.0), hw)
+    # at the mixer: −21 dBm each, product 2·(−21) + (−21) − 2·30 = −123 dBm at lo + 30 kHz
+    expected = 20 * math.log10(math.sqrt(2 * 50 * 1e-3 * 10 ** (-123 / 10)) * 10 ** (36 / 20) / 2.825)
+    assert tone_dbfs(iq, 30e3) == pytest.approx(expected, abs=0.1)
+    assert ("a", "c") in [tuple(x[:2]) for x in stats.imd3]
+
+
+def test_imd3_with_the_preamp_adds_its_own_product(tmp_path):
+    hw = Hardware.load(write_char(tmp_path, adc_dr_db=200.0, iip3_dbm=30.0, oip3_dbm=24.0))
+    lo = 14e6
+    st = [{"id": "a", "mode": "carrier", "rf_hz": lo + 100e3, "level_dbm": -20.0},
+          {"id": "c", "mode": "carrier", "rf_hz": lo + 170e3, "level_dbm": -20.0}]
+    iq, _, _ = run(scenario(lo, st, preamp=True, noise=-200.0), hw)
+    # preamp: IIP3 = 24 − 14 = 10 dBm; inputs −21 dBm → −83 dBm at its input, −69 dBm at the mixer
+    # mixer: inputs −7 dBm → −21 − 60 = −81 dBm; same phase (flat front end): amplitudes add
+    amp = lambda p: math.sqrt(2 * 50 * 1e-3 * 10 ** (p / 10))
+    expected = 20 * math.log10((amp(-69) + amp(-81)) * 10 ** (36 / 20) / 2.825)
+    assert tone_dbfs(iq, 30e3) == pytest.approx(expected, abs=0.1)
+
+
+def test_a_station_above_full_scale_at_the_mixer_is_reported(tmp_path):
+    hw = Hardware.load(write_char(tmp_path))
+    st = {"id": "loud", "mode": "carrier", "rf_hz": 14.5e6, "level_dbm": -10.0}    # −11 dBm at the mixer > −20
+    _, _, stats = run(scenario(14e6, [st]), hw)
+    assert stats.overload == ("loud",)
+
+
+def test_missing_phase_noise_file_is_refused(tmp_path):
+    d = write_char(tmp_path)
+    (d / "lo_phase_noise.json").unlink()
+    with pytest.raises(HardwareModelError, match="lo_phase_noise.json is missing"):
+        Hardware.load(d)
+
+
+def test_imd3_and_reciprocal_mixing_of_a_station_outside_the_passband_are_filtered(tmp_path):
+    """A station the filter rejects by 80 dB contributes its IMD3 and phase-noise products 80 dB
+    down (per its own S21), never at full level."""
+    pn = {"offset_hz": [100.0, 1e6], "dbc_per_hz": [-110.0, -110.0]}
+    hw = Hardware.load(write_char(tmp_path, pn=pn, adc_dr_db=200.0))
+    lo = 14e6
+    st = [{"id": "near", "mode": "carrier", "rf_hz": 11.015e6, "level_dbm": -20.0},     # in filter 2's passband
+          {"id": "far", "mode": "carrier", "rf_hz": 8.0e6, "level_dbm": -20.0}]         # below it: −80 dB
+    _, _, stats = run(scenario(lo, st, noise=-200.0), hw)
+    product = {(i, j): p for i, j, _, p in stats.imd3}
+    # 2·(−21) + (−100) − 2·30 = −202 dBm at the mixer, −201 at the antenna
+    assert product[("near", "far")] == pytest.approx(-201.0, abs=0.2)
+    # reciprocal mixing: only "near" counts (−21 − 110 + 20·log(14/9)), "far" is 79 dB lower
+    assert stats.reciprocal_dbm_per_hz == pytest.approx(-21 - 110 + 20 * math.log10(14 / 9) + 1, abs=0.3)
+
+
+def test_an_in_window_pair_adds_one_product_per_ordered_pair(tmp_path):
+    # IIP3 0 dBm puts the product (−123 dBm) 40 dB above the fixture's receiver noise in a 1 Hz bin
+    hw = Hardware.load(write_char(tmp_path, adc_dr_db=200.0, iip3_dbm=0.0))
+    lo = 14e6
+    st = [{"id": "a", "mode": "carrier", "rf_hz": lo + 10e3, "level_dbm": -40.0},
+          {"id": "b", "mode": "carrier", "rf_hz": lo + 20e3, "level_dbm": -40.0}]
+    iq, _, stats = run(scenario(lo, st, noise=-200.0), hw)
+    assert sorted((i, j) for i, j, _, _ in stats.imd3) == [("a", "b"), ("b", "a")]
+    # 2·20 − 10 = 30 kHz: 3·(−41) − 2·0 = −123 dBm at the mixer
+    expected = 20 * math.log10(math.sqrt(2 * 50 * 1e-3 * 10 ** (-123 / 10)) * 10 ** (36 / 20) / 2.825)
+    assert tone_dbfs(iq, 30e3) == pytest.approx(expected, abs=0.1)
+    assert tone_dbfs(iq, 10e3) == pytest.approx(20 * math.log10(math.sqrt(2 * 50 * 1e-3 * 10 ** (-40 / 10)) * 10 ** (35 / 20) / 2.825), abs=0.05)

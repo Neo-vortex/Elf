@@ -29,7 +29,9 @@ class HardwareModelError(RuntimeError):
 
 
 # fields the twin reads beyond the plan 2.4 contract (spec §6, plan 2.5)
-REQUIRED = {"mixer": ("nf_db", "adc_fs_peak_v", "clip_peak_v", "adc_noise", "bypass_correction"),
+REQUIRED = {"mixer": ("nf_db", "adc_fs_peak_v", "clip_peak_v", "adc_noise", "bypass_correction", "iip3_dbm",
+                       "adc_full_scale_dbm"),
+            "lo_phase_noise": ("reference_hz", "offset_hz", "dbc_per_hz", "source"),
             "preamp": ("freq_hz", "gain_db", "nf_db", "bypass_loss_db")}
 
 
@@ -100,13 +102,15 @@ class Hardware:
     attenuator: dict
     mixer: dict
 
+    lo_phase_noise: dict
+
     @classmethod
     def load(cls, char_dir: Path = DEFAULT_DIR) -> "Hardware":
         d = Path(char_dir)
         bank = _read(d / "bpf_bank.json", "bpf_bank")
         s21 = {f["index"]: _read_s21(d / f"bpf_{f['index']}.s2p") for f in bank["filters"]}
         return cls(bank, s21, _read(d / "preamp.json", "preamp"), _read(d / "attenuator.json", "attenuator"),
-                   _read(d / "mixer.json", "mixer"))
+                   _read(d / "mixer.json", "mixer"), _read(d / "lo_phase_noise.json", "lo_phase_noise"))
 
     # --- front end -------------------------------------------------------------------------
     def filter_index(self, f_lo: float) -> int:
@@ -127,14 +131,29 @@ class Hardware:
     def front_gain(self, f_rf, f_lo: float, preamp: bool, attenuator_db: int) -> np.ndarray:
         """Complex transducer gain from the antenna to the mixer input at RF frequencies f_rf,
         with the filter selected for f_lo."""
+        g_in, g_pre = self.front_parts(f_rf, f_lo, preamp, attenuator_db)
+        return g_in * g_pre
+
+    def front_parts(self, f_rf, f_lo: float, preamp: bool, attenuator_db: int):
+        """(attenuator × filter, complex; preamp or bypass amplitude gain): the front end split at
+        the preamp input, where its IMD is referred."""
         f_rf = np.asarray(f_rf, dtype=float)
         a = self.attenuator
         att_db = np.interp(f_rf, a["freq_hz"], a["pad_db"] if attenuator_db else a["bypass_db"])
         fs, s21 = self.s21[self.filter_index(f_lo)]
         flt = _interp_complex(f_rf, fs, s21)
         p = self.preamp
-        pre_db = np.interp(f_rf, p["freq_hz"], p["gain_db"]) if preamp else -p["bypass_loss_db"]
-        return 10 ** ((att_db + pre_db) / 20) * flt
+        pre_db = np.interp(f_rf, p["freq_hz"], p["gain_db"]) if preamp else -p["bypass_loss_db"] + 0 * f_rf
+        return 10 ** (att_db / 20) * flt, 10 ** (pre_db / 20)
+
+    def phase_noise_dbc_hz(self, offset_hz, f_lo: float):
+        """LO single-sideband phase noise L(offset) at f_lo: the measured curve (lo_phase_noise.json,
+        at reference_hz) interpolated over log offset, held flat outside its range, scaled by
+        20·log10(f_lo / reference_hz)."""
+        c = self.lo_phase_noise
+        o = np.log10(np.maximum(np.abs(np.asarray(offset_hz, dtype=float)), 1e-3))
+        db = np.interp(o, np.log10(c["offset_hz"]), c["dbc_per_hz"])
+        return db + 20 * math.log10(f_lo / c["reference_hz"])
 
     # --- mixer -----------------------------------------------------------------------------
     def conv_gain(self, f_lo: float) -> float:
@@ -283,6 +302,48 @@ class HardwareStats:
     folded: tuple[str, ...]          # station ids received through an LO harmonic
     clipped_samples: int
     peak_dbfs: float
+    imd3: tuple = ()                 # (id_i, id_j, product Hz, antenna-referred dBm) for 2·f_i − f_j in the window
+    overload: tuple[str, ...] = ()   # stations above the full-scale level at the mixer input
+    reciprocal_dbm_per_hz: float = float("-inf")   # mean reciprocal-mixing density in the window, antenna-referred
+    imbalance: Imbalance | None = None
+
+
+def _amp(dbm) -> float:
+    return math.sqrt(2 * R0 * 1e-3 * 10 ** (dbm / 10))
+
+
+def _imd3(scenario, hw: "Hardware", usable, lo: float, n: int, fs: int, window_hz: float, envelope):
+    """Third-order products 2·f_i − f_j of every ordered station pair that land in the window,
+    from the mixer IIP3 (at its input) and, with the preamp on, the preamp IIP3 (OIP3 − gain, at
+    its input). Each product is c·u_i²·conj(u_j) at f_im; the two stages' products add with the
+    phases of the front-end gains (in phase for a flat front end: the worst case). Returned
+    antenna-referred, ready to add to the in-window envelope."""
+    rx = scenario.receiver
+    a_mix = _amp(hw.mixer["iip3_dbm"])
+    t = np.arange(n) / fs
+    x = np.zeros(n, dtype=complex)
+    found = []
+    for si in usable:
+        for sj in usable:
+            if si is sj:
+                continue
+            f_im = 2 * si.rf_hz - sj.rf_hz
+            if abs(f_im - lo) + (2 * si.bandwidth_hz + sj.bandwidth_hz) / 2 > window_hz:
+                continue
+            ai, aj = _amp(si.level_dbm), _amp(sj.level_dbm)
+            gi_in, gi_pre = hw.front_parts(si.rf_hz, lo, rx.preamp, rx.attenuator_db)
+            gj_in, gj_pre = hw.front_parts(sj.rf_hz, lo, rx.preamp, rx.attenuator_db)
+            fi, fj = gi_in * gi_pre, gj_in * gj_pre
+            c = fi ** 2 * np.conj(fj) * ai ** 2 * aj / a_mix ** 2
+            if rx.preamp:
+                g_im = float(np.interp(f_im, hw.preamp["freq_hz"], hw.preamp["gain_db"]))
+                a_pre = _amp(hw.preamp["oip3_dbm"] - g_im)
+                c = c + gi_in ** 2 * np.conj(gj_in) * ai ** 2 * aj / a_pre ** 2 * 10 ** (g_im / 20)
+            c_ant = complex(c / hw.front_gain(f_im, lo, rx.preamp, rx.attenuator_db))
+            u = envelope(si) ** 2 * np.conj(envelope(sj))
+            x += c_ant * u * np.exp(2j * np.pi * (f_im - lo) * t)
+            found.append((si.id, sj.id, f_im, 10 * math.log10(abs(c_ant) ** 2 / (2 * R0) / 1e-3)))
+    return x, tuple(found)
 
 
 def _complex_noise(n: int, density: float, fs: float, rng: np.random.Generator) -> np.ndarray:
@@ -304,6 +365,29 @@ def receive(scenario, rng: np.random.Generator, hw: Hardware, render, fs: int, w
     x = _complex_noise(n, 2 * R0 * (n_ant + budget["receiver_noise_w_per_hz"]), fs, rng)
     excluded: list[tuple[str, str]] = []
     folded = []
+    # stations the front-end data covers (a harmonic station beyond the filter data is excluded below)
+    f_lo_s2p, f_hi_s2p = hw.s2p_range(band)
+    usable = [st for st in scenario.stations if f_lo_s2p <= st.rf_hz <= f_hi_s2p]
+    envelopes: dict[str, np.ndarray] = {}
+
+    def envelope(st):   # unit-power envelope about the station's own frequency
+        if st.id not in envelopes:
+            envelopes[st.id] = render(st, st.rf_hz, n)
+        return envelopes[st.id]
+
+    # reciprocal mixing: each station's power at the mixer × L(offset), offset = f_s − LO − f_bb
+    rm = np.zeros(n)
+    overload = []
+    for st in usable:
+        p_mix = 1e-3 * 10 ** (st.level_dbm / 10) * float(abs(hw.front_gain(st.rf_hz, lo, rx.preamp, rx.attenuator_db)) ** 2)
+        rm += p_mix * 10 ** (hw.phase_noise_dbc_hz(st.rf_hz - lo - f_bins, lo) / 10)
+        if 10 * math.log10(p_mix / 1e-3) > hw.mixer["adc_full_scale_dbm"]:
+            overload.append(st.id)
+    rm_ant = rm / np.abs(hw.front_gain(lo + f_bins, lo, rx.preamp, rx.attenuator_db)) ** 2
+    w = rng.normal(size=n) + 1j * rng.normal(size=n)
+    x += np.fft.ifft(np.fft.fft(w) * np.sqrt(2 * R0 * rm_ant * fs / 2))
+    x_imd, imd3 = _imd3(scenario, hw, usable, lo, n, fs, window_hz, envelope)
+    x += x_imd
     spec_h: dict[tuple[int, str], np.ndarray] = {}
     harmonics = hw.harmonics(lo)
     for st in scenario.stations:
@@ -313,7 +397,6 @@ def receive(scenario, rng: np.random.Generator, hw: Hardware, render, fs: int, w
             continue
         for k, (_, side) in harmonics.items():
             if abs(st.rf_hz - k * lo) + st.bandwidth_hz / 2 <= window_hz:
-                f_lo_s2p, f_hi_s2p = hw.s2p_range(band)
                 if not f_lo_s2p <= st.rf_hz <= f_hi_s2p:
                     excluded.append((st.id, f"{st.rf_hz / 1e6:.6f} MHz near {k}·LO is beyond the filter "
                                             f"data ({f_hi_s2p / 1e6:g} MHz)"))
@@ -324,8 +407,8 @@ def receive(scenario, rng: np.random.Generator, hw: Hardware, render, fs: int, w
                 break
         else:
             excluded.append((st.id, f"{st.rf_hz / 1e6:.6f} MHz is outside the receiver window "
-                                    f"{lo / 1e6:.6f} MHz ±{window_hz / 1e3:.1f} kHz and its LO harmonics "
-                                    "(out-of-window effects: plan 2.6)"))
+                                    f"{lo / 1e6:.6f} MHz ±{window_hz / 1e3:.1f} kHz and its LO harmonics: "
+                                    "it contributes only reciprocal mixing and IMD3"))
     y = np.fft.fft(x) * hw.front_gain(lo + f_bins, lo, rx.preamp, rx.attenuator_db)
     if not rx.preamp:
         y *= hw.bypass_correction(lo, f_bins)
@@ -351,6 +434,8 @@ def receive(scenario, rng: np.random.Generator, hw: Hardware, render, fs: int, w
     di = np.clip(np.round((i + rng.normal(scale=sigma, size=n)) / fsv / lsb) * lsb, -1.0, 1.0 - lsb)
     dq = np.clip(np.round((q + rng.normal(scale=sigma, size=n)) / fsv / lsb) * lsb, -1.0, 1.0 - lsb)
     peak = float(max(np.max(np.abs(di)), np.max(np.abs(dq)), 1e-30))
+    band_rm = np.abs(f_bins) <= window_hz
+    rm_db = 10 * math.log10(max(float(np.mean(rm_ant[band_rm])), 1e-300) / 1e-3)
     stats = HardwareStats(band, budget, 20 * math.log10(g), image_rejection_db(imb), tuple(folded), clipped,
-                          20 * math.log10(peak))
+                          20 * math.log10(peak), imd3, tuple(overload), rm_db, imb)
     return di - 1j * dq, excluded, stats
