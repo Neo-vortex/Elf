@@ -66,6 +66,17 @@
   - **Cal-tone level and isolation:** the level at the antenna-side node in SPICE, and the leakage with CLK3 disabled.
 - The mixer check's `DIRECT_MIN_HZ` moves from 3.2 to 4.8 MHz. Band 4's test point (3.35 MHz) moves to the ÷4 path, and `make hw` regenerates the characterisation.
 
+**Amended 2026-10-12 (plan 3.1 prototype):**
+- **Clock part:** the Torob part is the **Si5351C-B-GM1**, 16-QFN 3 × 3 mm with 4 outputs (datasheet Rev. 1.3 §10.6; the 8-output 20-QFN Si5351C-B-GM is not stocked). Four outputs are exactly enough: CLK0/1 direct I/Q, CLK2 for ÷4, CLK3 cal tone. Footprint `QFN-16-1EP_3x3mm_P0.5mm_EP1.75x1.75mm` (exposed pad 1.70–1.90 mm per the datasheet).
+- **Planner:** 53,901 LO points on the 1 kHz grid, 0 failures, 0 Hz error (exact rational settings; on a 1 kHz grid every PLL ratio has a denominator ≤ 25,000).
+- **Skew budget** (uniform ± per stage, summed in the mixer Monte Carlo):
+  - Direct path: Si5351 ±0.2 ns (assumed, not specified) + 74LVC157 ±0.5 ns.
+  - ÷4 path: 74LVC74A ±0.5 ns + 74LVC157A ±0.5 ns (tsk(o) ≤ 1.0 ns each, Nexperia datasheets).
+  - With the 4.8 MHz crossover (band 4's test point is now ÷4), image rejection at the 5th percentile is 39.8 dB direct and 40.0 dB ÷4 (target ≥ 30).
+- **Cal-tone pad:** 100 Ω / 51 Ω / **22 kΩ** (33 kΩ gave −74.3 dB once the Si5351's 50 Ω output impedance is included). Result: −70.8 dB at 1 MHz, −68.9 dB at 54 MHz (the 22 kΩ resistor's 0.1 pF body capacitance is modelled); it loads the RF line by 0.01 dB.
+- **Footprint check:** every footprint must exist in the installed KiCad 9 libraries. It caught the bias-T's 1 mH choke footprint (`…D10.0mm_P5.00mm_Fastron_07HCP` does not exist), now `L_Radial_D10.0mm_P5.00mm_Fastron_07P` with a 13 × 13 mm keep-out (user: leave generous room).
+- **`make hw` result cache** (user request), keyed by deck text + ngspice version + rawfiles, in `build/hw-cache`. `make hw-fresh` re-simulates everything and refreshes the cache. Per phase: one `make hw-fresh` plus one cached `make hw` that must give identical files (replaces two full runs).
+
 ### 3.2 Power (plan 3.2)
 
 - **Inputs:**
