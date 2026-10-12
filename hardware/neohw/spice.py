@@ -1,6 +1,7 @@
 """Turn a SKiDL circuit into an ngspice deck and simulate it."""
 from __future__ import annotations
 
+import math
 import re
 from dataclasses import dataclass
 from pathlib import Path
@@ -15,9 +16,67 @@ class SpiceError(ValueError):
 
 @dataclass(frozen=True)
 class Port:
+    """S-parameter port (ngspice `portnum`); its internal z0 is noiseless, so use Source/Load
+    for noise."""
     net: object
     number: int
     z0: float = 50.0
+
+    def lines(self) -> list[str]:
+        drive = 1 if self.number == 1 else 0
+        return [f"VPORT{self.number} {node_name(self.net)} 0 dc 0 ac {drive} "
+                f"portnum {self.number} z0 {self.z0:g}"]
+
+
+@dataclass(frozen=True)
+class Source:
+    """Signal source with a (noisy) series resistor. `tones` are (frequency Hz, available
+    power dBm) sine generators for transient analyses; the first stage also carries `ac 1`."""
+    net: object
+    name: str = "in"
+    z0: float = 50.0
+    tones: tuple[tuple[float, float], ...] = ()
+
+    @property
+    def vname(self) -> str:
+        return f"VS_{self.name}0"
+
+    def lines(self) -> list[str]:
+        out, prev = [], "0"
+        for k, tone in enumerate(self.tones or ((None, None),)):
+            nxt = f"s_{self.name}{k}"
+            sine = ""
+            if tone[0] is not None:
+                amp = 2 * math.sqrt(2 * self.z0 * 1e-3 * 10 ** (tone[1] / 10))   # open-circuit peak
+                sine = f" sin(0 {amp:.9g} {tone[0]:.9g})"
+            out.append(f"VS_{self.name}{k} {nxt} {prev} dc 0{' ac 1' if k == 0 else ''}{sine}")
+            prev = nxt
+        out.append(f"RS_{self.name} {prev} {node_name(self.net)} {self.z0:g}")
+        return out
+
+
+@dataclass(frozen=True)
+class Load:
+    net: object
+    name: str = "out"
+    r: float = 50.0
+
+    def lines(self) -> list[str]:
+        return [f"RL_{self.name} {node_name(self.net)} 0 {self.r:g}"]
+
+
+@dataclass(frozen=True)
+class Supply:
+    net: object
+    volts: float
+    name: str = "vcc"
+
+    @property
+    def vname(self) -> str:
+        return f"VSUP_{self.name}"
+
+    def lines(self) -> list[str]:
+        return [f"{self.vname} {node_name(self.net)} 0 dc {self.volts:g}"]
 
 
 @dataclass(frozen=True)
@@ -45,6 +104,31 @@ class Sp:
 class Op:
     def command(self) -> str:
         return "op"
+
+
+@dataclass(frozen=True)
+class Noise:
+    """Noise analysis referred to `source` (a Source); results in the noise1 plot."""
+    output_net: object
+    source: Source
+    start_hz: float
+    stop_hz: float
+    points_per_decade: int = 20
+
+    def command(self) -> str:
+        return (f"noise v({node_name(self.output_net)}) {self.source.vname} dec {self.points_per_decade} "
+                f"{self.start_hz:g} {self.stop_hz:g}\nsetplot noise1")
+
+
+@dataclass(frozen=True)
+class Tran:
+    """Transient on a uniform grid (`linearize`), saved from `start_s`."""
+    step_s: float
+    stop_s: float
+    start_s: float = 0.0
+
+    def command(self) -> str:
+        return f"tran {self.step_s:g} {self.stop_s:g} {self.start_s:g} {self.step_s:g}\nlinearize"
 
 
 def _canonical(net):
@@ -88,6 +172,12 @@ def to_deck(circuit, title: str, ports: list[Port], analyses: list, extra_lines=
     """`variation` maps a part ref to a value multiplier (Monte Carlo); missing refs use 1."""
     variation = variation or {}
     lines = [title]
+    models: list[str] = []
+    for part in circuit.parts:
+        for model in getattr(part, "spice_models", ()):
+            if model not in models:
+                models.append(model)
+    lines += models
     for part in circuit.parts:
         if not hasattr(part, "spice_lines"):
             raise SpiceError(f"{part.ref} has no SPICE model")
@@ -101,9 +191,7 @@ def to_deck(circuit, title: str, ports: list[Port], analyses: list, extra_lines=
         lines.extend(part.spice_lines(nodes, variation.get(part.ref, 1.0)))
     _check_nets(circuit, ports)
     for port in ports:
-        drive = 1 if port.number == 1 else 0
-        lines.append(f"VPORT{port.number} {node_name(port.net)} 0 dc 0 ac {drive} "
-                     f"portnum {port.number} z0 {port.z0:g}")
+        lines += port.lines()
     lines.extend(extra_lines)
     raws = []
     lines += [".control", "set filetype=ascii"]
