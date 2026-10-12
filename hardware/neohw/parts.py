@@ -64,12 +64,12 @@ def capacitor(value, footprint: str = "Capacitor_SMD:C_0805_2012Metric", mpn: st
         if esr <= 0 and esl <= 0:
             return [f"C{p.ref} {n['1']} {n['2']} {_num(farads * k)}"]
         out, node = [], n["1"]
-        if esr > 0:
-            out.append(f"R{p.ref}_esr {node} {p.ref}_e {_num(esr)}")
-            node = f"{p.ref}_e"
+        if esr > 0:      # internal node names as before ESL was added: existing netlists are unchanged
+            out.append(f"R{p.ref}_esr {node} {p.ref}_esr {_num(esr)}")
+            node = f"{p.ref}_esr"
         if esl > 0:
-            out.append(f"L{p.ref}_esl {node} {p.ref}_l {_num(esl)}")
-            node = f"{p.ref}_l"
+            out.append(f"L{p.ref}_esl {node} {p.ref}_esl {_num(esl)}")
+            node = f"{p.ref}_esl"
         return out + [f"C{p.ref} {node} {n['2']} {_num(farads * k)}"]
 
     p.spice_lines = lines
