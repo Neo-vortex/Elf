@@ -107,6 +107,33 @@
 
 New blocks in `hardware/neohw/blocks/`: `clock.py`, `power.py`, `controller.py`, `relay_drive.py`, `monitor.py`, `board.py` (connects every block). New checks follow the phase 2 pattern. The frequency planner lives in `hardware/neohw/lo_plan.py` (pure Python, unit-tested; the firmware's C version will be tested against its output tables).
 
-## 5. Out of scope
+## 5. Layout phase deliverables (decided 2026-10-12, recorded here for the next phase)
+
+- **Standards:**
+  - 4-layer stackup (user-confirmed): signal / GND / power / signal.
+  - 50 Ω grounded coplanar lines, sized to the fab's stackup (Aryamadar first, Maher PCB as fallback).
+  - IPC-2221 / IPC-2152 / IPC-7351 rules.
+  - Signal flow in one direction, with digital, USB and the boost converter in the far corner.
+  - A via fence around each filter, inductors at right angles to their neighbours, optional shield-can footprints, short matched S0/S1 lines.
+  - Board about external-hard-drive size, at most roughly 140 × 100 mm.
+  - The 1 mH drum choke gets a 13 × 13 mm keep-out.
+- **Educational silkscreen:**
+  - A labelled outline per block, e.g. "FILTER 7 · 12–16 MHz (20 m)".
+  - Signal-flow arrows, labelled test points, the band table and a legend.
+- **Layout as code** through KiCad 9's `pcbnew` API (system Python).
+- **Verification:**
+  - DRC.
+  - Netlist comparison against SKiDL.
+  - openEMS on the filters and lines.
+- **3D:**
+  - Ray-traced renders (`kicad-cli pcb render`) in the hardware report.
+  - GLB export (`kicad-cli pcb export glb`; needs the `kicad-packages3d` models), plus simple dimensioned models for the G6K-2F, the GDT and the axial inductors.
+- **Project site on GitHub Pages:**
+  - `make site` builds a static site: an interactive three.js board viewer (rotate, zoom, flip, silkscreen toggle, part info on hover), the renders, the hardware and simulation reports, and block explanations.
+  - A GitHub Actions workflow publishes the committed site on every push to `main`.
+  - The README links to it.
+  - Enabling Pages is confirmed with the user first.
+
+## 6. Out of scope
 
 PCB layout and EM checks (KiCad needs `sudo apt install kicad` by the user), firmware, host software, the virtual USB board (L5), transmit.
