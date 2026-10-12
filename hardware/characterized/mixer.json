@@ -2,7 +2,7 @@
  "schema_version": 1,
  "block": "mixer",
  "status": "pass",
- "generated_by": "701dbf8",
+ "generated_by": "0e6737f",
  "conv_gain_db": 36.15388244596626,
  "conv_gain_definition": "per-channel differential amplitude at the ADC pins / matched-source amplitude at rf_in",
  "baseband_response": {
@@ -80,22 +80,22 @@
  "iip3_dbm": 32.48118027481935,
  "image_rejection_db": {
   "direct": {
-   "median": 46.65623682292151,
-   "p5": 39.77258466929925,
+   "median": 44.26588727611132,
+   "p5": 35.560973973275914,
    "runs": 40,
-   "median_gain_err_db": -0.0673797750509083,
-   "median_phase_err_deg": -0.2933663678396101,
-   "p5_gain_err_db": 0.15032024375720943,
-   "p5_phase_err_deg": 0.6272945225035755
+   "median_gain_err_db": -0.09545888903551147,
+   "median_phase_err_deg": 0.308691092507388,
+   "p5_gain_err_db": -0.2805471264772833,
+   "p5_phase_err_deg": -0.46881134354100595
   },
   "div4": {
-   "median": 48.38372809569823,
-   "p5": 40.033098941707024,
+   "median": 45.664738645851955,
+   "p5": 39.44924432497686,
    "runs": 40,
-   "median_gain_err_db": -0.06615825008954859,
-   "median_phase_err_deg": 0.010333601456693486,
-   "p5_gain_err_db": -0.1727269348553723,
-   "p5_phase_err_deg": -0.008890083927781234
+   "median_gain_err_db": -0.08980170057681723,
+   "median_phase_err_deg": 0.07399122432514105,
+   "p5_gain_err_db": -0.18440090218818062,
+   "p5_phase_err_deg": 0.10195678846423561
   }
  },
  "dc_offset_v": {
@@ -1084,14 +1084,14 @@
   },
   {
    "name": "image_rejection_p5_direct_db",
-   "value": 39.77258466929925,
+   "value": 35.560973973275914,
    "limit": "\u2265 30",
    "passed": true,
    "unit": "dB"
   },
   {
    "name": "image_rejection_p5_div4_db",
-   "value": 40.033098941707024,
+   "value": 39.44924432497686,
    "limit": "\u2265 30",
    "passed": true,
    "unit": "dB"
