@@ -148,6 +148,26 @@
   - **Current-mirror transfer:** SPICE over 0–200 mA and 0–50 °C, accuracy reported.
   - **Relay coil current budget.**
 
+**Amended 2026-10-13 (plan 3.3 prototype):**
+- **CS5361 is the clock master, not the ESP32** (changes the parent spec §6 and the bullet above).
+  - A 24.576 MHz 3.3 V oscillator (3.2 × 2.5 mm) drives MCLK through 33 Ω. MDIV = 1 (MCLK ÷ 2 = 12.288 MHz = 128 × 96 kHz), M1/M0 = 0/1 (double speed), HPF on, all by resistors.
+  - The ESP32-S3 receives SCLK, LRCK and SDOUT as I2S slave. Reason: the ESP32's I2S master clock comes from a fractional divider whose jitter would land directly on the ADC's sampling instants; a crystal oscillator does not.
+  - M/S and I2S/LJ are on GPIOs (pulled to the intended default) because their pin polarity is not stated in the datasheet text. The firmware selects master and I2S, releases RST, and checks that LRCK and SCLK toggle at the expected rates before enabling I2S; otherwise it flips the level and reports it.
+  - Pending: the oscillator on Torob.
+- **Relay drive:** 3 × 74HC595 → 3 × ULN2803, as above (the parent spec's PCF8574 is replaced: one shift chain on 4 GPIOs, outputs latched together, no I2C traffic during a band change). Bit order: bank filters 1–11 (in, out), then attenuator, then preamp. /OE has a 10 kΩ pull-up; the last QH' is tied off through 10 kΩ.
+  - Coil budget at most 4 coils: 0.112 A on 5V_MAIN (already in the plan 3.2 budget).
+- **Bias-T switch**, simulated:
+  - SY6280's smallest current limit is 0.4 A (datasheet), so R_SET = 17.4 kΩ gives ≈ 0.39 A as the hardware short-circuit limit, and the firmware cuts the feed at 150 mA. The bias-T chokes are rated ≥ 0.4 A so a short until the cut-off never damages them.
+  - Sense: 1 Ω shunt, BC857B current mirror (680 Ω load) into an ADC1 pin. Results over 0 / 27 / 50 °C and 0–200 mA plus a short: monotonic; 0.63 V at zero current; temperature drift 1.3 %; short current 0.39 A; sense at most 2.88 V (ADC limit 3.1 V). The firmware subtracts the zero reading and applies the 27 °C table.
+  - EN has a pull-down: the feed is off until the firmware enables it after the CC check.
+- **USB-C:** CC1/CC2 also go through 10 kΩ to ADC pins, so the firmware reads the host's advertised current (default / 1.5 A / 3 A) before enabling the bias-T.
+- **I2C pull-ups go to 3V3_RF** (the Si5351C core rail, per its datasheet), never to 3V3_D, so the bus never back-powers it. LM75A at 0x48 on the same rail, Si5351C at 0x60.
+- **GPIO map** (all ADC functions on ADC1, which works while Wi-Fi is off or on; no PSRAM pin; strapping pins unused): sense VBUS/EXT/MAIN IO1/IO2/IO4, bias sense IO5, CC1/CC2 IO6/IO7, I2C IO8/IO9, I2S BCLK/WS/DIN IO10/IO11/IO12, ADC RST/OVFL IO13/IO14, M/S IO41, I2S/LJ IO42, LO path IO15, shift SER/CLK/LATCH/OE IO16/IO17/IO18/IO21, bias EN IO38, status LED IO40.
+- **Code structure:** relay drive and monitoring live in `controller.py`; the bias-T switch is its own block (`bias_switch.py`, also simulated alone). Every block takes an optional shared circuit, and `board.py` builds them all into one, merging only the shared rail and bus names.
+- **Board check** (`checks/board.py`): 471 parts; no single-pin net; no unconnected required pin; every supply and ground pin on its rail (a table per part type); every part has a footprint; the board netlist, BOM and a JSON summary are written.
+- **Found and fixed by the board check:** the 25 MHz crystal of plan 3.1 had pins named "1"/"2", which SKiDL resolves to pad numbers first, so XB was wired to a ground pad. Pins are now named X1/X2/GND1/GND2 and a test checks that no digit-named pin lands on a different pad.
+- **Pending on Torob (user away 2026-10-13):** the 24.576 MHz oscillator, the 0805 LED and the tactile button (common parts), and the SS34 from plan 3.2. The board check reports them.
+
 ## 4. Code structure
 
 New blocks in `hardware/neohw/blocks/`: `clock.py`, `power.py`, `controller.py`, `relay_drive.py`, `monitor.py`, `board.py` (connects every block). New checks follow the phase 2 pattern. The frequency planner lives in `hardware/neohw/lo_plan.py` (pure Python, unit-tested; the firmware's C version will be tested against its output tables).
