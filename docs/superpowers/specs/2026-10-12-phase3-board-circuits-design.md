@@ -34,7 +34,7 @@
 | 0.5 A 1206 fuse | input protection | 3 |
 | MT3608 (SOT23-6) | boost to 7 V | 4 |
 | MIC5205-5.0 / -3.3 / ADJ | low-noise LDOs (150 mA) | 5 |
-| AMS1117-3.3 | 3V3_D | 22 (parent §10) |
+| TLV74033PDBVR (replaces AMS1117-3.3, plan 3.2 review) | 3V3_D | listed under the LDL1117S33 search |
 | SY6280 | bias-T switch with current limit | 1 |
 | 74HC595 (SO-16) | relay shift registers | 17 |
 | ULN2803 | relay drivers | 26 |
@@ -92,7 +92,7 @@
 - **Rails:**
   - **5V_A:** MT3608 boost to 7 V → two-stage LC → MIC5205-5.0.
   - **3V3_RF:** MIC5205-3.3 from 5 V main.
-  - **3V3_D:** AMS1117-3.3.
+  - **3V3_D:** AMS1117-3.3 (replaced by a TLV74033, see the amendment).
   - **5 V main:** relays and the bias-T.
 - **Checks (SPICE):**
   - **Mux:** the source switch-over, and no current into VBUS when external power is present.
@@ -105,14 +105,21 @@
   - The USB path uses **two AO3401 back to back** (common source), gated by the external-supply node. The single MOSFET of the first draft let USB supply the board through its body diode whenever the external supply was a little lower.
   - The external input's reverse-polarity MOSFET comes **before** the SMBJ5.0A. With the TVS first, a reversed plug drew 19 A through it until the fuse blew.
   - Results:
-    - USB draws 0.03 mA when external power is present, even with USB at 5.25 V and external at 4.75 V.
+    - USB draws 0.03 mA when external power is present, even with USB at 5.25 V and external at 4.75 V, and nothing flows back into the host with USB at 4.4 V and external at 5.25 V.
     - A reversed plug draws 0 mA, and the board keeps running on USB.
-    - Fuses are 1 A, 1206 fast.
-- **Rails** at minimum input and maximum load all hold, over 6 DC scenarios: 5V_A ≥ 4.995 V; 3V3_RF ≥ 3.297 V; 3V3_D ≥ 3.162 V. The last is AMS1117 at its 1.1 V worst-case dropout from 4.27 V (external 4.75 V through the Schottky), still above the CS5361 VD minimum of 3.135 V.
+    - Fuses are 1 A, 1206 time-lag (see Transients).
+- **Rails** at minimum input and maximum load all hold, over 10 DC scenarios: 5V_A ≥ 4.994 V; 3V3_RF ≥ 3.297 V; 3V3_D ≥ 3.292 V.
+- **3V3_D uses a TLV74033 (changed after review):** the AMS1117's maximum dropout of 1.3 V left 3V3_D below the CS5361 VD minimum (3.1 V) with the external supply at 4.75 V (5V_MAIN 4.30 V). The TLV74033 (SOT-23-5, 300 mA, on Torob as TLV74033PDBVR) is modelled with 0.4 V dropout. Continuous 3V3_D maximum is 0.15 A from the datasheet sum (ESP32-S3 at 240 MHz with the radio off ≈ 107 mA, CS5361 VD+VL 17 mA, oscillator 10 mA, logic and LED 8 mA); 0.25 A peaks stay within the part's rating.
+- **EXT_P pull-down is 1 kΩ (changed after review):** with 100 kΩ, the SS34's reverse leakage from 5V_MAIN (mA when hot) lifted EXT_P until the USB FETs turned off (simulated with 2 mA: 5V_MAIN fell to 2.7 V). With 1 kΩ, 5V_MAIN stays at 4.54 V. The cost is 25 mW from the jack.
+- **Transients:**
+  - Pulling the jack with USB present hands over without a dip (3V3_D minimum 3.29 V).
+  - USB plug-in: rails up in 0.84 ms; inrush peak 5.6 A, I²t 0.0035 A²s. Both fuses are time-lag 1206 (melting I²t ≥ 0.05 A²s), and the check keeps the inrush below a fifth of that.
+  - A soft start on the shared USB-FET gate would also slow the hand-over (simulated: 3V3_D dips to 2.93 V), so the switch stays hard. A dedicated USB load switch with soft start (a new IC to confirm on Torob) is a Rev A decision.
+- **The external input's ferrite and LC filter are dropped:** every sensitive rail has its own LC and LDO, and the conducted check has about 90 dB of margin. Adapter noise is mostly common mode, which a differential LC does not remove; a clip-on ferrite on the adapter cable is the remedy.
 - **Current budget** (datasheet currents):
   - USB-only typical **426 mA**, within USB 2.0's 500 mA.
-  - Maximum 719 mA, with the active antenna's 100 mA and ESP32 peaks. **An active antenna needs the barrel jack or a USB-C host offering 1.5 A** (read from CC in plan 3.3); the firmware enforces this before enabling the bias-T.
-- **Junction temperatures at 50 °C ambient, maximum load:** MIC5205-5.0 97 °C (7.0 → 5.0 V at 110 mA), AMS1117 87 °C, MIC5205-3.3 64 °C (limit 125 °C).
+  - Maximum 618 mA, with the active antenna's 100 mA. **An active antenna needs the barrel jack or a USB-C host offering 1.5 A** (read from CC in plan 3.3); the firmware enforces this before enabling the bias-T.
+- **Junction temperatures at 50 °C ambient**, each regulator at its own input over every maximum-load case (USB and external at 4.75 and 5.25 V): MIC5205-5.0 96 °C, TLV74033 114 °C, MIC5205-3.3 70 °C (limit 125 °C).
 - **Conducted boost ripple:**
   - Sources: the MT3608's diode-current pulses and inductor current, driven into the simulated filter network. Coupling paths: preamp supply (−84 dB at 14 MHz), mixer bias (−185 dB) and bias-T feed to the antenna line (−39 dB).
   - Worst spur over all bands is −253 dBm against a gate of −160.5 dBm (MDS − 20 dB). Without the bias-T feed LC it would be about −180 dBm.
