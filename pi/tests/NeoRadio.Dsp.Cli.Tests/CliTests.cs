@@ -187,4 +187,63 @@ public sealed class CliTests : IDisposable
         Assert.Equal(3, code);
         Assert.Contains("output error", err);
     }
+
+    static Complex[] Imbalanced(Complex[] z, double gainDb, double phaseDeg)
+    {
+        double g = Math.Pow(10, gainDb / 20);
+        var rot = Complex.FromPolarCoordinates(1, phaseDeg * Math.PI / 180);
+        return z.Select(s => new Complex(s.Real, (s * rot).Imaginary / g)).ToArray();
+    }
+
+    /// <summary>RMS of a 16-bit mono WAV after the filters have settled (skips the start-up transient).</summary>
+    static double SteadyRms(string wav, int skip = 2000)
+    {
+        var bytes = File.ReadAllBytes(wav);
+        var samples = Enumerable.Range(0, (bytes.Length - 44) / 2).Skip(skip)
+            .Select(i => BitConverter.ToInt16(bytes, 44 + 2 * i) / 32768.0).ToArray();
+        return Math.Sqrt(samples.Average(v => v * v));
+    }
+
+    [Fact]
+    public void Iq_correction_removes_the_image_of_a_station_on_the_other_side()
+    {
+        // a strong station at −15.5 kHz; its image (−20 dB from a 3 dB / 10° imbalance) lands on
+        // the USB channel at +15.5 kHz (tune 14 kHz, audio 1.5 kHz)
+        var input = Imbalanced(Tone(-15500, 96000, 96000, 0.5), 3.0, 10.0);
+        var meta = WriteSigMf("img", "cf32_le", 96000, input);
+        double Rms(params string[] extra)
+        {
+            var wav = Path.Combine(_dir, $"o{extra.Length}.wav");
+            var (code, err) = Run(new[] { "--input", meta, "--output", wav, "--tune-offset", "14000", "--no-agc" }
+                .Concat(extra).ToArray());
+            Assert.True(code == 0, err);
+            return SteadyRms(wav);
+        }
+        double raw = Rms();
+        double corrected = Rms("--iq-gain-db", "3", "--iq-phase-deg", "10");
+        Assert.True(raw > 0.01, $"image before correction {raw}");
+        Assert.True(corrected < raw / 1000, $"image after correction {corrected} vs {raw}");   // > 60 dB
+    }
+
+    [Theory]
+    [InlineData("--iq-gain-db", "7")]
+    [InlineData("--iq-phase-deg", "-45")]
+    [InlineData("--iq-gain-db", "NaN")]
+    public void Iq_imbalance_out_of_range_is_a_usage_error(string option, string value)
+    {
+        var (code, err) = Run("--input", "a.sigmf-meta", "--output", "b.wav", "--tune-offset", "0", option, value);
+        Assert.Equal(2, code);
+        Assert.Contains(option, err);
+    }
+
+    [Fact]
+    public void Iq_options_default_to_no_correction()
+    {
+        var o = CliOptions.Parse(new[] { "--input", "a", "--output", "b", "--tune-offset", "0" });
+        Assert.Equal(0.0, o.IqGainDb);
+        Assert.Equal(0.0, o.IqPhaseDeg);
+        var p = CliOptions.Parse(new[] { "--input", "a", "--output", "b", "--tune-offset", "0", "--iq-gain-db", "0.16", "--iq-phase-deg", "-0.43" });
+        Assert.Equal(0.16, p.IqGainDb);
+        Assert.Equal(-0.43, p.IqPhaseDeg);
+    }
 }

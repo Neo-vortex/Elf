@@ -45,6 +45,7 @@ public static class CliApp
             return UsageError;
         }
 
+        new IqCorrector(options.IqGainDb, options.IqPhaseDeg).Correct(recording.Samples);
         float[] audio = receiver.Process(recording.Samples);
         try
         {
