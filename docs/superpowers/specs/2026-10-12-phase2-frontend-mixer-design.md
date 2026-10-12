@@ -117,7 +117,7 @@ Amended 2026-10-12 from the plan 2.4 prototype.
 | `preamp.json` | Frequency grid with gain_db and nf_db (nominal corner; 0.1–300 MHz since plan 2.5, so the twin can fold the preamp's output noise at 3f and 5f; the checks stay on 1–54 MHz); oip3_dbm; bypass_loss_db |
 | `attenuator.json` | Attenuation and bypass loss |
 | `mixer.json` | conv_gain_db; baseband response H(f) over ±60 kHz (complex samples); harmonic responses {1, 2, 3, 5} as complex gain including sign and sideband; iip3_dbm; image_rejection_db {median, p5} with the corresponding gain/phase error; dc_offset; adc_full_scale_dbm. Plan 2.5 adds: nf_db with its definition, ron_ohms and the stand-in noise densities; `bypass_correction` per band; adc_fs_peak_v (CS5361 full scale), clip_peak_v (op-amp swing, ±1 V per output) and adc_noise (dynamic range and its bandwidth) |
-| `lo_phase_noise.json` | Si5351 phase-noise curve (dBc/Hz vs offset), hand-entered from the datasheet with the source noted |
+| `lo_phase_noise.json` | Si5351 phase-noise curve (dBc/Hz vs offset), hand-entered with the source noted. Amended 2026-10-12 (plan 2.6): the Si5351 datasheet (Rev. 1.3) gives only period and cycle-to-cycle jitter (70 ps pk-pk typical), no phase-noise curve. The file holds the RFzero measurement of an Si5351A at 9 MHz on a Rohde & Schwarz FSIQ 26 with the low-phase-noise option (−103, −128, −136, −138, −144 dBc/Hz at 100 Hz, 1 kHz, 10 kHz, 100 kHz, 1 MHz), cross-checked against the ARRL QST review of the QRP Labs QCX (Si5351A-driven, better than −135 dBc/Hz at 10 and 50 kHz). The twin scales it by 20·log10(f_LO / 9 MHz) and holds it flat outside 100 Hz–1 MHz; the ÷4 path scales the same way |
 
 Every file carries `schema_version`, the generating git commit and the block's check status. The twin refuses files whose `schema_version` it does not support.
 
@@ -148,6 +148,16 @@ Every file carries `schema_version`, the generating git commit and the block's c
 - Stations near k·LO are folded with the product model; the filter data ends at 208 MHz, so a harmonic station beyond it is excluded with a reason.
 - Scenarios: `noise.dbm_per_hz` makes a scenario absolute (stations then need `level_dbm`, the power while active). The hardware model requires absolute levels and rejects `adc` settings; the ideal model converts absolute levels to SNR in 2500 Hz.
 - The twin refuses characterisation files that are missing, carry another schema_version, or have status `fail` (naming the failed checks).
+
+**Amended 2026-10-12 (plan 2.6 prototype):**
+- IMD3: every ordered station pair (i, j) whose product 2·f_i − f_j lands in the window adds c·u_i²·conj(u_j) at the product frequency, where u are the stations' unit-power envelopes. The mixer term uses its IIP3 at its input (mixer.json iip3_dbm) and the levels there; with the preamp on, a preamp term uses IIP3 = OIP3 − gain at its input. The two terms add with the phases of the front-end gains, which for a flat front end is in phase (the worst case). The mixer IIP3 was re-run at reltol 1e-6: +32.51 dBm, slope 1.817 dB/dB, against +32.48 dBm, 1.814 at 1e-4, so the check keeps its tolerance.
+- Reciprocal mixing: each station whose frequency the filter data covers adds noise of density P_mixer·L(f_s − f_LO − f_bb) at baseband frequency f_bb, in-window stations included.
+- A station whose power at the mixer input exceeds the full-scale level (adc_full_scale_dbm) is reported as an overload risk. The baseband response is characterised only to ±60 kHz, so clipping by out-of-window stations is not simulated.
+- MDS is measured on the twin's I/Q: a −110 dBm carrier 10 kHz from the LO; the noise density 2–20 kHz from the tone, excluding the DC offset and the tone's image; MDS = level − 10·log10(S / N_500). Prototype: −140.5 dBm at 14.1 MHz and −140.6 dBm at 50.1 MHz (preamp on; budget −140.5 dBm, receiver NF 6.4 dB).
+- Blocker scenario (`20m_blocker_hardware.yaml`, preamp off): the FT8 signal at −15 dB still decodes; the window's noise floor rises by 0.00 dB. The carrier's reciprocal mixing (about −201 dBm/Hz) is far below the −155 dBm/Hz band noise.
+- FT8 sweep, hardware model (20 m, band noise −155 dBm/Hz, preamp off, the known imbalance corrected): implementation loss +0.5 dB against the audio-only reference (ideal receiver −0.1 dB), 1 dB steps, 20 trials.
+- The twin passes the I/Q imbalance it applied (the 5th-percentile run for the LO path) to `neoradio-dsp --iq-gain-db/--iq-phase-deg`. Gain is limited to ±6 dB and phase to ±30°.
+- `make sim` runs the sweep with the hardware curve and the hardware checks (MDS, blocker).
 
 **C# DSP addition:**
 - `NeoRadio.Dsp.IqCorrector`: amplitude and phase correction, applied before demodulation.
