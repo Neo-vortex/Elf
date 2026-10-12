@@ -1,0 +1,70 @@
+* FST3253 dual 4:1 bus switch, behavioural, from the onsemi 74FST3253 datasheet:
+* switches are NMOS (level 1) fitted to RON = 4 ohm at VIN = 0 V, VCC = 4.5 V (vto 0.8 V,
+* kp*W/L = 67.6 mA/V^2, body effect gamma 0.5), so RON rises as the signal nears VCC - 1.5 V;
+* A port 13 pF, B ports 5 pF; select inputs TTL (threshold 1.5 V); /OE active low. The
+* 2-to-4 decoder is ideal fast switches (select-to-bus delay, 1-5.3 ns, is not modelled: only
+* its mismatch matters, and that is applied as LO skew). VCC must be 4.0-5.5 V.
+* Truth table (S1 S0): 00 -> B0, 01 -> B1, 10 -> B2, 11 -> B3.
+* Nodes follow the SOIC-16/TSSOP-16 pinout:
+*  1 /1OE  2 S1  3 1B3  4 1B2  5 1B1  6 1B0  7 1A  8 GND  9 2A 10 2B0 11 2B1 12 2B2 13 2B3 14 S0 15 /2OE 16 VCC
+.model FST_NSW nmos(level=1 vto=0.8 kp=67.6m gamma=0.5 phi=0.7 lambda=0)
+.model FST_HI sw(vt=1.5 vh=0.05 ron=10 roff=1e9)
+.model FST_LO sw(vt=-1.5 vh=0.05 ron=10 roff=1e9)
+* S model control voltage = v(nc+) - v(nc-); FST_LO with nodes (gnd, x) is on when v(x) < 1.5 V
+.subckt FST3253 oe1 s1 b13 b12 b11 b10 a1 gnd a2 b20 b21 b22 b23 s0 oe2 vcc
+* gate k is pulled to VCC when /1OE is low and (S1, S0) selects it, else pulled to GND
+Sen vcc en gnd oe1 FST_LO
+* selector for each gate: series pull-up through the two select conditions,
+* parallel pull-down when either condition fails or the section is disabled
+Su0a en u0 gnd s1 FST_LO
+Su0b u0 g0 gnd s0 FST_LO
+Sd0a g0 gnd s1 gnd FST_HI
+Sd0b g0 gnd s0 gnd FST_HI
+Sd0c g0 gnd oe1 gnd FST_HI
+Su1a en u1 gnd s1 FST_LO
+Su1b u1 g1 s0 gnd FST_HI
+Sd1a g1 gnd s1 gnd FST_HI
+Sd1b g1 gnd gnd s0 FST_LO
+Sd1c g1 gnd oe1 gnd FST_HI
+Su2a en u2 s1 gnd FST_HI
+Su2b u2 g2 gnd s0 FST_LO
+Sd2a g2 gnd gnd s1 FST_LO
+Sd2b g2 gnd s0 gnd FST_HI
+Sd2c g2 gnd oe1 gnd FST_HI
+Su3a en u3 s1 gnd FST_HI
+Su3b u3 g3 s0 gnd FST_HI
+Sd3a g3 gnd gnd s1 FST_LO
+Sd3b g3 gnd gnd s0 FST_LO
+Sd3c g3 gnd oe1 gnd FST_HI
+Cg0 g0 gnd 0.5p
+Cg1 g1 gnd 0.5p
+Cg2 g2 gnd 0.5p
+Cg3 g3 gnd 0.5p
+Ru0 u0 gnd 1e9
+Ru1 u1 gnd 1e9
+Ru2 u2 gnd 1e9
+Ru3 u3 gnd 1e9
+Ren en gnd 1e9
+M0 a1 g0 b10 gnd FST_NSW w=1 l=1
+M1 a1 g1 b11 gnd FST_NSW w=1 l=1
+M2 a1 g2 b12 gnd FST_NSW w=1 l=1
+M3 a1 g3 b13 gnd FST_NSW w=1 l=1
+Ca1 a1 gnd 13p
+Cb10 b10 gnd 5p
+Cb11 b11 gnd 5p
+Cb12 b12 gnd 5p
+Cb13 b13 gnd 5p
+* section 2 is unused on this board (/2OE high): only its port capacitances remain
+* (with 1 Gohm leakage so its open ports have a DC path)
+Rla2 a2 gnd 1e9
+Rlb20 b20 gnd 1e9
+Rlb21 b21 gnd 1e9
+Rlb22 b22 gnd 1e9
+Rlb23 b23 gnd 1e9
+Ca2 a2 gnd 13p
+Cb20 b20 gnd 5p
+Cb21 b21 gnd 5p
+Cb22 b22 gnd 5p
+Cb23 b23 gnd 5p
+Roe2 oe2 gnd 1e9
+.ends FST3253

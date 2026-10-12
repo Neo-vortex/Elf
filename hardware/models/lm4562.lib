@@ -1,0 +1,18 @@
+* LM4562 behavioural macromodel, built from the TI datasheet (SNAS326): gain-bandwidth 55 MHz
+* (single pole: 3.456 mS into 10 pF), open-loop gain ~131 dB, input voltage noise 2.7 nV/rtHz
+* (a 440 ohm series resistor's thermal noise), 30 kohm / 2 pF differential input.
+* Not modelled: slew limit (20 V/us), output swing limit (~1.4 V from each rail at +-15 V, taken
+* as +-1.0 V around mid-supply at 5 V and checked on the waveforms), current noise
+* (1.6 pA/rtHz, < 0.5 nV/rtHz at the mixer's source impedance), output current limit.
+* TI's PSpice model could not be fetched by script and is reported to have swapped inputs.
+* Nodes: +in -in out v+ v-
+.subckt LM4562 inp inn out vp vn
+Ren inp inp2 440
+Rin inp2 inn 30k
+Cin inp2 inn 2p
+Gm 0 n1 inp2 inn 3.456m
+Cc n1 0 10p
+Rp n1 0 1e9
+Eo o1 0 n1 0 1
+Ro o1 out 30
+.ends LM4562

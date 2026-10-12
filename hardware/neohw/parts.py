@@ -206,3 +206,58 @@ def gdt(capacitance: float = 1.5e-12, torob: str | None = "گازی برقگیر
     p.spice_lines = lambda n, k=1.0: [f"C{p.ref} {n['1']} {n['2']} {_num(capacitance)}",
                                       f"R{p.ref} {n['1']} {n['2']} {_num(G6K_INSULATION_OHMS)}"]
     return p
+
+
+
+FST3253_PINS = {"/1OE": "1", "S1": "2", "1B3": "3", "1B2": "4", "1B1": "5", "1B0": "6", "1A": "7",
+                "GND": "8", "2A": "9", "2B0": "10", "2B1": "11", "2B2": "12", "2B3": "13", "S0": "14",
+                "/2OE": "15", "VCC": "16"}
+
+
+def fst3253(mpn: str = "74FST3253", torob: str | None = "FST3253") -> Part:
+    """onsemi/Fairchild FST3253 dual 4:1 bus switch, SOIC-16 (VCC 4.0–5.5 V). Section 2 may
+    stay unconnected except /2OE."""
+    p = _tagged(_template("FST3253", "U", FST3253_PINS, "Package_SO:SOIC-16_3.9x9.9mm_P1.27mm")(value="FST3253"))
+    p.mpn, p.torob, p.tol = mpn, torob, 0.0
+    p.spice_models = (_model("fst3253.lib"),)
+    p.nc_pins = ("2A", "2B0", "2B1", "2B2", "2B3")
+    order = ["/1OE", "S1", "1B3", "1B2", "1B1", "1B0", "1A", "GND", "2A", "2B0", "2B1", "2B2", "2B3",
+             "S0", "/2OE", "VCC"]
+    p.spice_lines = lambda n, k=1.0: [f"X{p.ref} " + " ".join(n[x] for x in order) + " FST3253"]
+    return p
+
+
+LM4562_PINS = {"OUTA": "1", "-INA": "2", "+INA": "3", "V-": "4", "+INB": "5", "-INB": "6", "OUTB": "7", "V+": "8"}
+
+
+def lm4562_dual(mpn: str = "LM4562MAX", torob: str | None = "LM4562") -> Part:
+    """TI LM4562 dual op-amp, SOIC-8 (datasheet macromodel, models/lm4562.lib)."""
+    p = _tagged(_template("LM4562", "U", LM4562_PINS, "Package_SO:SOIC-8_3.9x4.9mm_P1.27mm")(value="LM4562"))
+    p.mpn, p.torob, p.tol = mpn, torob, 0.0
+    p.spice_models = (_model("lm4562.lib"),)
+    p.spice_lines = lambda n, k=1.0: [
+        f"X{p.ref}a {n['+INA']} {n['-INA']} {n['OUTA']} {n['V+']} {n['V-']} LM4562",
+        f"X{p.ref}b {n['+INB']} {n['-INB']} {n['OUTB']} {n['V+']} {n['V-']} LM4562"]
+    return p
+
+
+CS5361_PINS = {"RST": "1", "M/S": "2", "LRCK": "3", "SCLK": "4", "MCLK": "5", "VD": "6", "GND": "7",
+               "VL": "8", "SDOUT": "9", "MDIV": "10", "HPF": "11", "I2S/LJ": "12", "M0": "13", "M1": "14",
+               "OVFL": "15", "AINL+": "16", "AINL-": "17", "GND2": "18", "VA": "19", "AINR-": "20",
+               "AINR+": "21", "VQ": "22", "REFGND": "23", "FILT+": "24"}
+CS5361_ZIN_DIFF = 7.5e3      # datasheet minimum differential input impedance
+CS5361_FS_VPP = 1.13         # full-scale differential input, x VA (Vpp)
+
+
+def cs5361(mpn: str = "CS5361-KZZ", torob: str | None = "CS5361") -> Part:
+    """Cirrus CS5361 ADC, TSSOP-24. Only the analog input is simulated: 7.5 kΩ differential per
+    channel and VQ at 2.5 V; digital and supply pins are left to phase 3 (no SPICE elements)."""
+    p = _tagged(_template("CS5361", "U", CS5361_PINS, "Package_SO:TSSOP-24_4.4x7.8mm_P0.65mm")(value="CS5361"))
+    p.mpn, p.torob, p.tol = mpn, torob, 0.0
+    p.nc_pins = tuple(x for x in CS5361_PINS if x not in ("AINL+", "AINL-", "AINR+", "AINR-", "VQ", "GND"))
+    p.spice_lines = lambda n, k=1.0: [
+        f"R{p.ref}_l {n['AINL+']} {n['AINL-']} {_num(CS5361_ZIN_DIFF)}",
+        f"R{p.ref}_r {n['AINR+']} {n['AINR-']} {_num(CS5361_ZIN_DIFF)}",
+        f"V{p.ref}_vq {p.ref}_vqi {n['GND']} dc 2.5",
+        f"R{p.ref}_vq {p.ref}_vqi {n['VQ']} 25"]
+    return p
