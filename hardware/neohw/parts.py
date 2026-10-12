@@ -35,11 +35,20 @@ def _num(v: float) -> str:
 
 
 def resistor(value, footprint: str = "Resistor_SMD:R_0805_2012Metric", mpn: str | None = None,
-             torob: str | None = None, tol: float = 0.01) -> Part:
+             torob: str | None = None, tol: float = 0.01, c_par: float = 0.0) -> Part:
+    """`c_par` adds the body's parallel capacitance to the SPICE model only (high-value
+    resistors at RF)."""
     ohms = _positive(value)
     p = _tagged(_template("R", "R", ["1", "2"], footprint)(value=format_si(ohms, "Ω")))
     p.mpn, p.torob, p.tol = mpn, torob, tol
-    p.spice_lines = lambda n, k=1.0: [f"R{p.ref} {n['1']} {n['2']} {_num(ohms * k)}"]
+
+    def lines(n, k=1.0):
+        out = [f"R{p.ref} {n['1']} {n['2']} {_num(ohms * k)}"]
+        if c_par > 0:
+            out.append(f"C{p.ref}_par {n['1']} {n['2']} {_num(c_par)}")
+        return out
+
+    p.spice_lines = lines
     return p
 
 
@@ -263,3 +272,48 @@ def cs5361(mpn: str = "CS5361-KZZ", torob: str | None = "CS5361") -> Part:
         f"V{p.ref}_vq {p.ref}_vqi {n['GND']} dc 2.5",
         f"R{p.ref}_vq {p.ref}_vqi {n['VQ']} 25"]
     return p
+
+
+def _ic(value: str, pins: dict[str, str], footprint: str, mpn: str, torob: str | None, nc=()) -> Part:
+    """An IC used for the netlist and BOM only (board-level blocks are not simulated in SPICE)."""
+    p = _tagged(_template(value, "U", pins, footprint)(value=value))
+    p.mpn, p.torob, p.tol = mpn, torob, 0.0
+    p.nc_pins = tuple(nc)
+    return p
+
+
+SI5351C_GM1_PINS = {"XA": "1", "XB": "2", "OEB": "3", "SCL": "4", "SDA": "5", "CLKIN": "6", "CLK1": "7",
+                    "VDDOB": "8", "VDDOA": "9", "CLK0": "10", "VDDOD": "11", "CLK3": "12", "CLK2": "13",
+                    "VDDOC": "14", "GND": "15", "VDD": "16", "PAD": "17"}
+
+
+def si5351c() -> Part:
+    """Silicon Labs Si5351C-B-GM1: 16-QFN 3×3 mm, 4 outputs, crystal and CLKIN (datasheet Rev. 1.3,
+    §10.6). The 20-QFN 8-output Si5351C-B-GM is not stocked on Torob; four outputs suffice."""
+    return _ic("Si5351C", SI5351C_GM1_PINS, "Package_DFN_QFN:QFN-16-1EP_3x3mm_P0.5mm_EP1.75x1.75mm",
+               "Si5351C-B-GM1", "SI5351C")
+
+
+def crystal_25mhz() -> Part:
+    """25 MHz fundamental crystal, 3225 4-pad (pads 2 and 4 are case ground). The Si5351's internal
+    load capacitance (6/8/10 pF, register 183) is set to the crystal's CL; no external caps."""
+    return _ic("25MHz", {"1": "1", "GND1": "2", "2": "3", "GND2": "4"}, "Crystal:Crystal_SMD_3225-4Pin_3.2x2.5mm",
+               "25MHz 3225 CL=8pF", "کریستال 25MHZ")
+
+
+LVC74_PINS = {"/1RD": "1", "1D": "2", "1CP": "3", "/1SD": "4", "1Q": "5", "/1Q": "6", "GND": "7", "/2Q": "8",
+              "2Q": "9", "/2SD": "10", "2CP": "11", "2D": "12", "/2RD": "13", "VCC": "14"}
+
+
+def lvc74(nc=()) -> Part:
+    """Nexperia 74LVC74A dual D flip-flop, SO-14 (datasheet Rev. 13, Table 2)."""
+    return _ic("74LVC74", LVC74_PINS, "Package_SO:SOIC-14_3.9x8.7mm_P1.27mm", "74LVC74AD", "74LVC74", nc)
+
+
+LVC157_PINS = {"S": "1", "1I0": "2", "1I1": "3", "1Y": "4", "2I0": "5", "2I1": "6", "2Y": "7", "GND": "8",
+               "3Y": "9", "3I1": "10", "3I0": "11", "4Y": "12", "4I1": "13", "4I0": "14", "/E": "15", "VCC": "16"}
+
+
+def lvc157(nc=()) -> Part:
+    """Nexperia 74LVC157A quad 2-input multiplexer, SO-16 (datasheet Rev. 13, Table 2)."""
+    return _ic("74LVC157", LVC157_PINS, "Package_SO:SOIC-16_3.9x9.9mm_P1.27mm", "74LVC157AD", "74LVC157", nc)

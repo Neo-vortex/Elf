@@ -7,11 +7,19 @@ from pathlib import Path
 
 from neohw.tools import REPO_ROOT
 
-DEFAULT_PATH = REPO_ROOT / "docs" / "superpowers" / "specs" / "2026-10-12-parts-availability-torob.json"
+SPECS = REPO_ROOT / "docs" / "superpowers" / "specs"
+DEFAULT_PATH = SPECS / "2026-10-12-parts-availability-torob.json"
+SURVEYS = (DEFAULT_PATH, SPECS / "2026-10-12-parts-survey-phase3-torob.json")
 
 
-def load(path: Path = DEFAULT_PATH) -> dict:
-    return json.loads(Path(path).read_text(encoding="utf-8"))
+def load(path: Path | None = None) -> dict:
+    """All Torob surveys merged (later surveys win for a repeated key), or one file."""
+    if path is not None:
+        return json.loads(Path(path).read_text(encoding="utf-8"))
+    data: dict = {}
+    for p in SURVEYS:
+        data.update(json.loads(p.read_text(encoding="utf-8")))
+    return data
 
 
 def _norm(text: str) -> str:
