@@ -24,6 +24,8 @@ def test_bias_tee_has_gdt_bleed_block_and_damped_choke_chain():
     blk = bias_tee.build()
     values = sorted(p.value for p in blk.circuit.parts)
     assert values == sorted(["GDT 90V", "1MΩ", "1uF", "4.7uH", "47uH", "1mH", "2.2kΩ", "100nF", "10uF"])
+    chokes = [p for p in blk.circuit.parts if p.ref.startswith("L")]
+    assert all(getattr(p, "dcr", None) for p in chokes)
     assert "bias_feed" in _deck(blk)
 
 
@@ -31,3 +33,8 @@ def test_bias_tee_has_gdt_bleed_block_and_damped_choke_chain():
 def test_bias_tee_meets_targets(tools, tmp_path):
     res = check.run(tmp_path / "o", tmp_path / "c")
     assert res.passed, [(c.name, c.value) for c in res.checks]
+
+
+@pytest.mark.integration
+def test_dc_drop_at_100ma_is_small(tools):
+    assert check.dc_drop_v(0.1) <= check.DC_DROP_MAX_V

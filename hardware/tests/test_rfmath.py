@@ -9,7 +9,16 @@ from neohw import rfmath
 def test_noise_figure_of_a_matched_resistor_source_is_0_db():
     e = math.sqrt(4 * rfmath.K_B * rfmath.T_SIM * 50)
     assert rfmath.noise_figure_db(np.array([e]))[0] == pytest.approx(0.0, abs=1e-9)
-    assert rfmath.noise_figure_db(np.array([e * math.sqrt(2)]))[0] == pytest.approx(3.0103, abs=1e-3)
+
+
+def test_noise_figure_references_the_source_to_290_k():
+    # IEEE: excess noise over the source's own (at the simulation temperature), referred to
+    # a 290 K source. Equal excess noise at 323.15 K must give the same NF as at 300.15 K.
+    for t in (300.15, 323.15):
+        e_src2 = 4 * rfmath.K_B * t * 50
+        excess = 4 * rfmath.K_B * 290.0 * 50          # F = 2 by definition
+        nf = rfmath.noise_figure_db(np.array([math.sqrt(e_src2 + excess)]), t_kelvin=t)[0]
+        assert nf == pytest.approx(10 * math.log10(2), abs=1e-9)
 
 
 def test_two_tone_recovers_known_intercept():

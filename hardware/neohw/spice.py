@@ -153,7 +153,7 @@ def _check_nets(circuit, ports: list[Port]) -> None:
     nets: dict[int, object] = {}
     for part in circuit.parts:
         for pin in part.pins:
-            if pin.net is not None and not pin.name.upper().startswith("COIL"):
+            if pin.net is not None and pin.name not in getattr(part, "nc_pins", ()):
                 net = _canonical(pin.net)
                 pins_on[id(net)] = pins_on.get(id(net), 0) + 1
                 nets[id(net)] = net
@@ -184,7 +184,8 @@ def to_deck(circuit, title: str, ports: list[Port], analyses: list, extra_lines=
         nodes = {}
         for pin in part.pins:
             if pin.net is None or not pin.is_connected():
-                if pin.name.upper().startswith("COIL"):
+                if pin.name in getattr(part, "nc_pins", ()):   # may stay open: private node
+                    nodes[pin.name] = f"{part.ref}_{pin.name.lower()}"
                     continue
                 raise SpiceError(f"{part.ref} pin {pin.name} is unconnected")
             nodes[pin.name] = node_name(pin.net)

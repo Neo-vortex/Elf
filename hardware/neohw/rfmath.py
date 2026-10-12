@@ -9,10 +9,16 @@ K_B = 1.380649e-23
 T_SIM = 300.15   # ngspice default temperature (27 °C)
 
 
-def noise_figure_db(inoise_v_per_rthz: np.ndarray, z0: float = 50.0) -> np.ndarray:
-    """NF from ngspice's input-referred noise density (referred to the source voltage) for a
-    source of resistance z0 at the simulation temperature."""
-    return 20 * np.log10(np.asarray(inoise_v_per_rthz) / math.sqrt(4 * K_B * T_SIM * z0))
+T0 = 290.0       # IEEE reference temperature for noise figure
+
+
+def noise_figure_db(inoise_v_per_rthz: np.ndarray, z0: float = 50.0, t_kelvin: float = T_SIM) -> np.ndarray:
+    """IEEE noise figure from ngspice's input-referred noise density (referred to the source
+    voltage). The simulated source resistor is at `t_kelvin` (the circuit temperature); its own
+    noise is removed and the excess is referred to a source at 290 K."""
+    e2 = np.asarray(inoise_v_per_rthz) ** 2
+    excess = e2 - 4 * K_B * t_kelvin * z0
+    return 10 * np.log10(1 + excess / (4 * K_B * T0 * z0))
 
 
 def tone_powers_dbm(v: np.ndarray, step_s: float, freqs_hz, r: float = 50.0) -> list[float]:

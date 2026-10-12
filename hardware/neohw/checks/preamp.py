@@ -1,13 +1,17 @@
-"""Preamp check (spec §4, NF amended): gain 14 ± 1 dB over 1–54 MHz, NF ≤ 4.5 dB, OIP3 ≥ +25 dBm,
-unconditionally stable 0.1–500 MHz (also at 4.75 and 5.25 V), input RL ≥ 12 dB; output RL and
-bypass loss reported. Writes preamp.json (spec §6)."""
+"""Preamp check (spec §4, amended after the final review of plan 2.3). Over every corner of
+supply (4.75 / 5.0 / 5.25 V) × BFR92A hFE (65 / 94.7 / 150) × temperature (0 / 27 / 50 °C):
+gain 14 ± 1 dB over 1–54 MHz, NF ≤ 5.0 dB (IEEE, 290 K source), OIP3 ≥ +22 dBm (two tones at 14 and 50 MHz),
+K > 1 and |Δ| < 1 from 0.1 MHz to 6 GHz, collector current < 25 mA (BFR92A maximum);
+input RL ≥ 12 dB at the nominal corner. Output RL, bypass loss and supply current reported.
+Writes preamp.json (spec §6) from the nominal corner."""
 from __future__ import annotations
 
+import itertools
 from pathlib import Path
 
 import numpy as np
 
-from neohw import availability, charfile, export
+from neohw import availability, charfile, export, parts
 from neohw.blocks import preamp
 from neohw.checks import BlockResult, CheckResult, db
 from neohw.ngspice import run_decks
@@ -16,11 +20,13 @@ from neohw.spice import Load, Noise, Op, Port, Source, Sp, Supply, Tran, node_na
 
 BAND = (1e6, 54e6)
 GAIN_DB, GAIN_TOL_DB = 14.0, 1.0
-NF_MAX_DB = 4.5
-OIP3_MIN_DBM = 25.0
+NF_MAX_DB = 5.0
+OIP3_MIN_DBM = 22.0
 RL_IN_MIN_DB = 12.0
-SUPPLY_V = (4.75, 5.0, 5.25)
-STAB_SWEEP = Sp(0.1e6, 500e6, 40, "dec")
+IC_MAX_MA = parts.BFR92A_IC_MAX * 1e3
+NOMINAL = (5.0, 94.733, 27.0)
+CORNERS = list(itertools.product((4.75, 5.0, 5.25), (65.0, 94.733, 150.0), (0.0, 27.0, 50.0)))
+STAB_SWEEP = Sp(0.1e6, 6e9, 40, "dec")
 TONES_HZ = (14.0e6, 50.0e6)
 DF = 0.1e6
 TONE_DBM = -20.0
@@ -28,68 +34,91 @@ SETTLE_S, WINDOW_S, STEP_S = 10e-6, 20e-6, 0.25e-9
 TRAN_OPTIONS = ".options reltol=1e-6 abstol=1e-15 vntol=1e-12"
 
 
-def _ports(blk, volts):
-    return [Port(blk.ports["rf_in"], 1), Port(blk.ports["rf_out"], 2), Supply(blk.ports["vcc"], volts, "5v")]
+def _supply(blk, volts):
+    return Supply(blk.ports["vcc"], volts, "5v")
+
+
+def _temp(t):
+    return f".options temp={t:g}"
 
 
 def _sparams(d):
     return [d[f"s_{a}_{b}"] for a, b in ((1, 1), (2, 1), (1, 2), (2, 2))]
 
 
-def evaluate() -> dict:
-    amp, byp = preamp.build("amp"), preamp.build("bypass")
-    decks = [to_deck(amp.circuit, f"preamp {v} V", _ports(amp, v), [Op(), STAB_SWEEP]) for v in SUPPLY_V]
-    decks.append(to_deck(byp.circuit, "preamp bypass", _ports(byp, 5.0), [Sp(*BAND, 50, "dec")]))
+def corner_decks(volts: float, bf: float, temp: float) -> dict:
+    """Build (serially: SKiDL is not thread-safe) the S-parameter, noise and two-tone decks."""
+    amp = preamp.build("amp", bf=bf)
+    sp = to_deck(amp.circuit, "preamp sp", [Port(amp.ports["rf_in"], 1), Port(amp.ports["rf_out"], 2),
+                                            _supply(amp, volts)], [Op(), STAB_SWEEP], extra_lines=[_temp(temp)])
     src = Source(amp.ports["rf_in"], "rf")
-    decks.append(to_deck(amp.circuit, "preamp noise",
-                         [src, Load(amp.ports["rf_out"]), Supply(amp.ports["vcc"], 5.0, "5v")],
-                         [Noise(amp.ports["rf_out"], src, BAND[0], BAND[1], 20)]))
+    nz = to_deck(amp.circuit, "preamp noise", [src, Load(amp.ports["rf_out"]), _supply(amp, volts)],
+                 [Noise(amp.ports["rf_out"], src, BAND[0], BAND[1], 20)], extra_lines=[_temp(temp)])
+    tt = []
     for f1 in TONES_HZ:
         tones = Source(amp.ports["rf_in"], "rf", tones=((f1, TONE_DBM), (f1 + DF, TONE_DBM)))
-        decks.append(to_deck(amp.circuit, f"preamp two-tone {f1:g}",
-                             [tones, Load(amp.ports["rf_out"]), Supply(amp.ports["vcc"], 5.0, "5v")],
-                             [Tran(STEP_S, SETTLE_S + WINDOW_S, SETTLE_S)], extra_lines=[TRAN_OPTIONS]))
-    out = run_decks([d for d, _ in decks[:3]], decks[0][1])
-    corners = []
-    for v, res in zip(SUPPLY_V, out):
-        op, sp = res["a0.raw"][0].data, res["a1.raw"][0].data
+        tt.append(to_deck(amp.circuit, f"preamp two-tone {f1:g}",
+                          [tones, Load(amp.ports["rf_out"]), _supply(amp, volts)],
+                          [Tran(STEP_S, SETTLE_S + WINDOW_S, SETTLE_S)], extra_lines=[TRAN_OPTIONS, _temp(temp)]))
+    names = {k: node_name(amp.ports[k]) for k in ("sense_hi", "sense_lo", "rf_out")}
+    return {"corner": (volts, bf, temp), "sp": sp, "nz": nz, "tt": tt, "nodes": names}
+
+
+def evaluate(corners=CORNERS) -> list[dict]:
+    """All corners: decks built serially, every ngspice run in parallel."""
+    built = [corner_decks(*c) for c in corners]
+    sp_res = run_decks([b["sp"][0] for b in built], ["a0.raw", "a1.raw"])
+    nz_res = run_decks([b["nz"][0] for b in built], ["a0.raw"])
+    tt_res = run_decks([d for b in built for d, _ in b["tt"]], ["a0.raw"])
+    rs = float(preamp.VALUES["rs"])
+    n = int(round(WINDOW_S / STEP_S))
+    out = []
+    for i, b in enumerate(built):
+        op, sp = sp_res[i]["a0.raw"][0].data, sp_res[i]["a1.raw"][0].data
         f = sp["frequency"].real
         s = _sparams(sp)
         k, delta = stability(*s)
         band = (f >= BAND[0]) & (f <= BAND[1])
-        corners.append({"volts": v, "f": f, "s": s, "band": band, "k_min": float(k.min()),
-                        "delta_max": float(delta.max()),
-                        "current_ma": float(-op["i(vsup_5v)"][0].real * 1e3)})
-    (byp_res,) = run_decks([decks[3][0]], decks[3][1])
-    (nz_res,) = run_decks([decks[4][0]], decks[4][1])
-    tt = run_decks([d for d, _ in decks[5:]], decks[5][1])
-    bd = byp_res["a0.raw"][0].data
-    nz = nz_res["a0.raw"][0].data
-    oip3 = []
-    for f1, res in zip(TONES_HZ, tt):
-        d = res["a0.raw"][0].data
-        t, vout = d["time"].real, d[f"v({node_name(amp.ports['rf_out'])})"].real
-        n = int(round(WINDOW_S / STEP_S))
-        oip3.append(two_tone(vout[t >= SETTLE_S - STEP_S / 2][:n], STEP_S, f1, f1 + DF)["oip3_dbm"])
-    return {"corners": corners, "bypass_loss_db": float(-db(bd["s_2_1"]).min()),
-            "bypass_loss_max_db": float(-db(bd["s_2_1"]).max()),
-            "nf_f": nz["frequency"].real, "nf_db": noise_figure_db(nz["inoise_spectrum"].real),
-            "oip3_dbm": dict(zip(TONES_HZ, oip3))}
+        nodes = b["nodes"]
+        supply_a = (op[f"v({nodes['sense_hi']})"][0].real - op[f"v({nodes['sense_lo']})"][0].real) / rs
+        nz = nz_res[i]["a0.raw"][0].data
+        oip3 = []
+        for j, f1 in enumerate(TONES_HZ):
+            d = tt_res[i * len(TONES_HZ) + j]["a0.raw"][0].data
+            t, v = d["time"].real, d[f"v({nodes['rf_out']})"].real
+            oip3.append(two_tone(v[t >= SETTLE_S - STEP_S / 2][:n], STEP_S, f1, f1 + DF)["oip3_dbm"])
+        out.append({"corner": b["corner"], "f": f[band], "gain_db": db(s[1])[band],
+                    "rl_in_db": -db(s[0])[band], "rl_out_db": -db(s[3])[band],
+                    "k_min": float(k.min()), "delta_max": float(delta.max()),
+                    # the sense resistor carries the collector current plus the BC857B's emitter current
+                    "collector_current_ma": float(supply_a * 1e3),
+                    "nf_f": nz["frequency"].real,
+                    "nf_db": noise_figure_db(nz["inoise_spectrum"].real, t_kelvin=b["corner"][2] + 273.15),
+                    "oip3_dbm": min(oip3)})
+    return out
+
+
+def bypass_loss_db() -> float:
+    byp = preamp.build("bypass")
+    deck, raws = to_deck(byp.circuit, "preamp bypass", [Port(byp.ports["rf_in"], 1), Port(byp.ports["rf_out"], 2),
+                                                         _supply(byp, 5.0)], [Sp(*BAND, 50, "dec")])
+    (res,) = run_decks([deck], raws)
+    return float(-db(res[raws[0]][0].data["s_2_1"]).max())
 
 
 def run(out_dir: Path, char_dir: Path) -> BlockResult:
     out_dir, char_dir = Path(out_dir), Path(char_dir)
-    r = evaluate()
-    nominal = next(c for c in r["corners"] if c["volts"] == 5.0)
-    f, s, band = nominal["f"], nominal["s"], nominal["band"]
-    gain = db(s[1])[band]
-    rl_in, rl_out = -db(s[0])[band], -db(s[3])[band]
-    nf_max = float(r["nf_db"].max())
-    oip3_min = min(r["oip3_dbm"].values())
-    k_min = min(c["k_min"] for c in r["corners"])
-    d_max = max(c["delta_max"] for c in r["corners"])
-    gains = [db(c["s"][1])[c["band"]] for c in r["corners"]]
-    g_lo, g_hi = float(min(g.min() for g in gains)), float(max(g.max() for g in gains))
+    corners = evaluate()
+    nom = next(c for c in corners if c["corner"] == NOMINAL)
+    g_lo = min(float(c["gain_db"].min()) for c in corners)
+    g_hi = max(float(c["gain_db"].max()) for c in corners)
+    nf_max = max(float(c["nf_db"].max()) for c in corners)
+    oip3_min = min(c["oip3_dbm"] for c in corners)
+    k_min = min(c["k_min"] for c in corners)
+    d_max = max(c["delta_max"] for c in corners)
+    ic_max = max(c["collector_current_ma"] for c in corners)
+    rl_in = float(nom["rl_in_db"].min())
+    byp = bypass_loss_db()
     checks = [
         CheckResult("gain_min_db", g_lo, f"≥ {GAIN_DB - GAIN_TOL_DB:g}", g_lo >= GAIN_DB - GAIN_TOL_DB),
         CheckResult("gain_max_db", g_hi, f"≤ {GAIN_DB + GAIN_TOL_DB:g}", g_hi <= GAIN_DB + GAIN_TOL_DB),
@@ -97,15 +126,16 @@ def run(out_dir: Path, char_dir: Path) -> BlockResult:
         CheckResult("oip3_min_dbm", oip3_min, f"≥ {OIP3_MIN_DBM:g}", oip3_min >= OIP3_MIN_DBM, "dBm"),
         CheckResult("stability_k_min", k_min, "> 1", k_min > 1, ""),
         CheckResult("stability_delta_max", d_max, "< 1", d_max < 1, ""),
-        CheckResult("input_rl_min_db", float(rl_in.min()), f"≥ {RL_IN_MIN_DB:g}", float(rl_in.min()) >= RL_IN_MIN_DB),
-        CheckResult("output_rl_min_db", float(rl_out.min()), "report", True),
-        CheckResult("bypass_loss_max_db", r["bypass_loss_max_db"], "report", True),
-        CheckResult("supply_current_ma", nominal["current_ma"], "report", True, "mA"),
+        CheckResult("collector_current_max_ma", ic_max, f"< {IC_MAX_MA:g}", ic_max < IC_MAX_MA, "mA"),
+        CheckResult("input_rl_min_db", rl_in, f"≥ {RL_IN_MIN_DB:g}", rl_in >= RL_IN_MIN_DB),
+        CheckResult("output_rl_min_db", float(nom["rl_out_db"].min()), "report", True),
+        CheckResult("bypass_loss_max_db", byp, "report", True),
+        CheckResult("supply_current_ma", nom["collector_current_ma"], "report", True, "mA"),
     ]
-    fb = f[band]
-    nf_on_grid = np.interp(fb, r["nf_f"], r["nf_db"])
-    result = BlockResult("preamp", checks, plots={"gain (dB)": (fb, gain), "NF (dB)": (fb, nf_on_grid),
-                                                   "input RL (dB)": (fb, rl_in)}, logx=True)
+    fb = nom["f"]
+    nf_on_grid = np.interp(fb, nom["nf_f"], nom["nf_db"])
+    result = BlockResult("preamp", checks, plots={"gain (dB)": (fb, nom["gain_db"]), "NF (dB)": (fb, nf_on_grid),
+                                                   "input RL (dB)": (fb, nom["rl_in_db"])}, logx=True)
     blk = preamp.build("amp")
     data = availability.load()
     result.artefacts = {
@@ -114,8 +144,8 @@ def run(out_dir: Path, char_dir: Path) -> BlockResult:
         "svg": export.svg_diagram(blk.circuit, out_dir / "preamp.svg"),
         "characterisation": charfile.write(
             char_dir / "preamp.json", "preamp", "pass" if result.passed else "fail",
-            {"freq_hz": fb.tolist(), "gain_db": gain.tolist(), "nf_db": nf_on_grid.tolist(),
-             "oip3_dbm": oip3_min, "bypass_loss_db": r["bypass_loss_max_db"],
+            {"freq_hz": fb.tolist(), "gain_db": nom["gain_db"].tolist(), "nf_db": nf_on_grid.tolist(),
+             "oip3_dbm": nom["oip3_dbm"], "oip3_min_corner_dbm": oip3_min, "bypass_loss_db": byp,
              "checks": [c.__dict__ for c in checks]}),
     }
     return result

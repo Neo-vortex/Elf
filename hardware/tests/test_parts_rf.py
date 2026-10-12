@@ -52,3 +52,44 @@ def test_part_models_are_emitted_once_before_elements():
     deck, _ = to_deck(ckt, "t", [Port(c, 1), Port(b, 2)], [Op()])
     assert deck.count(".subckt BFR92P") == 1
     assert deck.index(".subckt BFR92P") < deck.index("XQ1 ")
+
+
+def test_bav99_middle_pin_may_be_left_open():
+    ckt = Circuit()
+    with ckt:
+        rf, gnd = Net("rf"), Net("GND")
+        d = parts.diode_pair_bav99()
+        d["A"] += rf
+        d["K"] += gnd
+    deck, _ = to_deck(ckt, "t", [Port(rf, 1)], [Op()])
+    assert f"D{d.ref}a rf {d.ref}_com D1N4148" in deck and f"D{d.ref}b {d.ref}_com 0 D1N4148" in deck
+
+
+def test_bc857b_pins_and_model():
+    ckt = Circuit()
+    with ckt:
+        q = parts.pnp_bc857b()
+    assert {p.name: p.num for p in q.pins} == {"B": "1", "E": "2", "C": "3"}
+    assert q.spice_lines({"C": "c", "B": "b", "E": "e"}) == [f"X{q.ref} c b e BC857B"]
+    assert "Nexperia" in q.spice_models[0]
+
+
+def test_bfr92a_current_gain_override_gets_its_own_model():
+    ckt = Circuit()
+    with ckt:
+        c, b, e = Net("c"), Net("b"), Net("GND")
+        for bf in (65, 150):
+            q = parts.npn_bfr92a(bf=bf); q["C"] += c; q["B"] += b; q["E"] += e
+    deck, _ = to_deck(ckt, "t", [Port(c, 1), Port(b, 2)], [Op()])
+    assert "BF=65 " in deck and "BF=150 " in deck
+    assert deck.count(".subckt BFR92P_bf65 ") == 1 and deck.count(".subckt BFR92P_bf150 ") == 1
+
+
+def test_choke_with_dcr_has_series_dcr_and_parallel_core_loss():
+    ckt = Circuit()
+    with ckt:
+        ind = parts.inductor("1m", 40, 0.3e6, dcr=2.5, c_par=17e-12)
+    lines = ind.spice_lines({"1": "a", "2": "b"})
+    assert lines[1] == f"R{ind.ref} {ind.ref}_m b 2.5"
+    rp = 40 * 2 * 3.141592653589793 * 0.3e6 * 1e-3
+    assert lines[3] == f"R{ind.ref}_q a b {rp:.6g}"

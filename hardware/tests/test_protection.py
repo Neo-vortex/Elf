@@ -20,10 +20,12 @@ def _deck(blk):
                    [Op()])[0]
 
 
-def test_limiter_diodes_sit_between_the_bias_rails():
+def test_limiter_is_two_antiparallel_bav99_strings():
     blk = protection.build()
-    (d,) = [p for p in blk.circuit.parts if p.value == "BAV99"]
-    assert (d["A"].net.name, d["COM"].net.name, d["K"].net.name) == ("lim_lo", "lim_y", "lim_hi")
+    diodes = [p for p in blk.circuit.parts if p.value == "BAV99"]
+    assert len(diodes) == 2 and len(blk.circuit.parts) == 2
+    ends = sorted((d["A"].net.name, d["K"].net.name) for d in diodes)
+    assert ends == [("GND", "rf"), ("rf", "GND")]
     _deck(blk)
 
 
@@ -32,3 +34,9 @@ def test_limiter_imd3_below_target(tools):
     r = check.imd3()
     assert r["pout_dbm"] == pytest.approx(-10.0, abs=0.1)
     assert r["imd3_dbm"] <= check.IMD3_MAX_DBM
+
+
+@pytest.mark.integration
+def test_limiter_clamps_strong_signals(tools):
+    assert check.clamp_peak_v(27.0) <= check.CLAMP_MAX_V
+    assert check.clamp_peak_v(0.0) == pytest.approx(0.316, rel=0.02)   # linear at 0 dBm

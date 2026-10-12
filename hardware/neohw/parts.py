@@ -81,6 +81,7 @@ def relay_dpdt(state: str, contact_r: float = 0.05, open_c: float = 0.5e-12,
         raise ValueError(f"relay state must be 'released' or 'energised', got {state!r}")
     p = _tagged(_template("G6K-2F", "K", RELAY_PINS, footprint)(value="G6K-2F"))
     p.mpn, p.torob, p.state, p.tol = mpn, torob, state, 0.0
+    p.nc_pins = ("COIL+", "COIL-")   # coil drive is phase 3; no SPICE element
     p.bom_note = f"inter-pole C {inter_pole_c * 1e12:g} pF assumed"
 
     def lines(n, k=1.0):
@@ -107,12 +108,16 @@ INDUCTOR_C_PAR = 2.5e-12  # SRF: 1 µH ≈ 100 MHz, 10 µH ≈ 32 MHz, 100 µH �
 
 def inductor(value, q: float, q_freq_hz: float, tol: float = 0.03, trim: float = 1.0,
              mpn: str | None = None, torob: str | None = None, note: str | None = None,
-             c_par: float = INDUCTOR_C_PAR) -> Part:
+             c_par: float = INDUCTOR_C_PAR, dcr: float | None = None,
+             footprint: str = INDUCTOR_FOOTPRINT) -> Part:
     """L + series R (giving `q` at `q_freq_hz`) with a parallel C for the self-resonance.
 
     `value` is the part to buy. `trim` scales it to what the builder selects with an LCR
     meter (a pair is picked so its sum hits the design target); `tol` is the selection
     tolerance. Q is assumed; both are stated in the BOM note.
+
+    With `dcr` (chokes that carry DC), the series R is the DC resistance and the Q loss
+    becomes a parallel resistor Q·2πf·L instead.
     """
     henries = _positive(value)
     if q <= 0 or q_freq_hz <= 0:
@@ -121,16 +126,19 @@ def inductor(value, q: float, q_freq_hz: float, tol: float = 0.03, trim: float =
         raise ValueError(f"trim {trim:.3f} is outside the ±10 % a selected part can reach")
     henries_built = henries * trim
     r_s = 2 * math.pi * q_freq_hz * henries_built / q
-    p = _tagged(_template("L", "L", ["1", "2"], INDUCTOR_FOOTPRINT)(value=format_si(henries, "H")))
-    p.mpn, p.torob, p.tol = mpn, torob, tol
+    p = _tagged(_template("L", "L", ["1", "2"], footprint)(value=format_si(henries, "H")))
+    p.mpn, p.torob, p.tol, p.dcr = mpn, torob, tol, dcr
     p.torob_match = lambda name: inductor_hit(name, henries)
     p.bom_note = note or f"select to ±{tol * 100:g} % with LCR meter; Q={q:g} assumed"
 
     def lines(n, k=1.0):
         mid = f"{p.ref}_m"
-        return [f"L{p.ref} {n['1']} {mid} {_num(henries_built * k)}",
-                f"R{p.ref} {mid} {n['2']} {_num(r_s * k)}",
-                f"C{p.ref}_p {n['1']} {n['2']} {_num(c_par)}"]
+        out = [f"L{p.ref} {n['1']} {mid} {_num(henries_built * k)}",
+               f"R{p.ref} {mid} {n['2']} {_num((dcr if dcr is not None else r_s) * k)}",
+               f"C{p.ref}_p {n['1']} {n['2']} {_num(c_par)}"]
+        if dcr is not None:
+            out.append(f"R{p.ref}_q {n['1']} {n['2']} {_num(q * 2 * math.pi * q_freq_hz * henries_built * k)}")
+        return out
 
     p.spice_lines = lines
     return p
@@ -146,13 +154,34 @@ def _model(name: str) -> str:
     return path.read_text().strip()
 
 
-def npn_bfr92a(mpn: str = "BFR92A", torob: str | None = "BFR92") -> Part:
-    """NXP BFR92A, SOT-23 (pin 1 base, 2 emitter, 3 collector); BFR92P model."""
+BFR92A_IC_MAX = 25e-3   # NXP BFR92A absolute maximum collector current (the BFR92P model is rated 45 mA)
+
+
+def npn_bfr92a(mpn: str = "BFR92A", torob: str | None = "BFR92", bf: float | None = None) -> Part:
+    """NXP BFR92A, SOT-23 (pin 1 base, 2 emitter, 3 collector); BFR92P model.
+
+    `bf` overrides the model's forward current gain (94.7) for hFE corner runs; each value
+    gets its own subcircuit name."""
     p = _tagged(_template("BFR92A", "Q", {"B": "1", "E": "2", "C": "3"},
                           "Package_TO_SOT_SMD:SOT-23")(value="BFR92A"))
     p.mpn, p.torob, p.tol = mpn, torob, 0.0
-    p.spice_models = (_model("bfr92p.lib"),)
-    p.spice_lines = lambda n, k=1.0: [f"X{p.ref} {n['C']} {n['B']} {n['E']} BFR92P"]
+    model, name = _model("bfr92p.lib"), "BFR92P"
+    if bf is not None:
+        name = f"BFR92P_bf{bf:g}"
+        model = (model.replace("BF=94.733", f"BF={bf:g}").replace("BFR92P_chip", f"{name}_chip")
+                 .replace(".subckt BFR92P ", f".subckt {name} ").replace(".ends BFR92P", f".ends {name}"))
+    p.spice_models = (model,)
+    p.spice_lines = lambda n, k=1.0: [f"X{p.ref} {n['C']} {n['B']} {n['E']} {name}"]
+    return p
+
+
+def pnp_bc857b(mpn: str = "BC857B", torob: str | None = None) -> Part:
+    """Nexperia BC857B general-purpose PNP, SOT-23 (pin 1 base, 2 emitter, 3 collector)."""
+    p = _tagged(_template("BC857B", "Q", {"B": "1", "E": "2", "C": "3"},
+                          "Package_TO_SOT_SMD:SOT-23")(value="BC857B"))
+    p.mpn, p.torob, p.tol = mpn, torob, 0.0
+    p.spice_models = (_model("bc857b.lib"),)
+    p.spice_lines = lambda n, k=1.0: [f"X{p.ref} {n['C']} {n['B']} {n['E']} BC857B"]
     return p
 
 
@@ -162,6 +191,7 @@ def diode_pair_bav99(mpn: str = "BAV99", torob: str | None = None) -> Part:
                           "Package_TO_SOT_SMD:SOT-23")(value="BAV99"))
     p.mpn, p.torob, p.tol = mpn, torob, 0.0
     p.spice_models = (_model("bav99.lib"),)
+    p.nc_pins = ("COM",)   # as a two-diode series string the middle pin stays open
     p.spice_lines = lambda n, k=1.0: [f"D{p.ref}a {n['A']} {n['COM']} D1N4148",
                                       f"D{p.ref}b {n['COM']} {n['K']} D1N4148"]
     return p

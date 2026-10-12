@@ -43,3 +43,19 @@ def test_preamp_meets_targets_and_writes_characterisation(tools, tmp_path):
     assert doc["block"] == "preamp" and doc["status"] == "pass"
     assert len(doc["freq_hz"]) == len(doc["gain_db"]) == len(doc["nf_db"]) > 50
     assert doc["oip3_dbm"] >= check.OIP3_MIN_DBM and doc["bypass_loss_db"] < 0.3
+    assert 3.0 < min(doc["nf_db"]) and max(doc["nf_db"]) <= check.NF_MAX_DB   # Source/Load noise, not ports
+    ic = {c.name: c for c in res.checks}["collector_current_max_ma"]
+    assert ic.passed and ic.value < check.IC_MAX_MA
+
+
+def test_preamp_uses_active_bias():
+    blk = preamp.build("amp")
+    values = [p.value for p in blk.circuit.parts]
+    assert "BC857B" in values and "BFR92A" in values
+
+
+def test_corners_cover_supply_gain_and_temperature():
+    volts = {c[0] for c in check.CORNERS}
+    gains = {c[1] for c in check.CORNERS}
+    temps = {c[2] for c in check.CORNERS}
+    assert volts == {4.75, 5.0, 5.25} and min(gains) <= 65 and max(gains) >= 150 and temps == {0.0, 27.0, 50.0}
