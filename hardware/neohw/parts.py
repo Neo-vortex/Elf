@@ -66,13 +66,21 @@ RELAY_PINS = {"COIL+": "1", "NC1": "2", "COM1": "3", "NO1": "4",
 G6K_INSULATION_OHMS = 1e9  # Omron G6K datasheet: insulation resistance 1,000 MΩ min (500 VDC)
 
 
+# Not published for the plain G6K-2F. Omron gives >= 30 dB isolation between poles at 1 GHz
+# for the G6K-2F-RF (about 0.05 pF in a 50-ohm system), which has grounded pins between the
+# contacts; the plain part is assumed twice as bad. Rev 0 measures it.
+G6K_INTER_POLE_C = 0.1e-12
+
+
 def relay_dpdt(state: str, contact_r: float = 0.05, open_c: float = 0.5e-12,
+               inter_pole_c: float = G6K_INTER_POLE_C,
                footprint: str = "Relay_SMD:Relay_DPDT_Omron_G6K-2F", mpn: str = "G6K-2F-5VDC",
                torob: str = "G6K-2F") -> Part:
     if state not in ("released", "energised"):
         raise ValueError(f"relay state must be 'released' or 'energised', got {state!r}")
     p = _tagged(_template("G6K-2F", "K", RELAY_PINS, footprint)(value="G6K-2F"))
     p.mpn, p.torob, p.state, p.tol = mpn, torob, state, 0.0
+    p.bom_note = f"inter-pole C {inter_pole_c * 1e12:g} pF assumed"
 
     def lines(n, k=1.0):
         out = []
@@ -83,7 +91,9 @@ def relay_dpdt(state: str, contact_r: float = 0.05, open_c: float = 0.5e-12,
             out.append(f"C{p.ref}_{open_}{pole} {com} {n[open_ + pole]} {_num(open_c)}")
             # the insulation resistance also gives every contact node a DC path
             out.append(f"R{p.ref}_{open_}{pole}_ins {com} {n[open_ + pole]} {_num(G6K_INSULATION_OHMS)}")
-        return out
+        for contact in ("COM", "NO", "NC"):   # stray C between the poles' matching contacts
+            out.append(f"C{p.ref}_x{contact} {n[contact + '1']} {n[contact + '2']} {_num(inter_pole_c)}")
+        return [line for line in out if line.split()[1] != line.split()[2]]  # drop node-to-itself
 
     p.spice_lines = lines
     return p
@@ -95,7 +105,7 @@ INDUCTOR_C_PAR = 2.5e-12  # SRF: 1 µH ≈ 100 MHz, 10 µH ≈ 32 MHz, 100 µH �
 
 
 def inductor(value, q: float, q_freq_hz: float, tol: float = 0.03, trim: float = 1.0,
-             mpn: str | None = None, torob: str | None = None) -> Part:
+             mpn: str | None = None, torob: str | None = None, note: str | None = None) -> Part:
     """L + series R (giving `q` at `q_freq_hz`) with a parallel C for the self-resonance.
 
     `value` is the part to buy. `trim` scales it to what the builder selects with an LCR
@@ -112,7 +122,7 @@ def inductor(value, q: float, q_freq_hz: float, tol: float = 0.03, trim: float =
     p = _tagged(_template("L", "L", ["1", "2"], INDUCTOR_FOOTPRINT)(value=format_si(henries, "H")))
     p.mpn, p.torob, p.tol = mpn, torob, tol
     p.torob_match = lambda name: inductor_hit(name, henries)
-    p.bom_note = f"select to ±{tol * 100:g} % with LCR meter; Q={q:g} assumed"
+    p.bom_note = note or f"select to ±{tol * 100:g} % with LCR meter; Q={q:g} assumed"
 
     def lines(n, k=1.0):
         mid = f"{p.ref}_m"

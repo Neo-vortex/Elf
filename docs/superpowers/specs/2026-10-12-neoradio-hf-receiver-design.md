@@ -62,7 +62,7 @@ Build the best HF receiver we can, from parts buyable in the Iranian market, con
 2. **Bias-T (5 V):** P-MOSFET high-side switch + PTC fuse; INA219 detects over-current (>150 mA → firmware switches off and reports). RF choke chain (large + small inductor in series) flat across 0.1–54 MHz; DC-blocking capacitors. **Off at every power-up.**
 3. **Protection:** gas discharge tube at the connector, 1 MΩ static bleed, light anti-parallel diode limiter after the attenuator, biased so it never conducts at normal signal levels.
 4. **Attenuator:** one 20 dB resistive π-pad, switched in/out by one DPDT relay.
-5. **Band-pass filter bank** — 10 sub-octave filters, each switched by one **Omron G6K-2F (DPDT)** relay (both sides with one relay). Exactly one filter relay is energised at a time; with all relays de-energised (controller not running) no filter is connected and the receiver is muted, which is the defined safe state.
+5. **Band-pass filter bank** — 10 sub-octave filters, each switched by two **Omron G6K-2F (DPDT)** relays, one per side (amended 2026-10-12: one relay carrying both buses couples them; see phase 2 spec §4). Exactly one filter relay is energised at a time; with all relays de-energised (controller not running) no filter is connected and the receiver is muted, which is the defined safe state.
 
    | # | Range (MHz) | Covers |
    |---|---|---|

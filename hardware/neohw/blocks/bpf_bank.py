@@ -6,7 +6,7 @@ from skidl import Circuit, Net
 from neohw.blocks import Block, bpf
 
 
-def build(selected: int | None) -> Block:
+def build(selected: int | None, q_ref: str = "centre") -> Block:
     """`selected` is the one energised filter, or None for the muted safe state."""
     if selected is not None and not 1 <= selected <= len(bpf.BANDS):
         raise ValueError(f"selected must be 1..{len(bpf.BANDS)} or None, got {selected}")
@@ -14,7 +14,7 @@ def build(selected: int | None) -> Block:
     with ckt:
         rf_in, rf_out, gnd = Net("rf_in"), Net("rf_out"), Net("GND")
         for index in range(1, len(bpf.BANDS) + 1):
-            bpf.add_switched(index, "energised" if index == selected else "released", rf_in, rf_out, gnd)
+            bpf.add_switched(index, "energised" if index == selected else "released", rf_in, rf_out, gnd, q_ref)
     return Block("bpf_bank", ckt, {"rf_in": rf_in, "rf_out": rf_out})
 
 

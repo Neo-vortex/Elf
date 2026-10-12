@@ -1,4 +1,4 @@
-"""One band-pass filter of the bank: Chebyshev HPF(5) + LPF(7/9), switched by a G6K-2F (spec §4)."""
+"""One band-pass filter of the bank: Chebyshev HPF(5) + LPF(7/9), switched by two G6K-2F (spec §4)."""
 from __future__ import annotations
 
 import math
@@ -59,13 +59,20 @@ def design(index: int) -> FilterDesign:
     return FilterDesign(index, lo, hi, tuple(_realise(e) for e in elements))
 
 
-def _inductors(pos: Position, a: Net, b: Net, prefix: str, d: FilterDesign) -> None:
+Q_REFS = ("centre", "upper")
+INDUCTOR_NOTE = ("select each group so its sum is within ±3 % of target (bpf_bank.json build sheet); "
+                 f"Q={Q_ASSUMED:g} at band centre assumed")
+CAPACITOR_NOTE = "C0G/NP0; select to ±2 % with LCR meter"
+
+
+def _inductors(pos: Position, a: Net, b: Net, prefix: str, d: FilterDesign, q_freq: float) -> None:
     """Series chain of 1–2 inductors from a to b, selected so their sum is pos.ideal."""
     values = pos.parts
     nodes = [a] + [Net(f"{prefix}_s{k}") for k in range(1, len(values))] + [b]
     trim = pos.ideal / sum(values)
     for k, v in enumerate(values):
-        ind = parts.inductor(v, Q_ASSUMED, d.centre_hz, trim=trim)
+        ind = parts.inductor(v, Q_ASSUMED, q_freq, trim=trim, note=INDUCTOR_NOTE)
+        ind.select_group, ind.select_target = prefix, pos.ideal
         ind[1] += nodes[k]
         ind[2] += nodes[k + 1]
 
@@ -73,17 +80,20 @@ def _inductors(pos: Position, a: Net, b: Net, prefix: str, d: FilterDesign) -> N
 def _capacitors(values, a: Net, b: Net) -> None:
     """1–2 C0G capacitors in parallel between a and b."""
     for v in values:
-        c = parts.capacitor(v, note="C0G/NP0 ±2 %")
+        c = parts.capacitor(v, note=CAPACITOR_NOTE)
         c[1] += a
         c[2] += b
 
 
-def add_filter(d: FilterDesign, f_in: Net, f_out: Net, gnd: Net) -> None:
+def add_filter(d: FilterDesign, f_in: Net, f_out: Net, gnd: Net, q_ref: str = "centre") -> None:
     """Add the filter's parts to the current circuit between f_in and f_out.
 
-    The last series position ends on f_out itself (nets are never merged: SKiDL keeps
-    merged nets as separate objects, which would split the SPICE node).
+    `q_ref` is where the assumed Q holds: the band centre (nominal) or the upper edge
+    (worst case: lower Q across the band). The last series position ends on f_out itself.
     """
+    if q_ref not in Q_REFS:
+        raise ValueError(f"q_ref must be one of {Q_REFS}, got {q_ref!r}")
+    q_freq = d.centre_hz if q_ref == "centre" else d.hi_hz
     series_at = [k for k, pos in enumerate(d.positions) if pos.kind in ("C_series", "L_series")]
     node = f_in
     for k, pos in enumerate(d.positions):
@@ -93,31 +103,39 @@ def add_filter(d: FilterDesign, f_in: Net, f_out: Net, gnd: Net) -> None:
             if pos.kind == "C_series":
                 _capacitors(pos.parts, node, nxt)
             else:
-                _inductors(pos, node, nxt, prefix, d)
+                _inductors(pos, node, nxt, prefix, d, q_freq)
             node = nxt
         elif pos.kind == "C_shunt":
             _capacitors(pos.parts, node, gnd)
         else:
-            _inductors(pos, node, gnd, prefix, d)
+            _inductors(pos, node, gnd, prefix, d, q_freq)
 
 
-def add_switched(index: int, state: str, bus_in: Net, bus_out: Net, gnd: Net) -> None:
-    """Filter plus its relay. Energised: COM-NO joins the filter ends to the buses.
-    Released: COM-NC grounds the filter ends and the buses see only open contacts."""
-    f_in, f_out = Net(f"f{index}_in"), Net(f"f{index}_out")
+def _switch(state: str, end: Net, bus: Net, gnd: Net) -> None:
+    """One G6K-2F, pole 1 switching: energised joins the filter end to the bus, released
+    grounds it and leaves the bus on one open contact. Pole 2 is grounded (paralleling it
+    would double the open-contact load on the bus: 9 relays x 1 pF spoils RL on 6 m)."""
     k = parts.relay_dpdt(state)
-    k["COM1"] += f_in
-    k["NO1"] += bus_in
+    k["COM1"] += end
+    k["NO1"] += bus
     k["NC1"] += gnd
-    k["COM2"] += f_out
-    k["NO2"] += bus_out
-    k["NC2"] += gnd
-    add_filter(design(index), f_in, f_out, gnd)
+    for pin in ("COM2", "NO2", "NC2"):
+        k[pin] += gnd
 
 
-def build(index: int, state: str = "energised") -> Block:
+def add_switched(index: int, state: str, bus_in: Net, bus_out: Net, gnd: Net, q_ref: str = "centre") -> None:
+    """Filter with an input relay and a separate output relay. One relay carrying both buses
+    would couple them through its inter-pole capacitance (x10 relays), which breaks the
+    3f rejection and mute targets on the upper bands."""
+    f_in, f_out = Net(f"f{index}_in"), Net(f"f{index}_out")
+    _switch(state, f_in, bus_in, gnd)
+    _switch(state, f_out, bus_out, gnd)
+    add_filter(design(index), f_in, f_out, gnd, q_ref)
+
+
+def build(index: int, state: str = "energised", q_ref: str = "centre") -> Block:
     ckt = Circuit()
     with ckt:
         rf_in, rf_out, gnd = Net("rf_in"), Net("rf_out"), Net("GND")
-        add_switched(index, state, rf_in, rf_out, gnd)
+        add_switched(index, state, rf_in, rf_out, gnd, q_ref)
     return Block(f"bpf{index}", ckt, {"rf_in": rf_in, "rf_out": rf_out})

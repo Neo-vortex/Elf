@@ -25,7 +25,7 @@ def test_design_rejects_bad_index():
 def test_bank_has_one_relay_per_filter_and_valid_deck():
     blk = bpf_bank.build(3)
     relays = [p for p in blk.circuit.parts if p.ref.startswith("K")]
-    assert len(relays) == 10 and sum(p.state == "energised" for p in relays) == 1
+    assert len(relays) == 20 and sum(p.state == "energised" for p in relays) == 2
     deck, _ = to_deck(blk.circuit, "t", [Port(blk.ports["rf_in"], 1), Port(blk.ports["rf_out"], 2)], [Op()])
     assert "f3_in" in deck and "f10_out" in deck
 
@@ -40,3 +40,31 @@ def test_selection_rule(freq, index):
 def test_selection_outside_range_rejected(freq):
     with pytest.raises(ValueError):
         bpf_bank.select(freq)
+
+
+def test_bus_in_and_bus_out_never_share_a_relay():
+    blk = bpf_bank.build(5)
+    relays = [p for p in blk.circuit.parts if p.ref.startswith("K")]
+    assert len(relays) == 20
+    for k in relays:
+        nets = {pin.net.name for pin in k.pins if pin.net is not None}
+        assert len(nets & {"rf_in", "rf_out"}) == 1, (k.ref, nets)
+
+
+def test_bank_inductors_carry_selection_groups():
+    blk = bpf_bank.build(None)
+    inds = [p for p in blk.circuit.parts if p.ref.startswith("L")]
+    assert inds and all(p.select_group and p.select_target > 0 for p in inds)
+    assert all("build sheet" in p.bom_note for p in inds)
+    caps = [p for p in blk.circuit.parts if p.ref.startswith("C")]
+    assert all("LCR meter" in p.bom_note for p in caps)
+
+
+def test_worst_case_q_reference_is_the_upper_edge():
+    nominal = bpf_bank.build(1)
+    worst = bpf_bank.build(1, q_ref="upper")
+    r = lambda blk: sorted(l for p in blk.circuit.parts if p.ref.startswith("L")
+                           for l in p.spice_lines({"1": "a", "2": "b"}) if l.startswith("R"))
+    assert r(nominal) != r(worst)
+    with pytest.raises(ValueError):
+        bpf_bank.build(1, q_ref="lower")

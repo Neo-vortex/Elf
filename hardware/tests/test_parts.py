@@ -37,7 +37,18 @@ def test_relay_contacts_follow_state(state, closed, open_):
     assert f"R{k.ref}_{closed[1]} {closed[0].lower()} {closed[1].lower()} 0.05" in lines
     assert f"C{k.ref}_{open_[1]} {open_[0].lower()} {open_[1].lower()} 5e-13" in lines
     assert f"R{k.ref}_{open_[1]}_ins {open_[0].lower()} {open_[1].lower()} 1e+09" in lines
-    assert len(lines) == 6  # closed R, open C || R_ins per pole; coil emits nothing
+    assert len(lines) == 9  # per pole: closed R, open C || R_ins; 3 inter-pole C; coil emits nothing
+
+
+def test_relay_models_inter_pole_capacitance():
+    ckt = Circuit()
+    with ckt:
+        k = parts.relay_dpdt("released")
+    nodes = {p: p.lower() for p in ["COM1", "NC1", "NO1", "COM2", "NC2", "NO2", "COIL+", "COIL-"]}
+    lines = k.spice_lines(nodes)
+    for a, b in (("com1", "com2"), ("no1", "no2"), ("nc1", "nc2")):
+        assert any(l.split()[1:] == [a, b, "1e-13"] for l in lines), (a, b)
+    assert "inter-pole" in k.bom_note
 
 
 def test_relay_pins_use_datasheet_pad_numbers():

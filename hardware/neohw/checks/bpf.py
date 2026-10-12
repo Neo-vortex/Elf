@@ -12,6 +12,7 @@ from neohw.ngspice import run_decks
 from neohw.spice import Port, Sp, to_deck
 from neohw.touchstone import write_s2p
 from neohw.tools import git_describe
+from neohw.units import parse_si
 
 MC_RUNS = 200
 MC_MIN_PCT = 95.0
@@ -69,13 +70,16 @@ def evaluate(index: int, mc_runs: int) -> dict:
         rng = np.random.default_rng([index, run])
         decks.append(to_deck(blk.circuit, f"bpf{index} mc{run}", _ports(blk), sweeps,
                              variation=_variation(blk.circuit, rng)))
-    decks.append(to_deck(blk.circuit, f"bpf{index} s2p", _ports(blk), [S2P_SWEEP]))
+    worst = bpf_bank.build(index, q_ref="upper")
+    decks.append(to_deck(worst.circuit, f"bpf{index} worst-case Q", _ports(worst), sweeps))
+    s2p_deck, s2p_raws = to_deck(blk.circuit, f"bpf{index} s2p", _ports(blk), [S2P_SWEEP])
     raws = decks[0][1]
-    results = run_decks([d for d, _ in decks[:-1]], raws)
-    (s2p_plot,) = run_decks([decks[-1][0]], decks[-1][1])[0]["a0.raw"]
+    results = run_decks([d for d, _ in decks], raws)
+    (s2p_plot,) = run_decks([s2p_deck], s2p_raws)[0][s2p_raws[0]]
     nominal = _metrics([results[0][r][0] for r in raws])
-    mc = [_metrics([res[r][0] for r in raws]) for res in results[1:]]
-    return {"nominal": nominal, "mc_runs": mc_runs,
+    mc = [_metrics([res[r][0] for r in raws]) for res in results[1:-1]]
+    il_worst = _metrics([results[-1][r][0] for r in raws])[0]
+    return {"nominal": nominal, "mc_runs": mc_runs, "il_worst_q_db": il_worst,
             "mc_passed": sum(1 for m in mc if _passes(index, *m)), "s2p": s2p_plot.data}
 
 
@@ -87,10 +91,21 @@ def mute_isolation_db() -> float:
     return float(-db(plot.data["s_2_1"]).max())
 
 
-def build_sheet(index: int) -> list[dict]:
-    """What to buy and what to select, per inductor position (source to load)."""
-    return [{"position": k, "kind": pos.kind, "target_h": pos.ideal, "buy_h": list(pos.parts)}
-            for k, pos in enumerate(bpf.design(index).positions, 1) if pos.kind.startswith("L")]
+def build_sheet(selected: int | None = None) -> list[dict]:
+    """Inductor groups of the bank as built (refs match the netlist and BOM): what to buy and
+    what the group must measure after selection."""
+    circuit = bpf_bank.build(selected).circuit
+    groups: dict[str, list] = {}
+    for p in circuit.parts:
+        if hasattr(p, "select_group"):
+            groups.setdefault(p.select_group, []).append(p)
+    sheet = []
+    for name, members in groups.items():
+        members.sort(key=lambda p: int(p.ref[1:]))
+        sheet.append({"filter": int(name[1:].split("_")[0]), "group": name,
+                      "refs": [p.ref for p in members], "buy_h": [parse_si(p.value[:-1]) for p in members],
+                      "target_h": members[0].select_target, "select": "sum within ±3 % of target_h"})
+    return sorted(sheet, key=lambda e: int(e["refs"][0][1:]))
 
 
 def run(out_dir: Path, char_dir: Path, mc_runs: int = MC_RUNS, filters=None) -> BlockResult:
@@ -98,6 +113,7 @@ def run(out_dir: Path, char_dir: Path, mc_runs: int = MC_RUNS, filters=None) -> 
     indices = list(filters or range(1, len(bpf.BANDS) + 1))
     checks, plots, entries = [], {}, []
     revision = git_describe()
+    sheet = build_sheet()
     for index in indices:
         lo, hi = bpf.BANDS[index - 1]
         r = evaluate(index, mc_runs)
@@ -120,8 +136,9 @@ def run(out_dir: Path, char_dir: Path, mc_runs: int = MC_RUNS, filters=None) -> 
         entries.append({"index": index, "lo_hz": lo, "hi_hz": hi, "hpf_order": bpf.HPF_ORDER,
                         "lpf_order": bpf.LPF_ORDER[index - 1], "il_db": il, "rl_db": rl,
                         "rej3f_db": rej if has_rejection_target(index) else None,
+                        "il_worst_q_db": r["il_worst_q_db"],
                         "mc_runs": mc_runs, "mc_passed": r["mc_passed"], "s2p": s2p.name,
-                        "inductors": build_sheet(index)})
+                        "inductors": [e for e in sheet if e["filter"] == index]})
     mute = mute_isolation_db()
     checks.append(CheckResult("bank_mute_isolation_db", mute, f"≥ {MUTE_MIN_DB:g}", mute >= MUTE_MIN_DB))
     result = BlockResult("bpf_bank", checks, plots=plots, logx=True)

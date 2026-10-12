@@ -54,3 +54,20 @@ def test_monte_carlo_is_reproducible():
     _need_tools()
     a, b = check.evaluate(9, mc_runs=5), check.evaluate(9, mc_runs=5)
     assert a["nominal"] == b["nominal"] and a["mc_passed"] == b["mc_passed"]
+
+
+def test_build_sheet_names_refs_and_targets():
+    sheet = check.build_sheet(None)
+    refs = [r for e in sheet for r in e["refs"]]
+    assert len(refs) == len(set(refs)) > 0
+    for e in sheet:
+        assert 1 <= len(e["refs"]) == len(e["buy_h"]) <= 2
+        assert sum(e["buy_h"]) == pytest.approx(e["target_h"], rel=0.10)
+        assert e["select"] == "sum within ±3 % of target_h"
+
+
+@pytest.mark.integration
+def test_worst_case_q_loss_is_reported_and_higher():
+    _need_tools()
+    r = check.evaluate(8, mc_runs=2)
+    assert r["il_worst_q_db"] > r["nominal"][0]
