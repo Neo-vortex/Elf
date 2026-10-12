@@ -53,16 +53,24 @@ def resistor(value, footprint: str = "Resistor_SMD:R_0805_2012Metric", mpn: str 
 
 
 def capacitor(value, footprint: str = "Capacitor_SMD:C_0805_2012Metric", mpn: str | None = None,
-              torob: str | None = None, esr: float = 0.0, tol: float = 0.02, note: str = "") -> Part:
+              torob: str | None = None, esr: float = 0.0, tol: float = 0.02, note: str = "",
+              esl: float = 0.0) -> Part:
+    """`esr` and `esl` are SPICE-only parasitics (power filtering at MHz needs the ESL)."""
     farads = _positive(value)
     p = _tagged(_template("C", "C", ["1", "2"], footprint)(value=format_si(farads, "F")))
     p.mpn, p.torob, p.tol, p.bom_note = mpn, torob, tol, note
 
     def lines(n, k=1.0):
+        if esr <= 0 and esl <= 0:
+            return [f"C{p.ref} {n['1']} {n['2']} {_num(farads * k)}"]
+        out, node = [], n["1"]
         if esr > 0:
-            mid = f"{p.ref}_esr"
-            return [f"R{p.ref}_esr {n['1']} {mid} {_num(esr)}", f"C{p.ref} {mid} {n['2']} {_num(farads * k)}"]
-        return [f"C{p.ref} {n['1']} {n['2']} {_num(farads * k)}"]
+            out.append(f"R{p.ref}_esr {node} {p.ref}_e {_num(esr)}")
+            node = f"{p.ref}_e"
+        if esl > 0:
+            out.append(f"L{p.ref}_esl {node} {p.ref}_l {_num(esl)}")
+            node = f"{p.ref}_l"
+        return out + [f"C{p.ref} {node} {n['2']} {_num(farads * k)}"]
 
     p.spice_lines = lines
     return p
@@ -334,3 +342,102 @@ LVC157_PINS = {"S": "1", "1I0": "2", "1I1": "3", "1Y": "4", "2I0": "5", "2I1": "
 def lvc157(nc=()) -> Part:
     """Nexperia 74LVC157A quad 2-input multiplexer, SO-16 (datasheet Rev. 13, Table 2)."""
     return _ic("74LVC157", LVC157_PINS, "Package_SO:SOIC-16_3.9x9.9mm_P1.27mm", "74LVC157AD", "74LVC157", nc)
+
+
+# --- power (phase 3 spec §3.2) -----------------------------------------------------------
+
+def ao3401() -> Part:
+    """Alpha & Omega AO3401A P-MOSFET, SOT-23 (G 1, S 2, D 3): −30 V, Rds(on) ≤ 60 mΩ at
+    Vgs −4.5 V, Vgs(th) −0.5 to −1.3 V (typ −0.9). Level-1 fit: vto −0.9 V, kp from 55 mΩ at
+    |Vgs| 4.65 V; body diode drain→source... (anode at drain, cathode at source)."""
+    p = _ic("AO3401", {"G": "1", "S": "2", "D": "3"}, "Package_TO_SOT_SMD:SOT-23", "AO3401A", "AO3401")
+    p.spice_models = (".model AO3401_M pmos(level=1 vto=-0.9 kp=4.85 lambda=0.01)\n"
+                      ".model AO3401_BD d(is=1e-12 n=1.0 rs=0.05)",)
+    p.spice_lines = lambda n, k=1.0: [f"M{p.ref} {n['D']} {n['G']} {n['S']} {n['S']} AO3401_M w=1 l=1",
+                                      f"D{p.ref}_bd {n['D']} {n['S']} AO3401_BD"]
+    return p
+
+
+def ss34() -> Part:
+    """3 A 40 V Schottky, SMA (K 1, A 2). Fit: 0.35 V at 0.3 A, 0.5 V at 3 A (datasheet typical)."""
+    p = _ic("SS34", {"K": "1", "A": "2"}, "Diode_SMD:D_SMA", "SS34", "SS34")
+    p.spice_models = (".model SS34_D d(is=1.4e-6 n=1.0 rs=0.028 cjo=200p bv=40)",)
+    p.spice_lines = lambda n, k=1.0: [f"D{p.ref} {n['A']} {n['K']} SS34_D"]
+    return p
+
+
+def smbj5() -> Part:
+    """SMBJ5.0A 600 W TVS, SMB (K 1, A 2): stand-off 5.0 V, breakdown 6.4 V min."""
+    p = _ic("SMBJ5.0A", {"K": "1", "A": "2"}, "Diode_SMD:D_SMB", "SMBJ5.0A", "SMBJ5.0A")
+    p.spice_models = (".model SMBJ5_D d(is=1e-12 n=1.5 bv=6.6 ibv=1m rs=0.1 cjo=1n)",)
+    p.spice_lines = lambda n, k=1.0: [f"D{p.ref} {n['A']} {n['K']} SMBJ5_D"]
+    return p
+
+
+def fuse_1206(amps: float) -> Part:
+    """Fast-acting 1206 fuse (cold resistance ≈ 0.1 Ω)."""
+    p = _ic(f"{amps:g}A fuse", {"1": "1", "2": "2"}, "Fuse:Fuse_1206_3216Metric", f"1206 fast {amps:g}A",
+            "فیوز ریستی 1206")
+    p.spice_lines = lambda n, k=1.0: [f"R{p.ref} {n['1']} {n['2']} 0.1"]
+    return p
+
+
+def barrel_jack() -> Part:
+    """5.5/2.1 mm DC jack (DC-005 style): 1 tip (+), 2 sleeve (−), 3 switch (unused)."""
+    p = _ic("DC jack 5.5/2.1", {"TIP": "1", "SLEEVE": "2", "SW": "3"}, "Connector_BarrelJack:BarrelJack_Horizontal",
+            "DC-005", "جک آداپتور 5.5 2.1", nc=("SW",))
+    p.spice_lines = lambda n, k=1.0: []          # the source is the stimulus
+    return p
+
+
+MT3608_EFFICIENCY = 0.85
+
+
+def mt3608() -> Part:
+    """Aerosemi MT3608 1.2 MHz boost, SOT23-6 (SW 1, GND 2, FB 3, EN 4, IN 5, NC/OC 6); FB 0.6 V
+    (0.588–0.612), 1.2 MHz typical, PFM at light load (MT3608L datasheet Rev 1.1).
+    DC model (averaged): a current pushed into SW until FB reaches 0.6 V (the external diode
+    and FB divider then set VOUT), and IN drawing that power over the efficiency, η = 0.85. The
+    boost inductor is open in the DC deck (the averaged model replaces its switching); the
+    ripple is analysed separately."""
+    p = _ic("MT3608", {"SW": "1", "GND": "2", "FB": "3", "EN": "4", "IN": "5", "NC": "6"},
+            "Package_TO_SOT_SMD:SOT-23-6", "MT3608", "MT3608", nc=("NC",))
+    reg = "max(0, min(3, 20 * (0.6 - v({fb}))))"
+    p.spice_lines = lambda n, k=1.0: [
+        f"B{p.ref}_reg {n['GND']} {n['SW']} I = " + reg.format(fb=n["FB"]),
+        f"B{p.ref}_in {n['IN']} {n['GND']} I = " + reg.format(fb=n["FB"])
+        + f" * v({n['SW']}) / ({MT3608_EFFICIENCY:g} * max(v({n['IN']}), 0.5))",
+        f"R{p.ref}_en {n['EN']} {n['GND']} 1e9"]
+    return p
+
+
+def mic5205(v_out: float) -> Part:
+    """Microchip MIC5205 150 mA LDO, SOT-23-5 (IN 1, GND 2, EN 3, BYP 4, OUT 5). Dropout 165 mV
+    at 150 mA (110 mV at 50 mA); ripple rejection 75 dB at 100 Hz (datasheet DS20005785; no
+    curve in the text, so the ripple analysis assumes a roll-off). DC model: OUT = min(v_out,
+    V_in − dropout) behind 50 mΩ; input current = output current."""
+    p = _ic(f"MIC5205-{v_out:.1f}", {"IN": "1", "GND": "2", "EN": "3", "BYP": "4", "OUT": "5"},
+            "Package_TO_SOT_SMD:SOT-23-5", f"MIC5205-{v_out:.1f}YM5", "MIC5205-3.3" if v_out < 4 else "MIC5205YM5")
+    p.v_out, p.dropout_v = v_out, 0.165
+    p.spice_lines = lambda n, k=1.0: _ldo_lines(p.ref, n, v_out, 0.165, "BYP")
+    return p
+
+
+def ams1117_33() -> Part:
+    """AMS1117-3.3, SOT-223 (GND 1, OUT 2 and tab, IN 3); dropout ≈ 1.1 V (datasheet typical at
+    800 mA; less at our load, so this is conservative)."""
+    p = _ic("AMS1117-3.3", {"GND": "1", "OUT": "2", "IN": "3"}, "Package_TO_SOT_SMD:SOT-223-3_TabPin2",
+            "AMS1117-3.3", "AMS1117-3.3")
+    p.v_out, p.dropout_v = 3.3, 1.1
+    p.spice_lines = lambda n, k=1.0: _ldo_lines(p.ref, n, 3.3, 1.1)
+    return p
+
+
+def _ldo_lines(ref: str, n: dict, v_out: float, dropout: float, byp: str | None = None) -> list[str]:
+    out = [f"B{ref}_reg {ref}_r {n['GND']} V = min({v_out:g}, v({n['IN']}) - {dropout:g})",
+           f"V{ref}_sense {ref}_r {ref}_s dc 0",
+           f"R{ref}_o {ref}_s {n['OUT']} 0.05",
+           f"F{ref}_in {n['IN']} {n['GND']} V{ref}_sense 1"]
+    if byp:
+        out += [f"R{ref}_byp {n[byp]} {n['GND']} 1e9", f"R{ref}_en {n['EN']} {n['GND']} 1e7"]
+    return out
