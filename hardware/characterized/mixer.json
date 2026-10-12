@@ -2,7 +2,7 @@
  "schema_version": 1,
  "block": "mixer",
  "status": "pass",
- "generated_by": "6bef3d2",
+ "generated_by": "c22f0db",
  "conv_gain_db": 36.15388244596626,
  "conv_gain_definition": "per-channel differential amplitude at the ADC pins / matched-source amplitude at rf_in",
  "baseband_response": {
