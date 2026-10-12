@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import math
+from pathlib import Path
 
 from skidl import SKIDL, TEMPLATE, Part, Pin
 
@@ -105,7 +106,8 @@ INDUCTOR_C_PAR = 2.5e-12  # SRF: 1 µH ≈ 100 MHz, 10 µH ≈ 32 MHz, 100 µH �
 
 
 def inductor(value, q: float, q_freq_hz: float, tol: float = 0.03, trim: float = 1.0,
-             mpn: str | None = None, torob: str | None = None, note: str | None = None) -> Part:
+             mpn: str | None = None, torob: str | None = None, note: str | None = None,
+             c_par: float = INDUCTOR_C_PAR) -> Part:
     """L + series R (giving `q` at `q_freq_hz`) with a parallel C for the self-resonance.
 
     `value` is the part to buy. `trim` scales it to what the builder selects with an LCR
@@ -128,7 +130,49 @@ def inductor(value, q: float, q_freq_hz: float, tol: float = 0.03, trim: float =
         mid = f"{p.ref}_m"
         return [f"L{p.ref} {n['1']} {mid} {_num(henries_built * k)}",
                 f"R{p.ref} {mid} {n['2']} {_num(r_s * k)}",
-                f"C{p.ref}_p {n['1']} {n['2']} {_num(INDUCTOR_C_PAR)}"]
+                f"C{p.ref}_p {n['1']} {n['2']} {_num(c_par)}"]
 
     p.spice_lines = lines
+    return p
+
+
+MODELS_DIR = Path(__file__).resolve().parents[1] / "models"
+
+
+def _model(name: str) -> str:
+    path = MODELS_DIR / name
+    if not path.exists():
+        raise FileNotFoundError(f"SPICE model {path} is missing (it is committed in hardware/models/)")
+    return path.read_text().strip()
+
+
+def npn_bfr92a(mpn: str = "BFR92A", torob: str | None = "BFR92") -> Part:
+    """NXP BFR92A, SOT-23 (pin 1 base, 2 emitter, 3 collector); BFR92P model."""
+    p = _tagged(_template("BFR92A", "Q", {"B": "1", "E": "2", "C": "3"},
+                          "Package_TO_SOT_SMD:SOT-23")(value="BFR92A"))
+    p.mpn, p.torob, p.tol = mpn, torob, 0.0
+    p.spice_models = (_model("bfr92p.lib"),)
+    p.spice_lines = lambda n, k=1.0: [f"X{p.ref} {n['C']} {n['B']} {n['E']} BFR92P"]
+    return p
+
+
+def diode_pair_bav99(mpn: str = "BAV99", torob: str | None = None) -> Part:
+    """BAV99, SOT-23: pin 1 anode of D1, pin 3 = D1 cathode + D2 anode, pin 2 cathode of D2."""
+    p = _tagged(_template("BAV99", "D", {"A": "1", "K": "2", "COM": "3"},
+                          "Package_TO_SOT_SMD:SOT-23")(value="BAV99"))
+    p.mpn, p.torob, p.tol = mpn, torob, 0.0
+    p.spice_models = (_model("bav99.lib"),)
+    p.spice_lines = lambda n, k=1.0: [f"D{p.ref}a {n['A']} {n['COM']} D1N4148",
+                                      f"D{p.ref}b {n['COM']} {n['K']} D1N4148"]
+    return p
+
+
+def gdt(capacitance: float = 1.5e-12, torob: str | None = "گازی برقگیر GDT") -> Part:
+    """Gas discharge tube at the connector: an open circuit with its capacitance below the
+    breakdown voltage (only small-signal behaviour is simulated). Footprint is project-local,
+    created in the layout phase."""
+    p = _tagged(_template("GDT", "GDT", ["1", "2"], "NeoRadio:GDT_SMD_2pin")(value="GDT 90V"))
+    p.mpn, p.torob, p.tol = None, torob, 0.0
+    p.spice_lines = lambda n, k=1.0: [f"C{p.ref} {n['1']} {n['2']} {_num(capacitance)}",
+                                      f"R{p.ref} {n['1']} {n['2']} {_num(G6K_INSULATION_OHMS)}"]
     return p

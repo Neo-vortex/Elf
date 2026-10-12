@@ -1,0 +1,3 @@
+* BAV99: two 1N4148-class switching diodes in series (SOT-23). Diode parameters are the
+* Philips/NXP 1N4148 SPICE model widely published with their small-signal diode data.
+.model D1N4148 D(IS=2.682n N=1.836 RS=0.5664 CJO=4p M=0.3333 VJ=0.5 TT=11.54n BV=100 IBV=100n)

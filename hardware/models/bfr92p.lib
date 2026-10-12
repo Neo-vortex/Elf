@@ -1,0 +1,21 @@
+* BFR92P (Infineon) Gummel-Poon chip model + SOT-23 package equivalent circuit.
+* Source: Infineon BFR92P datasheet (Aug-03-2001), "SPICE Parameters (Gummel-Poon Model,
+* Berkley-SPICE 2G.6 Syntax)", extracted by IMST; valid up to 6 GHz. The NXP BFR92A is the
+* same 5 GHz SOT-23 wideband NPN class; NXP's own model page was not reachable.
+* Node order: collector base emitter.
+.model BFR92P_chip NPN(IS=0.1213f BF=94.733 NF=1.0947 VAF=30 IKF=0.46227 ISE=129.55f NE=1.9052
++ BR=10.729 NR=0.8983 VAR=14.599 IKR=0.01 ISC=0.75557f NC=1.371 RB=14.998 IRB=0.01652m
++ RBM=7.8145 RE=0.29088 RC=0.13793 CJE=10.416f VJE=0.70618 MJE=0.34686 TF=26.796p XTF=0.3817
++ VTF=0.32861 ITF=4.4601m PTF=0 CJC=946.47f VJC=0.84079 MJC=0.4085 XCJC=0.13464 TR=1.2744n
++ CJS=0 VJS=0.75 MJS=0 XTB=0 EG=1.11 XTI=3 FC=0.99545 TNOM=27)
+.subckt BFR92P c b e
+LBO b b1 0.51n
+LBI b1 bi 0.85n
+LEO e e1 0.61n
+LEI e1 ei 0.69n
+LCO c ci 0.49n
+CBE b1 e1 73f
+CCB b1 c 84f
+CCE c e1 165f
+Q1 ci bi ei BFR92P_chip
+.ends BFR92P
