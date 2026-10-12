@@ -47,4 +47,4 @@ def test_cli_spice_error_is_exit_2_and_other_blocks_still_reported(tmp_path, mon
 
 
 def test_checks_run_in_signal_chain_order():
-    assert list(cli.CHECKS) == ["bias_tee", "attenuator", "protection", "bpf_bank", "preamp"]
+    assert list(cli.CHECKS) == ["bias_tee", "attenuator", "protection", "bpf_bank", "preamp", "mixer"]
