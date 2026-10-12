@@ -4,16 +4,22 @@ Inputs:
 - USB VBUS → 1 A fuse → Q1a/Q1b (two AO3401 back to back, common source) → 5V_MAIN. Their
   gates are the external-supply node: with external power present both are off and the
   opposing body diodes block current both ways (no USB draw, no back-feed into the host).
+  The switch is hard, so pulling the jack hands over to USB without a dip; the price is a USB
+  plug-in inrush into the board's ≈ 220 µF (reported by the check; a soft start on this shared
+  gate would slow the hand-over too, so a dedicated USB load switch is a Rev A decision).
 - Barrel jack 5 V → 1 A fuse → Q2 (AO3401, gate to ground: a reversed plug leaves it off, so
   nothing conducts) → EXT_P (SMBJ5.0A clamp) → SS34 Schottky → 5V_MAIN. The Schottky stops
   MAIN back-feeding the jack (and a PSU shared with the host).
-- EXT_P is pulled down (100 kΩ) so Q1 conducts when no jack is plugged in.
+- EXT_P is pulled down by 1 kΩ (25 mW with the jack in use) so Q1 conducts when no jack is
+  plugged in, even with the SS34's hot reverse leakage from 5V_MAIN (mA at 50 °C) flowing into it.
 
 Rails:
 - 5V_A (CS5361 VA, LM4562, FST3253, preamp, mixer bias): MT3608 boost to 7.0 V (FB 107 k / 10 k)
   → two LC stages (10 µH + 22 µF ‖ 100 nF each) → MIC5205-5.0.
 - 3V3_RF (Si5351C, 74LVC74/157): LC (10 µH + 22 µF ‖ 100 nF) → MIC5205-3.3.
-- 3V3_D (ESP32-S3, CS5361 VL/VD, logic): AMS1117-3.3 (22 µF tantalum output, for its stability).
+- 3V3_D (ESP32-S3, CS5361 VL/VD, logic): TLV74033 low-dropout regulator (0.4 V worst case at
+  our load: an AMS1117's 1.3 V maximum would leave 3V3_D below the CS5361 VD minimum with the
+  external supply at 4.75 V).
 - BIAS_5V (to the bias-T switch, plan 3.3): LC from 5V_MAIN (10 µH + 22 µF), keeping the boost's
   input ripple off the antenna feed.
 
@@ -102,7 +108,7 @@ def build() -> Block:
         tvs = parts.smbj5()
         tvs["K"] += ext_p
         tvs["A"] += gnd
-        _r("100k", ext_p, gnd)
+        _r("1k", ext_p, gnd)
         d1 = parts.ss34()
         d1["A"] += ext_p
         d1["K"] += main
@@ -155,14 +161,12 @@ def build() -> Block:
         _c("10u", v3rf, gnd, "X5R output", "Capacitor_SMD:C_1206_3216Metric")
         _c("100n", v3rf, gnd)
         # 3V3_D
-        ld = parts.ams1117_33()
+        ld = parts.tlv74033()
         ld["IN"] += main
+        ld["EN"] += main
         ld["GND"] += gnd
         ld["OUT"] += v3d
-        c_ta = parts.capacitor("22u", footprint="Capacitor_Tantalum_SMD:CP_EIA-3528-21_Kemet-B", esr=0.5,
-                               note="tantalum 10 V: AMS1117 stability needs its ESR")
-        c_ta[1] += v3d
-        c_ta[2] += gnd
+        _c("10u", v3d, gnd, "X5R output", "Capacitor_SMD:C_1206_3216Metric")
         _c("100n", v3d, gnd)
         # bias-T supply
         _filter_l(main, bias5, "bias-T feed filter, 1210 wirewound, rated ≥ 200 mA")

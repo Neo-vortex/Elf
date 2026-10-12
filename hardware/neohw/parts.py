@@ -374,9 +374,13 @@ def smbj5() -> Part:
     return p
 
 
+FUSE_1206_SLOW_I2T_MIN = 0.05     # A²s, melting I²t of a 1 A time-lag 1206 fuse (lower end of the series)
+
+
 def fuse_1206(amps: float) -> Part:
-    """Fast-acting 1206 fuse (cold resistance ≈ 0.1 Ω)."""
-    p = _ic(f"{amps:g}A fuse", {"1": "1", "2": "2"}, "Fuse:Fuse_1206_3216Metric", f"1206 fast {amps:g}A",
+    """Time-lag 1206 fuse (cold resistance ≈ 0.1 Ω): rides through the plug-in inrush, which a
+    fast 1 A 1206 (melting I²t ≈ 0.01 A²s) would wear out over repeated plug-ins."""
+    p = _ic(f"{amps:g}A fuse", {"1": "1", "2": "2"}, "Fuse:Fuse_1206_3216Metric", f"1206 time-lag {amps:g}A",
             "فیوز ریستی 1206")
     p.spice_lines = lambda n, k=1.0: [f"R{p.ref} {n['1']} {n['2']} 0.1"]
     return p
@@ -423,13 +427,15 @@ def mic5205(v_out: float) -> Part:
     return p
 
 
-def ams1117_33() -> Part:
-    """AMS1117-3.3, SOT-223 (GND 1, OUT 2 and tab, IN 3); dropout ≈ 1.1 V (datasheet typical at
-    800 mA; less at our load, so this is conservative)."""
-    p = _ic("AMS1117-3.3", {"GND": "1", "OUT": "2", "IN": "3"}, "Package_TO_SOT_SMD:SOT-223-3_TabPin2",
-            "AMS1117-3.3", "AMS1117-3.3")
-    p.v_out, p.dropout_v = 3.3, 1.1
-    p.spice_lines = lambda n, k=1.0: _ldo_lines(p.ref, n, 3.3, 1.1)
+def tlv74033() -> Part:
+    """TI TLV74033PDBVR 300 mA LDO, SOT-23-5 (IN 1, GND 2, EN 3, NC 4, OUT 5), stable with a 1 µF
+    ceramic. Dropout ≈ 0.23 V typical at 300 mA (datasheet SBVS235); the model uses 0.4 V, above
+    the maximum at our ≤ 150 mA. On Torob under the LDL1117S33 search (TLV74033PDBVR listing)."""
+    p = _ic("TLV74033", {"IN": "1", "GND": "2", "EN": "3", "NC": "4", "OUT": "5"},
+            "Package_TO_SOT_SMD:SOT-23-5", "TLV74033PDBVR", "LDL1117S33", nc=("NC",))
+    p.torob_match = lambda name: "TLV74033" in name.upper()
+    p.v_out, p.dropout_v = 3.3, 0.4
+    p.spice_lines = lambda n, k=1.0: _ldo_lines(p.ref, n, 3.3, 0.4) + [f"R{p.ref}_en {n['EN']} {n['GND']} 1e7"]
     return p
 
 
