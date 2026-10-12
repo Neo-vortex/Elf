@@ -161,13 +161,21 @@ class Hardware:
         o = np.array(c["offset_hz"])
         return np.interp(f_bb, o, c["re"]) + 1j * np.interp(f_bb, o, c["im"])
 
-    def harmonics(self) -> dict[int, tuple[complex, str]]:
-        """LO harmonic k -> (complex response relative to the fundamental, sideband)."""
+    def harmonics(self, f_lo: float) -> dict[int, tuple[complex, str]]:
+        """LO harmonic k -> (complex response relative to the fundamental, sideband) at f_lo:
+        magnitude (dB) and phase interpolated over log f between the mixer's test points (the
+        response changes across the bank: band 1's 3rd harmonic is −5 dB, not the nominal −9.5);
+        the sideband is that of the nearest test point."""
+        pts = sorted(self.mixer["test_points"], key=lambda p: p["f_lo_hz"])
+        x = [math.log(p["f_lo_hz"]) for p in pts]
         out = {}
-        for k, v in self.mixer["harmonic_responses"].items():
+        for k in self.mixer["harmonic_responses"]:
             if int(k) == 1:
                 continue
-            out[int(k)] = (10 ** (v["db"] / 20) * np.exp(1j * math.radians(v["phase_deg"])), v["sideband"])
+            db = np.interp(math.log(f_lo), x, [p["harmonics"][k]["db"] for p in pts])
+            ph = np.interp(math.log(f_lo), x, np.unwrap([math.radians(p["harmonics"][k]["phase_deg"]) for p in pts]))
+            near = min(pts, key=lambda p: abs(math.log(p["f_lo_hz"]) - math.log(f_lo)))
+            out[int(k)] = (10 ** (db / 20) * np.exp(1j * ph), near["harmonics"][k]["sideband"])
         return out
 
     def imbalance(self, f_lo: float) -> Imbalance:
@@ -198,7 +206,10 @@ class Hardware:
             # the interface loss reduces signal and source noise alike, not the mixer's own noise
             g_if = 10 ** (self.mixer["bypass_correction"][str(self.filter_index(f_lo))]["mean_db"] / 10)
             stages.append(("filter → mixer interface", 1.0, g_if))
-        stages.append(("mixer", 10 ** (self.mixer["nf_db"] / 10), 1.0))
+        # nf_db is referred at the nominal conversion gain (mixer.json conv_gain_db); the mixer's
+        # added noise is fixed at the ADC, so its input-referred excess scales with 1/G(f_lo)²
+        g_ratio = (10 ** (self.mixer["conv_gain_db"] / 20) / self.conv_gain(f_lo)) ** 2
+        stages.append(("mixer", 1 + (10 ** (self.mixer["nf_db"] / 10) - 1) * g_ratio, 1.0))
         f_total, g = 1.0, 1.0
         rows = []
         for name, f, gain in stages:
@@ -207,19 +218,25 @@ class Hardware:
             rows.append({"stage": name, "nf_db": 10 * math.log10(f), "gain_db": 10 * math.log10(gain),
                          "added_factor": contrib})
             g *= gain
+        # the CS5361's own noise (added at the ADC by receive(), not part of the antenna-referred
+        # receiver noise): per channel N, so like the mixer's F − 1 = 2·N / (4·R·G²·k·T0)
+        adc = 2 * self.adc_noise_v2_per_hz / (4 * R0 * self.conv_gain(f_lo) ** 2 * K_B * T0) / g
         folded = 0.0
         if preamp:
             front = float(abs(self.front_gain(f_lo, f_lo, True, attenuator_db)) ** 2)
-            for k, (c, _) in self.harmonics().items():
+            for k, (c, _) in self.harmonics(f_lo).items():
                 fk = k * f_lo
                 if fk > p["freq_hz"][-1]:
                     continue    # beyond the characterised preamp range: not modelled (reported)
                 g_k = 10 ** (float(np.interp(fk, p["freq_hz"], p["gain_db"])) / 10)
                 f_k = 10 ** (float(np.interp(fk, p["freq_hz"], p["nf_db"])) / 10)
                 folded += K_B * T0 * g_k * f_k * abs(c) ** 2 / front
+        rows.append({"stage": "ADC (CS5361)", "nf_db": float("nan"), "gain_db": 0.0, "added_factor": adc})
+        f_all = f_total + folded / (K_B * T0) + adc
         return {"stages": rows, "f_cascade": f_total, "nf_db": 10 * math.log10(f_total),
                 "harmonic_noise_w_per_hz": folded,
-                "receiver_noise_w_per_hz": K_B * T0 * (f_total - 1) + folded}
+                "receiver_noise_w_per_hz": K_B * T0 * (f_total - 1) + folded,
+                "adc_added_factor": adc, "nf_total_db": 10 * math.log10(f_all)}
 
     # --- ADC -------------------------------------------------------------------------------
     @property
@@ -288,12 +305,13 @@ def receive(scenario, rng: np.random.Generator, hw: Hardware, render, fs: int, w
     excluded: list[tuple[str, str]] = []
     folded = []
     spec_h: dict[tuple[int, str], np.ndarray] = {}
+    harmonics = hw.harmonics(lo)
     for st in scenario.stations:
         amp = math.sqrt(2 * R0 * 1e-3 * 10 ** (st.level_dbm / 10))
         if abs(st.rf_hz - lo) + st.bandwidth_hz / 2 <= window_hz:
             x += render(st, lo, n) * amp
             continue
-        for k, (_, side) in hw.harmonics().items():
+        for k, (_, side) in harmonics.items():
             if abs(st.rf_hz - k * lo) + st.bandwidth_hz / 2 <= window_hz:
                 f_lo_s2p, f_hi_s2p = hw.s2p_range(band)
                 if not f_lo_s2p <= st.rf_hz <= f_hi_s2p:
@@ -311,7 +329,6 @@ def receive(scenario, rng: np.random.Generator, hw: Hardware, render, fs: int, w
     y = np.fft.fft(x) * hw.front_gain(lo + f_bins, lo, rx.preamp, rx.attenuator_db)
     if not rx.preamp:
         y *= hw.bypass_correction(lo, f_bins)
-    harmonics = hw.harmonics()
     for (k, side), spec in spec_h.items():
         c, _ = harmonics[k]
         f_rf = k * lo + (f_bins if side == "upper" else -f_bins)

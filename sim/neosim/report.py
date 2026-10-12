@@ -60,15 +60,17 @@ def _receiver_html(r: ScenarioResult) -> str:
     if r.hardware is None:
         return "<p>Receiver: ideal</p>"
     h = r.hardware
-    rows = "".join(f"<tr><td>{html.escape(x['stage'])}</td><td>{x['gain_db']:+.2f}</td><td>{x['nf_db']:.2f}</td>"
+    rows = "".join(f"<tr><td>{html.escape(x['stage'])}</td><td>{x['gain_db']:+.2f}</td><td>{'' if x['nf_db'] != x['nf_db'] else f"{x['nf_db']:.2f}"}</td>"
                    f"<td>{x['added_factor']:.3f}</td></tr>" for x in h.noise["stages"])
     folded = ", ".join(h.folded) or "none"
     return (f"<p>Receiver: hardware model (committed characterisation), filter {h.filter_index}, "
             f"preamp {'on' if rx.preamp else 'off'}, attenuator {rx.attenuator_db} dB; conversion gain "
             f"{h.conv_gain_db:.2f} dB; image rejection {h.image_rejection_db:.1f} dB (5th-percentile imbalance); "
             f"stations through LO harmonics: {html.escape(folded)}</p>"
-            f"<p>Noise budget at the LO: cascade NF {h.noise['nf_db']:.2f} dB; preamp noise folded in from LO "
-            f"harmonics {h.noise['harmonic_noise_w_per_hz'] / (hardware.K_B * hardware.T0):.3f} kT0. See the hardware report "
+            f"<p>Noise budget at the LO: receiver NF {h.noise['nf_total_db']:.2f} dB (analog cascade "
+            f"{h.noise['nf_db']:.2f} dB, preamp noise folded in from LO harmonics "
+            f"{h.noise['harmonic_noise_w_per_hz'] / (hardware.K_B * hardware.T0):.3f} kT0, ADC "
+            f"{h.noise['adc_added_factor']:.3f}). See the hardware report "
             f"(<code>build/hw/report.html</code>) for the block checks.</p>"
             f"<table><tr><th>stage</th><th>gain (dB)</th><th>NF (dB)</th><th>added noise factor (Friis)</th></tr>"
             f"{rows}</table>")

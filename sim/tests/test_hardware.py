@@ -16,7 +16,10 @@ def _doc(block, **payload):
 
 
 def write_char(d, *, il_db=1.0, pre_gain_db=14.0, pre_nf_db=4.0, mixer_nf_db=7.0, conv_gain_db=36.0,
-               harmonics=None, imbalance=(0.0, 0.0), adc_dr_db=108.0, dc=0.0, bypass=1.0):
+               harmonics=None, imbalance=(0.0, 0.0), adc_dr_db=108.0, dc=0.0, bypass=1.0,
+               tp_gain_db=None, tp_harmonics=None):
+    """`tp_gain_db` / `tp_harmonics`: (value at the 1 MHz test point, value at 60 MHz); default
+    both equal to the top-level (nominal) values."""
     """Flat synthetic characterisation: two filters (1–10 MHz, 10–60 MHz) with S21 = −il_db in
     band and −80 dB outside, flat preamp and attenuator, flat mixer response."""
     d.mkdir(parents=True, exist_ok=True)
@@ -41,7 +44,8 @@ def write_char(d, *, il_db=1.0, pre_gain_db=14.0, pre_nf_db=4.0, mixer_nf_db=7.0
     ir = {"p5_gain_err_db": imbalance[0], "p5_phase_err_deg": imbalance[1]}
     (d / "mixer.json").write_text(json.dumps(_doc(
         "mixer", conv_gain_db=conv_gain_db,
-        test_points=[{"f_lo_hz": 1e6, "conv_gain_db": conv_gain_db}, {"f_lo_hz": 60e6, "conv_gain_db": conv_gain_db}],
+        test_points=[{"f_lo_hz": f, "conv_gain_db": g, "harmonics": h} for f, g, h in zip(
+            (1e6, 60e6), tp_gain_db or (conv_gain_db, conv_gain_db), tp_harmonics or (harmonics or {}, harmonics or {}))],
         baseband_response={"offset_hz": offs, "re": [1.0] * 4, "im": [0.0] * 4},
         harmonic_responses=harm, image_rejection_db={"direct": ir, "div4": ir},
         nf_db=mixer_nf_db, adc_fs_peak_v=2.825, clip_peak_v=2.0,
@@ -221,3 +225,40 @@ def test_files_from_before_plan_2_5_are_refused_with_the_missing_fields(tmp_path
     (d / "mixer.json").write_text(json.dumps(doc))
     with pytest.raises(HardwareModelError, match=r"lacks .*bypass_correction.*nf_db.*make hw"):
         Hardware.load(d)
+
+
+def test_harmonic_responses_follow_the_lo(tmp_path):
+    """mixer.json's top level is the 14.2 MHz point; the per-LO test points differ (band 1: 3rd
+    harmonic −5 dB, not −9.5): interpolate over log f like the conversion gain."""
+    lo_h = {"3": {"db": -5.0, "phase_deg": 10.0, "sideband": "lower"}}
+    hi_h = {"3": {"db": -15.0, "phase_deg": -30.0, "sideband": "lower"}}
+    nominal = {"3": {"db": -9.54, "phase_deg": 0.0, "sideband": "lower"}}
+    hw = Hardware.load(write_char(tmp_path, harmonics=nominal, tp_harmonics=(lo_h, hi_h)))
+    mid = math.sqrt(1e6 * 60e6)
+    c, side = hw.harmonics(mid)[3]
+    assert 20 * math.log10(abs(c)) == pytest.approx(-10.0) and math.degrees(np.angle(c)) == pytest.approx(-10.0)
+    assert side == "lower"
+    assert 20 * math.log10(abs(hw.harmonics(1e6)[3][0])) == pytest.approx(-5.0)
+
+
+def test_mixer_noise_is_referred_at_the_lo_conversion_gain(tmp_path):
+    """nf_db is referred at the nominal (top-level) conversion gain; the mixer's added noise is
+    fixed at the ADC, so 3 dB less conversion gain doubles its input-referred excess."""
+    hw = Hardware.load(write_char(tmp_path, conv_gain_db=36.0, tp_gain_db=(39.0, 33.0)))
+    lo = math.sqrt(1e6 * 60e6)          # conversion gain 36 dB: the reference
+    lo_low = 60e6 / 1.0001              # ≈ 33 dB
+    m = lambda f: [r for r in hw.noise_budget(f, False, 0)["stages"] if r["stage"] == "mixer"][0]
+    assert 10 ** (m(lo)["nf_db"] / 10) - 1 == pytest.approx(10 ** 0.7 - 1, rel=1e-6)
+    assert (10 ** (m(lo_low)["nf_db"] / 10) - 1) / (10 ** 0.7 - 1) == pytest.approx(10 ** 0.3, rel=1e-3)
+
+
+def test_budget_total_includes_the_adc_noise_and_matches_the_twin_floor(tmp_path):
+    """With a noisy ADC (60 dB dynamic range) the twin's floor must match nf_total_db, not the
+    analog cascade alone."""
+    hw = Hardware.load(write_char(tmp_path, adc_dr_db=75.0))
+    iq, _, stats = run(scenario(14e6, duration=2.0), hw)
+    b = stats.noise
+    assert b["nf_total_db"] > b["nf_db"] + 1.0          # the ADC matters at this dynamic range
+    density = 2 * 50 * K_T0 * 10 ** (b["nf_total_db"] / 10) * 10 ** ((36 - 1) / 10) / 2.825 ** 2
+    measured = np.mean(np.abs(iq) ** 2) / FS_HZ
+    assert 10 * math.log10(measured / density) == pytest.approx(0.0, abs=0.1)
