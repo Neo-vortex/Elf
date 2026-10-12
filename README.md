@@ -99,8 +99,8 @@ make sim       # digital twin scenarios and FT8 sweep; report in build/sim/repor
 - [x] Digital twin with an ideal receiver, FT8 and CW decoding, and SNR sweeps
 - [x] Receiver DSP library and command-line tool
 - [x] Circuit-as-code toolchain: SPICE, KiCad netlist, BOM with availability, diagrams
-- [ ] Mixer noise figure and receiver noise budget
-- [ ] Digital twin driven by the simulated hardware: filters, attenuator, preamplifier,
+- [x] Mixer noise figure and receiver noise budget
+- [x] Digital twin driven by the simulated hardware: filters, attenuator, preamplifier,
       mixer response, image, harmonic responses and ADC clipping
 - [ ] Intermodulation and reciprocal-mixing models; blocker and MDS scenarios
 - [ ] I/Q imbalance correction in the DSP
