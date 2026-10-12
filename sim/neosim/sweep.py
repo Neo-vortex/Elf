@@ -1,6 +1,7 @@
 """FT8 decode rate vs SNR: audio-only reference vs full digital twin."""
 from __future__ import annotations
 
+import math
 import shutil
 from dataclasses import dataclass
 from pathlib import Path
@@ -9,13 +10,14 @@ import numpy as np
 from scipy.io import wavfile
 
 from neosim import decoders, sources
-from neosim.scenario import parse_scenario
+from neosim.scenario import SNR_BANDWIDTH_HZ, Scenario, parse_scenario
 from neosim.twin import run_scenario
 
 MESSAGE = "CQ EP2ABC LL35"
 AUDIO_HZ = 1500
 LO_HZ = 14_060_000
 DIAL_HZ = 14_074_000
+BAND_NOISE_DBM_HZ = -155.0      # hardware curve: quiet 20 m band noise at the antenna (preamp off on 20 m)
 
 
 @dataclass(frozen=True)
@@ -24,6 +26,7 @@ class SweepPoint:
     reference_rate: float
     twin_rate: float
     trials: int = 1
+    hardware_rate: float | None = None
 
 
 def wilson_interval(successes: int, trials: int, z: float = 1.96) -> tuple[float, float]:
@@ -48,32 +51,45 @@ def _reference_trial(audio: np.ndarray, snr_db: float, rng: np.random.Generator,
     return any(d.message == MESSAGE for d in decoders.decode_ft8(wav))
 
 
-def _twin_trial(snr_db: float, seed: int, workdir: Path) -> bool:
-    scenario = parse_scenario({
-        "name": f"sweep {snr_db:+.1f} dB", "lo_hz": LO_HZ, "seed": seed,
-        "stations": [{"id": "s", "mode": "ft8", "dial_hz": DIAL_HZ, "audio_hz": AUDIO_HZ,
-                      "snr_db": snr_db, "msg": MESSAGE}],
-        "receive": [{"id": "rx", "mode": "usb", "dial_hz": DIAL_HZ, "decoder": "ft8",
-                     "expect": {"contains": [MESSAGE]}}],
-    })
+def sweep_scenario(snr_db: float, seed: int, hardware: bool = False) -> Scenario:
+    """One sweep trial: the ideal receiver in SNR mode, or the hardware model with the same SNR
+    given as absolute levels over BAND_NOISE_DBM_HZ."""
+    station = {"id": "s", "mode": "ft8", "dial_hz": DIAL_HZ, "audio_hz": AUDIO_HZ, "msg": MESSAGE}
+    data = {"name": f"sweep {snr_db:+.1f} dB", "lo_hz": LO_HZ, "seed": seed, "stations": [station],
+            "receive": [{"id": "rx", "mode": "usb", "dial_hz": DIAL_HZ, "decoder": "ft8",
+                         "expect": {"contains": [MESSAGE]}}]}
+    if hardware:
+        data["receiver"] = {"model": "hardware", "preamp": "off"}
+        data["noise"] = {"type": "awgn", "dbm_per_hz": BAND_NOISE_DBM_HZ}
+        station["level_dbm"] = snr_db + BAND_NOISE_DBM_HZ + 10 * math.log10(SNR_BANDWIDTH_HZ)
+    else:
+        station["snr_db"] = snr_db
+    return parse_scenario(data)
+
+
+def _twin_trial(snr_db: float, seed: int, workdir: Path, hardware: bool = False) -> bool:
     try:
-        return run_scenario(scenario, workdir).passed
+        return run_scenario(sweep_scenario(snr_db, seed, hardware), workdir).passed
     finally:
         shutil.rmtree(workdir, ignore_errors=True)  # an 11.5 MB capture per trial adds up fast
 
 
-def sweep_ft8(snrs: list[float], trials: int, workdir: Path, seed: int = 1) -> list[SweepPoint]:
+def sweep_ft8(snrs: list[float], trials: int, workdir: Path, seed: int = 1, hardware: bool = False) -> list[SweepPoint]:
+    """`hardware` adds a third curve: the same trials through the hardware receiver model."""
     workdir = Path(workdir)
     workdir.mkdir(parents=True, exist_ok=True)
     audio = sources.ft8_audio(MESSAGE, AUDIO_HZ)
     rng = np.random.default_rng(seed)
     points = []
     for snr in snrs:
-        ref_ok = twin_ok = 0
+        ref_ok = twin_ok = hw_ok = 0
         for trial in range(trials):
             ref_ok += _reference_trial(audio, snr, rng, workdir / "reference.wav")
             twin_ok += _twin_trial(snr, seed * 1000 + trial, workdir / f"twin_{snr:+.1f}_{trial}")
-        points.append(SweepPoint(float(snr), ref_ok / trials, twin_ok / trials, trials))
+            if hardware:
+                hw_ok += _twin_trial(snr, seed * 1000 + trial, workdir / f"hw_{snr:+.1f}_{trial}", hardware=True)
+        points.append(SweepPoint(float(snr), ref_ok / trials, twin_ok / trials, trials,
+                                 hw_ok / trials if hardware else None))
     return points
 
 
@@ -85,10 +101,13 @@ def threshold_snr(snrs: list[float], rates: list[float], level: float = 0.5) -> 
     return None  # never crosses inside the swept range: the threshold is unknown
 
 
-def implementation_loss_db(points: list[SweepPoint]) -> float | None:
+def implementation_loss_db(points: list[SweepPoint], curve: str = "twin") -> float | None:
+    """Loss of the ideal twin ("twin") or the hardware model ("hardware") against the audio-only reference."""
     snrs = [p.snr_db for p in points]
     ref = threshold_snr(snrs, [p.reference_rate for p in points])
-    twin = threshold_snr(snrs, [p.twin_rate for p in points])
+    if curve == "hardware" and any(p.hardware_rate is None for p in points):
+        return None
+    twin = threshold_snr(snrs, [p.twin_rate if curve == "twin" else p.hardware_rate for p in points])
     if ref is None or twin is None:
         return None
     return twin - ref

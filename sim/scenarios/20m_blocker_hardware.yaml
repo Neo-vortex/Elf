@@ -1,0 +1,11 @@
+name: 20 m FT8 at -15 dB with a +60 dB carrier at 15.4 MHz (blocker, hardware receiver)
+lo_hz: 14_060_000
+duration_s: 15.0
+seed: 4
+receiver: {model: hardware, preamp: off, attenuator: 0}
+noise: {type: awgn, dbm_per_hz: -155}       # -121 dBm in 2500 Hz
+stations:
+  - {id: ft8_weak, mode: ft8, dial_hz: 14_074_000, audio_hz: 1500, level_dbm: -136, msg: "CQ EP2ABC LL35"}   # -15 dB SNR
+  - {id: bcast, mode: carrier, rf_hz: 15_400_000, level_dbm: -61}   # +60 dB over the noise in 2500 Hz, inside filter 7 (12-16 MHz)
+receive:
+  - {id: rx_ft8, mode: usb, dial_hz: 14_074_000, decoder: ft8, expect: {contains: ["CQ EP2ABC LL35"]}}

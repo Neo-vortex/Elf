@@ -21,7 +21,7 @@ test: tools
 	cd hardware && $(PYTHON) -m pytest -q
 
 sim: tools
-	cd sim && $(PYTHON) -m neosim run scenarios/*.yaml --workdir ../build/sim --report ../build/sim/report.html --sweep-ft8 -14 -22 1 --trials 20
+	cd sim && $(PYTHON) -m neosim run scenarios/*.yaml --workdir ../build/sim --report ../build/sim/report.html --sweep-ft8 -14 -22 1 --trials 20 --sweep-hardware --hardware-checks
 
 hw:
 	cd hardware && $(PYTHON) -m neohw run --out ../build/hw --characterized characterized --report ../build/hw/report.html
