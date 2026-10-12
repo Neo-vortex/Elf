@@ -29,6 +29,9 @@ parts are selected for availability in the Iranian electronics market.
 - Built-in calibration tone (Si5351 output through a -70 dB pad) for software self-calibration
 - Low-noise instrumentation baseband (LM4562) into a CS5361 audio ADC
 - Muted safe state with all relays released
+- Powered from USB-C or an external 5 V barrel jack with automatic switch-over (external
+  first, no back-feed into the host), reverse-polarity and surge protection; a boost converter
+  and low-noise LDOs give separate analogue, RF and digital rails
 
 ### Connectivity and software
 
@@ -122,9 +125,9 @@ make sim       # digital twin scenarios and FT8 sweep; report in build/sim/repor
 - [x] Clock generation: Si5351C, divide-by-four, path selection
 - [ ] ADC digital interface (CS5361, I2S)
 - [ ] Controller and USB: ESP32-S3, USB-C, ESD protection
-- [ ] Power: source selection, boost converter, low-noise regulators
+- [x] Power: source selection, boost converter, low-noise regulators
 - [ ] Relay drivers, bias-T switching, current and temperature monitoring
-- [ ] Calibration tone path
+- [x] Calibration tone path
 - [ ] Availability survey for the remaining parts
 
 ### Board
