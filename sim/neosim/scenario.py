@@ -1,6 +1,7 @@
 """Scenario files: imaginary stations and receive jobs."""
 from __future__ import annotations
 
+import math
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -17,6 +18,9 @@ STATION_MODES = {"ft8", "cw", "carrier"}
 RECEIVE_MODES = {"usb", "lsb", "cw"}
 DECODERS = {"ft8", "cw"}
 _BANDWIDTH_HZ = {"ft8": 50.0, "cw": 100.0, "carrier": 1.0}
+RECEIVER_MODELS = {"ideal", "hardware"}
+ATTENUATOR_DB = {0, 20}
+SNR_BANDWIDTH_HZ = 2500.0
 
 
 class ScenarioError(ValueError):
@@ -25,14 +29,17 @@ class ScenarioError(ValueError):
 
 @dataclass(frozen=True)
 class Station:
+    """`snr_db` is the power while active (key down, FT8 tones) over the noise in 2500 Hz;
+    `level_dbm` is the same power at the antenna (absolute scenarios)."""
     id: str
     mode: str
     rf_hz: float
-    snr_db: float
+    snr_db: float | None
     msg: str | None = None
     text: str | None = None
     wpm: float | None = None
     audio_hz: float | None = None
+    level_dbm: float | None = None
 
     @property
     def bandwidth_hz(self) -> float:
@@ -49,7 +56,16 @@ class Receive:
 
 
 @dataclass(frozen=True)
+class Receiver:
+    model: str = "ideal"
+    preamp: bool = False
+    attenuator_db: int = 0
+
+
+@dataclass(frozen=True)
 class Scenario:
+    """`noise_dbm_per_hz` is set in absolute scenarios (band noise at the antenna, stations
+    given as level_dbm); the ideal receiver then works from the equivalent SNRs."""
     name: str
     lo_hz: float
     duration_s: float
@@ -57,6 +73,8 @@ class Scenario:
     noise_dbfs: float
     stations: tuple[Station, ...]
     receive: tuple[Receive, ...]
+    receiver: Receiver = Receiver()
+    noise_dbm_per_hz: float | None = None
 
 
 def _require(d: dict, key: str, where: str):
@@ -74,19 +92,28 @@ def _num(value, key: str, where: str, cast=float):
         raise ScenarioError(f"{where}: {key} must be a number, got {value!r}") from None
 
 
-def _station(d: dict) -> Station:
+def _station(d: dict, noise_dbm_per_hz: float | None) -> Station:
     sid = _require(d, "id", "station")
     where = f"station {sid}"
     mode = _require(d, "mode", where)
     if mode not in STATION_MODES:
         raise ScenarioError(f"{where}: unknown station mode '{mode}'")
-    snr = _num(_require(d, "snr_db", where), "snr_db", where)
+    level = None
+    if noise_dbm_per_hz is None:
+        if "level_dbm" in d:
+            raise ScenarioError(f"{where}: level_dbm needs absolute noise (noise.dbm_per_hz); use snr_db")
+        snr = _num(_require(d, "snr_db", where), "snr_db", where)
+    else:
+        if "snr_db" in d:
+            raise ScenarioError(f"{where}: an absolute scenario (noise.dbm_per_hz) gives stations as level_dbm, not snr_db")
+        level = _num(_require(d, "level_dbm", where), "level_dbm", where)
+        snr = level - (noise_dbm_per_hz + 10 * math.log10(SNR_BANDWIDTH_HZ))
     if mode == "ft8":
         audio = _num(_require(d, "audio_hz", where), "audio_hz", where)
         if not 200 <= audio <= 3000:
             raise ScenarioError(f"{where}: audio_hz must be 200..3000, got {audio}")
         return Station(sid, mode, _num(_require(d, "dial_hz", where), "dial_hz", where) + audio, snr,
-                       msg=str(_require(d, "msg", where)), audio_hz=audio)
+                       msg=str(_require(d, "msg", where)), audio_hz=audio, level_dbm=level)
     rf = _num(_require(d, "rf_hz", where), "rf_hz", where)
     if mode == "cw":
         text = str(_require(d, "text", where))
@@ -97,8 +124,32 @@ def _station(d: dict) -> Station:
         wpm = _num(_require(d, "wpm", where), "wpm", where)
         if not 5 <= wpm <= 60:
             raise ScenarioError(f"{where}: wpm must be 5..60, got {wpm}")
-        return Station(sid, mode, rf, snr, text=text, wpm=wpm)
-    return Station(sid, mode, rf, snr)
+        return Station(sid, mode, rf, snr, text=text, wpm=wpm, level_dbm=level)
+    return Station(sid, mode, rf, snr, level_dbm=level)
+
+
+def _receiver(d) -> Receiver:
+    if d is None:
+        return Receiver()
+    if not isinstance(d, dict):
+        raise ScenarioError("receiver must be a mapping")
+    unknown = set(d) - {"model", "preamp", "attenuator"}
+    if unknown:
+        raise ScenarioError(f"receiver: unknown key(s) {sorted(unknown)}")
+    model = d.get("model", "ideal")
+    if model not in RECEIVER_MODELS:
+        raise ScenarioError(f"receiver: unknown model '{model}' (ideal or hardware)")
+    preamp = d.get("preamp", "off")
+    # YAML 1.1 reads a bare on/off as a boolean
+    preamp = {True: "on", False: "off"}.get(preamp, preamp)
+    if preamp not in ("on", "off"):
+        raise ScenarioError(f"receiver: preamp must be on or off, got {preamp!r}")
+    att = _num(d.get("attenuator", 0), "attenuator", "receiver", int)
+    if att not in ATTENUATOR_DB:
+        raise ScenarioError(f"receiver: attenuator must be 0 or 20, got {att}")
+    if model == "ideal" and (preamp == "on" or att):
+        raise ScenarioError("receiver: preamp and attenuator apply to the hardware model only")
+    return Receiver(model, preamp == "on", att)
 
 
 def _receive(d: dict, lo_hz: float) -> Receive:
@@ -135,8 +186,17 @@ def parse_scenario(data: dict) -> Scenario:
         raise ScenarioError(f"duration_s must be 1..60, got {duration}")
     noise = data.get("noise", {"type": "awgn"})
     if not isinstance(noise, dict) or noise.get("type") != "awgn":
-        raise ScenarioError(f"noise type '{noise.get('type')}' not supported yet: only awgn")
-    stations = tuple(_station(s) for s in data.get("stations", []))
+        raise ScenarioError(f"noise type '{noise.get('type') if isinstance(noise, dict) else noise}' "
+                            "not supported yet: only awgn")
+    absolute = None
+    if "dbm_per_hz" in noise:
+        absolute = _num(noise["dbm_per_hz"], "dbm_per_hz", "noise")
+        if not -200 <= absolute <= -50:
+            raise ScenarioError(f"noise: dbm_per_hz must be -200..-50, got {absolute}")
+    receiver = _receiver(data.get("receiver"))
+    if receiver.model == "hardware" and absolute is None:
+        raise ScenarioError("the hardware receiver needs absolute levels: noise.dbm_per_hz and station level_dbm")
+    stations = tuple(_station(s, absolute) for s in data.get("stations", []))
     ids = [s.id for s in stations]
     dupes = {i for i in ids if ids.count(i) > 1}
     if dupes:
@@ -145,9 +205,11 @@ def parse_scenario(data: dict) -> Scenario:
     adc = data.get("adc", {})
     if not isinstance(adc, dict):
         raise ScenarioError("adc must be a mapping")
+    if receiver.model == "hardware" and adc:
+        raise ScenarioError("adc settings apply to the ideal receiver only: the hardware model uses the CS5361 data")
     return Scenario(name, lo, duration, _num(data.get("seed", 0), "seed", "scenario", int),
                     _num(adc.get("noise_dbfs", -100.0), "noise_dbfs", "adc"),
-                    stations, receive)
+                    stations, receive, receiver, absolute)
 
 
 def load_scenario(path: str | Path) -> Scenario:

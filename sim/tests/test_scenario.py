@@ -1,6 +1,8 @@
+import math
+
 import pytest
 
-from neosim.scenario import ScenarioError, parse_scenario
+from neosim.scenario import Receiver, ScenarioError, parse_scenario
 
 
 def base():
@@ -82,4 +84,61 @@ def test_station_entry_must_be_mapping():
     d = base()
     d["stations"].append("oops")
     with pytest.raises(ScenarioError, match="mapping"):
+        parse_scenario(d)
+
+
+def absolute(model="hardware", **receiver):
+    d = base()
+    d["noise"] = {"type": "awgn", "dbm_per_hz": -155}
+    for st in d["stations"]:
+        st["level_dbm"] = st.pop("snr_db") - 121.0
+    d["receiver"] = {"model": model, **receiver}
+    return d
+
+
+def test_absolute_scenario_keeps_levels_and_derives_snr():
+    s = parse_scenario(absolute(preamp="on", attenuator=20))
+    assert s.noise_dbm_per_hz == -155 and s.receiver == Receiver("hardware", True, 20)
+    a = s.stations[0]
+    assert a.level_dbm == -131.0
+    # SNR in 2500 Hz: −131 − (−155 + 33.98)
+    assert a.snr_db == pytest.approx(-131 + 155 - 10 * math.log10(2500))
+
+
+def test_yaml_on_off_booleans_are_accepted_for_the_preamp():
+    assert parse_scenario(absolute(preamp=True)).receiver.preamp is True
+    assert parse_scenario(absolute(preamp=False)).receiver.preamp is False
+
+
+def test_default_receiver_is_ideal_and_snr_mode():
+    s = parse_scenario(base())
+    assert s.receiver == Receiver() and s.noise_dbm_per_hz is None and s.stations[0].level_dbm is None
+
+
+@pytest.mark.parametrize(
+    "data, message",
+    [
+        (lambda: {**base(), "receiver": {"model": "hardware"}}, "needs absolute levels"),
+        (lambda: {**absolute(), "adc": {"noise_dbfs": -90}}, "ideal receiver only"),
+        (lambda: absolute(model="ideal", preamp="on"), "hardware model only"),
+        (lambda: absolute(attenuator=10), "0 or 20"),
+        (lambda: absolute(preamp="maybe"), "on or off"),
+        (lambda: absolute(model="analog"), "unknown model"),
+        (lambda: {**absolute(), "receiver": {"model": "hardware", "lna": "on"}}, "unknown key"),
+        (lambda: {**absolute(), "noise": {"type": "awgn", "dbm_per_hz": -20}}, "-200..-50"),
+    ],
+)
+def test_receiver_and_level_errors(data, message):
+    with pytest.raises(ScenarioError, match=message):
+        parse_scenario(data())
+
+
+def test_snr_and_level_cannot_be_mixed():
+    d = absolute()
+    d["stations"][1]["snr_db"] = 3
+    with pytest.raises(ScenarioError, match="not snr_db"):
+        parse_scenario(d)
+    d = base()
+    d["stations"][0]["level_dbm"] = -100
+    with pytest.raises(ScenarioError, match="needs absolute noise"):
         parse_scenario(d)
