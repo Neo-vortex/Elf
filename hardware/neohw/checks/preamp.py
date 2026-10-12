@@ -19,6 +19,9 @@ from neohw.rfmath import noise_figure_db, stability, two_tone
 from neohw.spice import Load, Noise, Op, Port, Source, Sp, Supply, Tran, node_name, to_deck
 
 BAND = (1e6, 54e6)
+# characterisation grid for the twin: down to the bank's 0.1 MHz and up to 5x 54 MHz (the mixer's
+# 5th-harmonic response folds the preamp's output noise there into the window)
+CHAR_BAND = (0.1e6, 300e6)
 GAIN_DB, GAIN_TOL_DB = 14.0, 1.0
 NF_MAX_DB = 5.0
 OIP3_MIN_DBM = 22.0
@@ -53,7 +56,7 @@ def corner_decks(volts: float, bf: float, temp: float) -> dict:
                                             _supply(amp, volts)], [Op(), STAB_SWEEP], extra_lines=[_temp(temp)])
     src = Source(amp.ports["rf_in"], "rf")
     nz = to_deck(amp.circuit, "preamp noise", [src, Load(amp.ports["rf_out"]), _supply(amp, volts)],
-                 [Noise(amp.ports["rf_out"], src, BAND[0], BAND[1], 20)], extra_lines=[_temp(temp)])
+                 [Noise(amp.ports["rf_out"], src, CHAR_BAND[0], CHAR_BAND[1], 20)], extra_lines=[_temp(temp)])
     tt = []
     for f1 in TONES_HZ:
         tones = Source(amp.ports["rf_in"], "rf", tones=((f1, TONE_DBM), (f1 + DF, TONE_DBM)))
@@ -79,9 +82,13 @@ def evaluate(corners=CORNERS) -> list[dict]:
         s = _sparams(sp)
         k, delta = stability(*s)
         band = (f >= BAND[0]) & (f <= BAND[1])
+        char = (f >= CHAR_BAND[0]) & (f <= CHAR_BAND[1])
         nodes = b["nodes"]
         supply_a = (op[f"v({nodes['sense_hi']})"][0].real - op[f"v({nodes['sense_lo']})"][0].real) / rs
         nz = nz_res[i]["a0.raw"][0].data
+        nz_f = nz["frequency"].real
+        nz_band = (nz_f >= BAND[0]) & (nz_f <= BAND[1])
+        nf_all = noise_figure_db(nz["inoise_spectrum"].real, t_kelvin=b["corner"][2] + 273.15)
         oip3 = []
         for j, f1 in enumerate(TONES_HZ):
             d = tt_res[i * len(TONES_HZ) + j]["a0.raw"][0].data
@@ -92,8 +99,9 @@ def evaluate(corners=CORNERS) -> list[dict]:
                     "k_min": float(k.min()), "delta_max": float(delta.max()),
                     # the sense resistor carries the collector current plus the BC857B's emitter current
                     "collector_current_ma": float(supply_a * 1e3),
-                    "nf_f": nz["frequency"].real,
-                    "nf_db": noise_figure_db(nz["inoise_spectrum"].real, t_kelvin=b["corner"][2] + 273.15),
+                    "char_f": f[char], "char_gain_db": db(s[1])[char],
+                    "nf_f_all": nz_f, "nf_db_all": nf_all,
+                    "nf_f": nz_f[nz_band], "nf_db": nf_all[nz_band],
                     "oip3_dbm": min(oip3)})
     return out
 
@@ -144,7 +152,9 @@ def run(out_dir: Path, char_dir: Path) -> BlockResult:
         "svg": export.svg_diagram(blk.circuit, out_dir / "preamp.svg"),
         "characterisation": charfile.write(
             char_dir / "preamp.json", "preamp", "pass" if result.passed else "fail",
-            {"freq_hz": fb.tolist(), "gain_db": nom["gain_db"].tolist(), "nf_db": nf_on_grid.tolist(),
+            {"freq_hz": nom["char_f"].tolist(), "gain_db": nom["char_gain_db"].tolist(),
+             "nf_db": np.interp(nom["char_f"], nom["nf_f_all"], nom["nf_db_all"]).tolist(),
+             "grid_note": "nominal corner; the checks cover 1–54 MHz, the grid extends to 0.1–300 MHz for the twin",
              "oip3_dbm": nom["oip3_dbm"], "oip3_min_corner_dbm": oip3_min, "bypass_loss_db": byp,
              "checks": [c.__dict__ for c in checks]}),
     }
