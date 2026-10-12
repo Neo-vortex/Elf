@@ -2,7 +2,7 @@
  "schema_version": 1,
  "block": "bpf_bank",
  "status": "pass",
- "generated_by": "8d84ca1",
+ "generated_by": "de8739c",
  "ripple_db": 0.02,
  "q_assumed": 30.0,
  "selection_rule": "filter n with lo_n <= f < hi_n; f = 54 MHz -> 10",
@@ -13,66 +13,97 @@
    "hi_hz": 500000.0,
    "hpf_order": 5,
    "lpf_order": 9,
-   "il_db": 1.8526367803474189,
-   "rl_db": 18.525701830916375,
+   "il_db": 1.8526477956349587,
+   "rl_db": 18.521926532754456,
    "rej3f_db": null,
+   "il_worst_q_db": 3.9920187358375756,
    "mc_runs": 200,
    "mc_passed": 200,
    "s2p": "bpf_1.s2p",
    "inductors": [
     {
-     "position": 2,
-     "kind": "L_shunt",
+     "filter": 1,
+     "group": "f1_p2",
+     "refs": [
+      "L1",
+      "L2"
+     ],
+     "buy_h": [
+      3.9e-05,
+      2.2e-05
+     ],
      "target_h": 6.094572129821718e-05,
+     "select": "sum within \u00b13 % of target_h"
+    },
+    {
+     "filter": 1,
+     "group": "f1_p4",
+     "refs": [
+      "L3",
+      "L4"
+     ],
      "buy_h": [
       3.9e-05,
       2.2e-05
-     ]
-    },
-    {
-     "position": 4,
-     "kind": "L_shunt",
+     ],
      "target_h": 6.09457212982172e-05,
-     "buy_h": [
-      3.9e-05,
-      2.2e-05
-     ]
+     "select": "sum within \u00b13 % of target_h"
     },
     {
-     "position": 7,
-     "kind": "L_series",
+     "filter": 1,
+     "group": "f1_p7",
+     "refs": [
+      "L5",
+      "L6"
+     ],
+     "buy_h": [
+      2.2e-05,
+      4.7000000000000005e-07
+     ],
      "target_h": 2.243290921321993e-05,
-     "buy_h": [
-      2.2e-05,
-      4.7e-07
-     ]
+     "select": "sum within \u00b13 % of target_h"
     },
     {
-     "position": 9,
-     "kind": "L_series",
+     "filter": 1,
+     "group": "f1_p9",
+     "refs": [
+      "L7",
+      "L8"
+     ],
+     "buy_h": [
+      1.8e-05,
+      8.2e-06
+     ],
      "target_h": 2.6348486402155528e-05,
+     "select": "sum within \u00b13 % of target_h"
+    },
+    {
+     "filter": 1,
+     "group": "f1_p11",
+     "refs": [
+      "L9",
+      "L10"
+     ],
      "buy_h": [
       1.8e-05,
       8.2e-06
-     ]
-    },
-    {
-     "position": 11,
-     "kind": "L_series",
+     ],
      "target_h": 2.6348486402155535e-05,
-     "buy_h": [
-      1.8e-05,
-      8.2e-06
-     ]
+     "select": "sum within \u00b13 % of target_h"
     },
     {
-     "position": 13,
-     "kind": "L_series",
-     "target_h": 2.2432909213219943e-05,
+     "filter": 1,
+     "group": "f1_p13",
+     "refs": [
+      "L11",
+      "L12"
+     ],
      "buy_h": [
       2.2e-05,
-      4.7e-07
-     ]
+      4.7000000000000005e-07
+     ],
+     "target_h": 2.2432909213219943e-05,
+     "select": "sum within \u00b13 % of target_h"
     }
    ]
   },
@@ -82,66 +113,97 @@
    "hi_hz": 1700000.0,
    "hpf_order": 5,
    "lpf_order": 9,
-   "il_db": 1.726200105524268,
-   "rl_db": 20.256156242978385,
+   "il_db": 1.7262418578377274,
+   "rl_db": 20.2428100304072,
    "rej3f_db": null,
+   "il_worst_q_db": 3.1180774645193394,
    "mc_runs": 200,
    "mc_passed": 200,
    "s2p": "bpf_2.s2p",
    "inductors": [
     {
-     "position": 2,
-     "kind": "L_shunt",
+     "filter": 2,
+     "group": "f2_p2",
+     "refs": [
+      "L13",
+      "L14"
+     ],
+     "buy_h": [
+      1.2e-05,
+      1.8000000000000002e-07
+     ],
      "target_h": 1.2189144259643435e-05,
-     "buy_h": [
-      1.2e-05,
-      1.8e-07
-     ]
+     "select": "sum within \u00b13 % of target_h"
     },
     {
-     "position": 4,
-     "kind": "L_shunt",
+     "filter": 2,
+     "group": "f2_p4",
+     "refs": [
+      "L15",
+      "L16"
+     ],
+     "buy_h": [
+      1.2e-05,
+      1.8000000000000002e-07
+     ],
      "target_h": 1.2189144259643439e-05,
-     "buy_h": [
-      1.2e-05,
-      1.8e-07
-     ]
+     "select": "sum within \u00b13 % of target_h"
     },
     {
-     "position": 7,
-     "kind": "L_series",
+     "filter": 2,
+     "group": "f2_p7",
+     "refs": [
+      "L17",
+      "L18"
+     ],
+     "buy_h": [
+      5.6e-06,
+      1e-06
+     ],
      "target_h": 6.597914474476448e-06,
-     "buy_h": [
-      5.6e-06,
-      1e-06
-     ]
+     "select": "sum within \u00b13 % of target_h"
     },
     {
-     "position": 9,
-     "kind": "L_series",
+     "filter": 2,
+     "group": "f2_p9",
+     "refs": [
+      "L19",
+      "L20"
+     ],
+     "buy_h": [
+      6.799999999999999e-06,
+      1e-06
+     ],
      "target_h": 7.74955482416339e-06,
-     "buy_h": [
-      6.8e-06,
-      1e-06
-     ]
+     "select": "sum within \u00b13 % of target_h"
     },
     {
-     "position": 11,
-     "kind": "L_series",
+     "filter": 2,
+     "group": "f2_p11",
+     "refs": [
+      "L21",
+      "L22"
+     ],
+     "buy_h": [
+      6.799999999999999e-06,
+      1e-06
+     ],
      "target_h": 7.749554824163392e-06,
-     "buy_h": [
-      6.8e-06,
-      1e-06
-     ]
+     "select": "sum within \u00b13 % of target_h"
     },
     {
-     "position": 13,
-     "kind": "L_series",
-     "target_h": 6.597914474476452e-06,
+     "filter": 2,
+     "group": "f2_p13",
+     "refs": [
+      "L23",
+      "L24"
+     ],
      "buy_h": [
       5.6e-06,
       1e-06
-     ]
+     ],
+     "target_h": 6.597914474476452e-06,
+     "select": "sum within \u00b13 % of target_h"
     }
    ]
   },
@@ -151,66 +213,97 @@
    "hi_hz": 2500000.0,
    "hpf_order": 5,
    "lpf_order": 9,
-   "il_db": 1.9141936923791034,
-   "rl_db": 18.09528571648703,
-   "rej3f_db": 73.69849125241726,
+   "il_db": 1.9143705095270491,
+   "rl_db": 18.058920690228963,
+   "rej3f_db": 73.70593113151659,
+   "il_worst_q_db": 2.313736475467481,
    "mc_runs": 200,
    "mc_passed": 200,
    "s2p": "bpf_3.s2p",
    "inductors": [
     {
-     "position": 2,
-     "kind": "L_shunt",
+     "filter": 3,
+     "group": "f3_p2",
+     "refs": [
+      "L25",
+      "L26"
+     ],
+     "buy_h": [
+      1.8e-06,
+      1.8e-06
+     ],
      "target_h": 3.585042429306893e-06,
+     "select": "sum within \u00b13 % of target_h"
+    },
+    {
+     "filter": 3,
+     "group": "f3_p4",
+     "refs": [
+      "L27",
+      "L28"
+     ],
      "buy_h": [
       1.8e-06,
       1.8e-06
-     ]
-    },
-    {
-     "position": 4,
-     "kind": "L_shunt",
+     ],
      "target_h": 3.5850424293068936e-06,
-     "buy_h": [
-      1.8e-06,
-      1.8e-06
-     ]
+     "select": "sum within \u00b13 % of target_h"
     },
     {
-     "position": 7,
-     "kind": "L_series",
+     "filter": 3,
+     "group": "f3_p7",
+     "refs": [
+      "L29",
+      "L30"
+     ],
+     "buy_h": [
+      3.2999999999999997e-06,
+      1.2e-06
+     ],
      "target_h": 4.486581842643985e-06,
-     "buy_h": [
-      3.3e-06,
-      1.2e-06
-     ]
+     "select": "sum within \u00b13 % of target_h"
     },
     {
-     "position": 9,
-     "kind": "L_series",
+     "filter": 3,
+     "group": "f3_p9",
+     "refs": [
+      "L31",
+      "L32"
+     ],
+     "buy_h": [
+      4.7e-06,
+      5.6e-07
+     ],
      "target_h": 5.269697280431106e-06,
+     "select": "sum within \u00b13 % of target_h"
+    },
+    {
+     "filter": 3,
+     "group": "f3_p11",
+     "refs": [
+      "L33",
+      "L34"
+     ],
      "buy_h": [
       4.7e-06,
       5.6e-07
-     ]
-    },
-    {
-     "position": 11,
-     "kind": "L_series",
+     ],
      "target_h": 5.269697280431107e-06,
-     "buy_h": [
-      4.7e-06,
-      5.6e-07
-     ]
+     "select": "sum within \u00b13 % of target_h"
     },
     {
-     "position": 13,
-     "kind": "L_series",
-     "target_h": 4.4865818426439885e-06,
+     "filter": 3,
+     "group": "f3_p13",
+     "refs": [
+      "L35",
+      "L36"
+     ],
      "buy_h": [
-      3.3e-06,
+      3.2999999999999997e-06,
       1.2e-06
-     ]
+     ],
+     "target_h": 4.4865818426439885e-06,
+     "select": "sum within \u00b13 % of target_h"
     }
    ]
   },
@@ -220,66 +313,97 @@
    "hi_hz": 4500000.0,
    "hpf_order": 5,
    "lpf_order": 9,
-   "il_db": 1.6985397162813098,
-   "rl_db": 20.428006737680207,
-   "rej3f_db": 54.89649616029918,
+   "il_db": 1.6986527674659686,
+   "rl_db": 20.367765756334208,
+   "rej3f_db": 54.90454457528653,
+   "il_worst_q_db": 2.2711522639350057,
    "mc_runs": 200,
    "mc_passed": 200,
    "s2p": "bpf_4.s2p",
    "inductors": [
     {
-     "position": 2,
-     "kind": "L_shunt",
+     "filter": 4,
+     "group": "f4_p2",
+     "refs": [
+      "L37",
+      "L38"
+     ],
+     "buy_h": [
+      2.2e-06,
+      2.2e-07
+     ],
      "target_h": 2.437828851928687e-06,
+     "select": "sum within \u00b13 % of target_h"
+    },
+    {
+     "filter": 4,
+     "group": "f4_p4",
+     "refs": [
+      "L39",
+      "L40"
+     ],
      "buy_h": [
       2.2e-06,
       2.2e-07
-     ]
-    },
-    {
-     "position": 4,
-     "kind": "L_shunt",
+     ],
      "target_h": 2.4378288519286877e-06,
-     "buy_h": [
-      2.2e-06,
-      2.2e-07
-     ]
+     "select": "sum within \u00b13 % of target_h"
     },
     {
-     "position": 7,
-     "kind": "L_series",
+     "filter": 4,
+     "group": "f4_p7",
+     "refs": [
+      "L41",
+      "L42"
+     ],
+     "buy_h": [
+      1.5e-06,
+      1e-06
+     ],
      "target_h": 2.4925454681355473e-06,
-     "buy_h": [
-      1.5e-06,
-      1e-06
-     ]
+     "select": "sum within \u00b13 % of target_h"
     },
     {
-     "position": 9,
-     "kind": "L_series",
+     "filter": 4,
+     "group": "f4_p9",
+     "refs": [
+      "L43",
+      "L44"
+     ],
+     "buy_h": [
+      2.7e-06,
+      2.2e-07
+     ],
      "target_h": 2.927609600239503e-06,
+     "select": "sum within \u00b13 % of target_h"
+    },
+    {
+     "filter": 4,
+     "group": "f4_p11",
+     "refs": [
+      "L45",
+      "L46"
+     ],
      "buy_h": [
       2.7e-06,
       2.2e-07
-     ]
-    },
-    {
-     "position": 11,
-     "kind": "L_series",
+     ],
      "target_h": 2.927609600239504e-06,
-     "buy_h": [
-      2.7e-06,
-      2.2e-07
-     ]
+     "select": "sum within \u00b13 % of target_h"
     },
     {
-     "position": 13,
-     "kind": "L_series",
-     "target_h": 2.492545468135549e-06,
+     "filter": 4,
+     "group": "f4_p13",
+     "refs": [
+      "L47",
+      "L48"
+     ],
      "buy_h": [
       1.5e-06,
       1e-06
-     ]
+     ],
+     "target_h": 2.492545468135549e-06,
+     "select": "sum within \u00b13 % of target_h"
     }
    ]
   },
@@ -289,64 +413,93 @@
    "hi_hz": 7500000.0,
    "hpf_order": 5,
    "lpf_order": 9,
-   "il_db": 1.792559423557651,
-   "rl_db": 17.774071697631705,
-   "rej3f_db": 62.939529517540656,
+   "il_db": 1.7929445255631637,
+   "rl_db": 17.685998906379762,
+   "rej3f_db": 62.957479270628944,
+   "il_worst_q_db": 2.3074892972948704,
    "mc_runs": 200,
    "mc_passed": 200,
    "s2p": "bpf_5.s2p",
    "inductors": [
     {
-     "position": 2,
-     "kind": "L_shunt",
+     "filter": 5,
+     "group": "f5_p2",
+     "refs": [
+      "L49",
+      "L50"
+     ],
+     "buy_h": [
+      1.2e-06,
+      1.5000000000000002e-07
+     ],
      "target_h": 1.354349362182604e-06,
-     "buy_h": [
-      1.2e-06,
-      1.5e-07
-     ]
+     "select": "sum within \u00b13 % of target_h"
     },
     {
-     "position": 4,
-     "kind": "L_shunt",
+     "filter": 5,
+     "group": "f5_p4",
+     "refs": [
+      "L51",
+      "L52"
+     ],
+     "buy_h": [
+      1.2e-06,
+      1.5000000000000002e-07
+     ],
      "target_h": 1.3543493621826042e-06,
-     "buy_h": [
-      1.2e-06,
-      1.5e-07
-     ]
+     "select": "sum within \u00b13 % of target_h"
     },
     {
-     "position": 7,
-     "kind": "L_series",
+     "filter": 5,
+     "group": "f5_p7",
+     "refs": [
+      "L53"
+     ],
+     "buy_h": [
+      1.5e-06
+     ],
      "target_h": 1.4955272808813284e-06,
-     "buy_h": [
-      1.5e-06
-     ]
+     "select": "sum within \u00b13 % of target_h"
     },
     {
-     "position": 9,
-     "kind": "L_series",
+     "filter": 5,
+     "group": "f5_p9",
+     "refs": [
+      "L54",
+      "L55"
+     ],
+     "buy_h": [
+      1.2e-06,
+      5.6e-07
+     ],
      "target_h": 1.7565657601437018e-06,
+     "select": "sum within \u00b13 % of target_h"
+    },
+    {
+     "filter": 5,
+     "group": "f5_p11",
+     "refs": [
+      "L56",
+      "L57"
+     ],
      "buy_h": [
       1.2e-06,
       5.6e-07
-     ]
-    },
-    {
-     "position": 11,
-     "kind": "L_series",
+     ],
      "target_h": 1.756565760143702e-06,
-     "buy_h": [
-      1.2e-06,
-      5.6e-07
-     ]
+     "select": "sum within \u00b13 % of target_h"
     },
     {
-     "position": 13,
-     "kind": "L_series",
-     "target_h": 1.4955272808813293e-06,
+     "filter": 5,
+     "group": "f5_p13",
+     "refs": [
+      "L58"
+     ],
      "buy_h": [
       1.5e-06
-     ]
+     ],
+     "target_h": 1.4955272808813293e-06,
+     "select": "sum within \u00b13 % of target_h"
     }
    ]
   },
@@ -356,64 +509,93 @@
    "hi_hz": 12000000.0,
    "hpf_order": 5,
    "lpf_order": 9,
-   "il_db": 1.877643880895433,
-   "rl_db": 17.61129422754429,
-   "rej3f_db": 67.74610537894502,
+   "il_db": 1.87853979844329,
+   "rl_db": 17.463407298440885,
+   "rej3f_db": 67.77978428168241,
+   "il_worst_q_db": 2.3683417944126606,
    "mc_runs": 200,
    "mc_passed": 200,
    "s2p": "bpf_6.s2p",
    "inductors": [
     {
-     "position": 2,
-     "kind": "L_shunt",
+     "filter": 6,
+     "group": "f6_p2",
+     "refs": [
+      "L59"
+     ],
+     "buy_h": [
+      8.200000000000001e-07
+     ],
      "target_h": 8.126096173095623e-07,
-     "buy_h": [
-      8.2e-07
-     ]
+     "select": "sum within \u00b13 % of target_h"
     },
     {
-     "position": 4,
-     "kind": "L_shunt",
+     "filter": 6,
+     "group": "f6_p4",
+     "refs": [
+      "L60"
+     ],
+     "buy_h": [
+      8.200000000000001e-07
+     ],
      "target_h": 8.126096173095625e-07,
-     "buy_h": [
-      8.2e-07
-     ]
+     "select": "sum within \u00b13 % of target_h"
     },
     {
-     "position": 7,
-     "kind": "L_series",
+     "filter": 6,
+     "group": "f6_p7",
+     "refs": [
+      "L61",
+      "L62"
+     ],
+     "buy_h": [
+      8.200000000000001e-07,
+      1.2000000000000002e-07
+     ],
      "target_h": 9.347045505508302e-07,
-     "buy_h": [
-      8.2e-07,
-      1.2e-07
-     ]
+     "select": "sum within \u00b13 % of target_h"
     },
     {
-     "position": 9,
-     "kind": "L_series",
+     "filter": 6,
+     "group": "f6_p9",
+     "refs": [
+      "L63",
+      "L64"
+     ],
+     "buy_h": [
+      1e-06,
+      1.0000000000000001e-07
+     ],
      "target_h": 1.0978536000898136e-06,
-     "buy_h": [
-      1e-06,
-      1e-07
-     ]
+     "select": "sum within \u00b13 % of target_h"
     },
     {
-     "position": 11,
-     "kind": "L_series",
+     "filter": 6,
+     "group": "f6_p11",
+     "refs": [
+      "L65",
+      "L66"
+     ],
+     "buy_h": [
+      1e-06,
+      1.0000000000000001e-07
+     ],
      "target_h": 1.0978536000898138e-06,
-     "buy_h": [
-      1e-06,
-      1e-07
-     ]
+     "select": "sum within \u00b13 % of target_h"
     },
     {
-     "position": 13,
-     "kind": "L_series",
-     "target_h": 9.347045505508307e-07,
+     "filter": 6,
+     "group": "f6_p13",
+     "refs": [
+      "L67",
+      "L68"
+     ],
      "buy_h": [
-      8.2e-07,
-      1.2e-07
-     ]
+      8.200000000000001e-07,
+      1.2000000000000002e-07
+     ],
+     "target_h": 9.347045505508307e-07,
+     "select": "sum within \u00b13 % of target_h"
     }
    ]
   },
@@ -423,55 +605,79 @@
    "hi_hz": 16000000.0,
    "hpf_order": 5,
    "lpf_order": 7,
-   "il_db": 1.5139526219423014,
-   "rl_db": 17.182712343255957,
-   "rej3f_db": 60.6771274945617,
+   "il_db": 1.5149443892321788,
+   "rl_db": 17.009978464925947,
+   "rej3f_db": 60.740234185091694,
+   "il_worst_q_db": 1.7462798008522555,
    "mc_runs": 200,
-   "mc_passed": 199,
+   "mc_passed": 198,
    "s2p": "bpf_7.s2p",
    "inductors": [
     {
-     "position": 2,
-     "kind": "L_shunt",
+     "filter": 7,
+     "group": "f7_p2",
+     "refs": [
+      "L69",
+      "L70"
+     ],
+     "buy_h": [
+      3.9e-07,
+      1.2000000000000002e-07
+     ],
      "target_h": 5.078810108184765e-07,
-     "buy_h": [
-      3.9e-07,
-      1.2e-07
-     ]
+     "select": "sum within \u00b13 % of target_h"
     },
     {
-     "position": 4,
-     "kind": "L_shunt",
+     "filter": 7,
+     "group": "f7_p4",
+     "refs": [
+      "L71",
+      "L72"
+     ],
+     "buy_h": [
+      3.9e-07,
+      1.2000000000000002e-07
+     ],
      "target_h": 5.078810108184766e-07,
-     "buy_h": [
-      3.9e-07,
-      1.2e-07
-     ]
+     "select": "sum within \u00b13 % of target_h"
     },
     {
-     "position": 7,
-     "kind": "L_series",
+     "filter": 7,
+     "group": "f7_p7",
+     "refs": [
+      "L73"
+     ],
+     "buy_h": [
+      6.800000000000001e-07
+     ],
      "target_h": 6.864988352664276e-07,
-     "buy_h": [
-      6.8e-07
-     ]
+     "select": "sum within \u00b13 % of target_h"
     },
     {
-     "position": 9,
-     "kind": "L_series",
+     "filter": 7,
+     "group": "f7_p9",
+     "refs": [
+      "L74",
+      "L75"
+     ],
+     "buy_h": [
+      6.800000000000001e-07,
+      1.2000000000000002e-07
+     ],
      "target_h": 7.905470399231043e-07,
-     "buy_h": [
-      6.8e-07,
-      1.2e-07
-     ]
+     "select": "sum within \u00b13 % of target_h"
     },
     {
-     "position": 11,
-     "kind": "L_series",
-     "target_h": 6.86498835266428e-07,
+     "filter": 7,
+     "group": "f7_p11",
+     "refs": [
+      "L76"
+     ],
      "buy_h": [
-      6.8e-07
-     ]
+      6.800000000000001e-07
+     ],
+     "target_h": 6.86498835266428e-07,
+     "select": "sum within \u00b13 % of target_h"
     }
    ]
   },
@@ -481,55 +687,79 @@
    "hi_hz": 22000000.0,
    "hpf_order": 5,
    "lpf_order": 7,
-   "il_db": 1.5053563683835847,
-   "rl_db": 17.41172165387377,
-   "rej3f_db": 58.851700302137104,
+   "il_db": 1.5076973943153307,
+   "rl_db": 17.170814481624,
+   "rej3f_db": 58.940687968786165,
+   "il_worst_q_db": 1.7627859714393332,
    "mc_runs": 200,
    "mc_passed": 199,
    "s2p": "bpf_8.s2p",
    "inductors": [
     {
-     "position": 2,
-     "kind": "L_shunt",
+     "filter": 8,
+     "group": "f8_p2",
+     "refs": [
+      "L77"
+     ],
+     "buy_h": [
+      3.9e-07
+     ],
      "target_h": 3.8091075811385736e-07,
-     "buy_h": [
-      3.9e-07
-     ]
+     "select": "sum within \u00b13 % of target_h"
     },
     {
-     "position": 4,
-     "kind": "L_shunt",
+     "filter": 8,
+     "group": "f8_p4",
+     "refs": [
+      "L78"
+     ],
+     "buy_h": [
+      3.9e-07
+     ],
      "target_h": 3.8091075811385746e-07,
-     "buy_h": [
-      3.9e-07
-     ]
+     "select": "sum within \u00b13 % of target_h"
     },
     {
-     "position": 7,
-     "kind": "L_series",
+     "filter": 8,
+     "group": "f8_p7",
+     "refs": [
+      "L79",
+      "L80"
+     ],
+     "buy_h": [
+      3.9e-07,
+      1.0000000000000001e-07
+     ],
      "target_h": 4.992718801937654e-07,
-     "buy_h": [
-      3.9e-07,
-      1e-07
-     ]
+     "select": "sum within \u00b13 % of target_h"
     },
     {
-     "position": 9,
-     "kind": "L_series",
+     "filter": 8,
+     "group": "f8_p9",
+     "refs": [
+      "L81",
+      "L82"
+     ],
+     "buy_h": [
+      4.7000000000000005e-07,
+      1.0000000000000001e-07
+     ],
      "target_h": 5.749433017622576e-07,
-     "buy_h": [
-      4.7e-07,
-      1e-07
-     ]
+     "select": "sum within \u00b13 % of target_h"
     },
     {
-     "position": 11,
-     "kind": "L_series",
-     "target_h": 4.992718801937658e-07,
+     "filter": 8,
+     "group": "f8_p11",
+     "refs": [
+      "L83",
+      "L84"
+     ],
      "buy_h": [
       3.9e-07,
-      1e-07
-     ]
+      1.0000000000000001e-07
+     ],
+     "target_h": 4.992718801937658e-07,
+     "select": "sum within \u00b13 % of target_h"
     }
    ]
   },
@@ -539,57 +769,83 @@
    "hi_hz": 30000000.0,
    "hpf_order": 5,
    "lpf_order": 7,
-   "il_db": 1.508506644432421,
-   "rl_db": 16.696819485272403,
-   "rej3f_db": 59.84566925741565,
+   "il_db": 1.5115987700631957,
+   "rl_db": 16.359475660624238,
+   "rej3f_db": 59.97098875287872,
+   "il_worst_q_db": 1.7602675193260455,
    "mc_runs": 200,
-   "mc_passed": 200,
+   "mc_passed": 198,
    "s2p": "bpf_9.s2p",
    "inductors": [
     {
-     "position": 2,
-     "kind": "L_shunt",
+     "filter": 9,
+     "group": "f9_p2",
+     "refs": [
+      "L85",
+      "L86"
+     ],
+     "buy_h": [
+      1.8000000000000002e-07,
+      1.0000000000000001e-07
+     ],
      "target_h": 2.7702600590098715e-07,
-     "buy_h": [
-      1.8e-07,
-      1e-07
-     ]
+     "select": "sum within \u00b13 % of target_h"
     },
     {
-     "position": 4,
-     "kind": "L_shunt",
+     "filter": 9,
+     "group": "f9_p4",
+     "refs": [
+      "L87",
+      "L88"
+     ],
+     "buy_h": [
+      1.8000000000000002e-07,
+      1.0000000000000001e-07
+     ],
      "target_h": 2.7702600590098725e-07,
-     "buy_h": [
-      1.8e-07,
-      1e-07
-     ]
+     "select": "sum within \u00b13 % of target_h"
     },
     {
-     "position": 7,
-     "kind": "L_series",
+     "filter": 9,
+     "group": "f9_p7",
+     "refs": [
+      "L89",
+      "L90"
+     ],
+     "buy_h": [
+      2.7e-07,
+      1.0000000000000001e-07
+     ],
      "target_h": 3.661327121420947e-07,
-     "buy_h": [
-      2.7e-07,
-      1e-07
-     ]
+     "select": "sum within \u00b13 % of target_h"
     },
     {
-     "position": 9,
-     "kind": "L_series",
+     "filter": 9,
+     "group": "f9_p9",
+     "refs": [
+      "L91",
+      "L92"
+     ],
+     "buy_h": [
+      2.7e-07,
+      1.5000000000000002e-07
+     ],
      "target_h": 4.216250879589889e-07,
-     "buy_h": [
-      2.7e-07,
-      1.5e-07
-     ]
+     "select": "sum within \u00b13 % of target_h"
     },
     {
-     "position": 11,
-     "kind": "L_series",
-     "target_h": 3.661327121420949e-07,
+     "filter": 9,
+     "group": "f9_p11",
+     "refs": [
+      "L93",
+      "L94"
+     ],
      "buy_h": [
       2.7e-07,
-      1e-07
-     ]
+      1.0000000000000001e-07
+     ],
+     "target_h": 3.661327121420949e-07,
+     "select": "sum within \u00b13 % of target_h"
     }
    ]
   },
@@ -599,66 +855,97 @@
    "hi_hz": 54000000.0,
    "hpf_order": 5,
    "lpf_order": 9,
-   "il_db": 1.7119133975257457,
-   "rl_db": 17.69595966089646,
-   "rej3f_db": 57.596256224381435,
+   "il_db": 1.7251238744531003,
+   "rl_db": 17.03163922852258,
+   "rej3f_db": 57.74536675185018,
+   "il_worst_q_db": 2.292887980899111,
    "mc_runs": 200,
-   "mc_passed": 200,
+   "mc_passed": 198,
    "s2p": "bpf_10.s2p",
    "inductors": [
     {
-     "position": 2,
-     "kind": "L_shunt",
+     "filter": 10,
+     "group": "f10_p2",
+     "refs": [
+      "L95",
+      "L96"
+     ],
+     "buy_h": [
+      1.0000000000000001e-07,
+      1.0000000000000001e-07
+     ],
      "target_h": 2.0315240432739057e-07,
-     "buy_h": [
-      1e-07,
-      1e-07
-     ]
+     "select": "sum within \u00b13 % of target_h"
     },
     {
-     "position": 4,
-     "kind": "L_shunt",
+     "filter": 10,
+     "group": "f10_p4",
+     "refs": [
+      "L97",
+      "L98"
+     ],
+     "buy_h": [
+      1.0000000000000001e-07,
+      1.0000000000000001e-07
+     ],
      "target_h": 2.0315240432739062e-07,
-     "buy_h": [
-      1e-07,
-      1e-07
-     ]
+     "select": "sum within \u00b13 % of target_h"
     },
     {
-     "position": 7,
-     "kind": "L_series",
+     "filter": 10,
+     "group": "f10_p7",
+     "refs": [
+      "L99",
+      "L100"
+     ],
+     "buy_h": [
+      1.0000000000000001e-07,
+      1.0000000000000001e-07
+     ],
      "target_h": 2.0375570096663602e-07,
-     "buy_h": [
-      1e-07,
-      1e-07
-     ]
+     "select": "sum within \u00b13 % of target_h"
     },
     {
-     "position": 9,
-     "kind": "L_series",
+     "filter": 10,
+     "group": "f10_p9",
+     "refs": [
+      "L101",
+      "L102"
+     ],
+     "buy_h": [
+      1.2000000000000002e-07,
+      1.2000000000000002e-07
+     ],
      "target_h": 2.393204673211657e-07,
-     "buy_h": [
-      1.2e-07,
-      1.2e-07
-     ]
+     "select": "sum within \u00b13 % of target_h"
     },
     {
-     "position": 11,
-     "kind": "L_series",
+     "filter": 10,
+     "group": "f10_p11",
+     "refs": [
+      "L103",
+      "L104"
+     ],
+     "buy_h": [
+      1.2000000000000002e-07,
+      1.2000000000000002e-07
+     ],
      "target_h": 2.393204673211658e-07,
-     "buy_h": [
-      1.2e-07,
-      1.2e-07
-     ]
+     "select": "sum within \u00b13 % of target_h"
     },
     {
-     "position": 13,
-     "kind": "L_series",
-     "target_h": 2.0375570096663613e-07,
+     "filter": 10,
+     "group": "f10_p13",
+     "refs": [
+      "L105",
+      "L106"
+     ],
      "buy_h": [
-      1e-07,
-      1e-07
-     ]
+      1.0000000000000001e-07,
+      1.0000000000000001e-07
+     ],
+     "target_h": 2.0375570096663613e-07,
+     "select": "sum within \u00b13 % of target_h"
     }
    ]
   }
@@ -666,14 +953,14 @@
  "checks": [
   {
    "name": "bpf1_il_db",
-   "value": 1.8526367803474189,
+   "value": 1.8526477956349587,
    "limit": "\u2264 3",
    "passed": true,
    "unit": "dB"
   },
   {
    "name": "bpf1_rl_db",
-   "value": 18.525701830916375,
+   "value": 18.521926532754456,
    "limit": "\u2265 14",
    "passed": true,
    "unit": "dB"
@@ -687,14 +974,14 @@
   },
   {
    "name": "bpf2_il_db",
-   "value": 1.726200105524268,
+   "value": 1.7262418578377274,
    "limit": "\u2264 3",
    "passed": true,
    "unit": "dB"
   },
   {
    "name": "bpf2_rl_db",
-   "value": 20.256156242978385,
+   "value": 20.2428100304072,
    "limit": "\u2265 14",
    "passed": true,
    "unit": "dB"
@@ -708,21 +995,21 @@
   },
   {
    "name": "bpf3_il_db",
-   "value": 1.9141936923791034,
+   "value": 1.9143705095270491,
    "limit": "\u2264 3",
    "passed": true,
    "unit": "dB"
   },
   {
    "name": "bpf3_rl_db",
-   "value": 18.09528571648703,
+   "value": 18.058920690228963,
    "limit": "\u2265 14",
    "passed": true,
    "unit": "dB"
   },
   {
    "name": "bpf3_rej3f_db",
-   "value": 73.69849125241726,
+   "value": 73.70593113151659,
    "limit": "\u2265 50",
    "passed": true,
    "unit": "dB"
@@ -736,21 +1023,21 @@
   },
   {
    "name": "bpf4_il_db",
-   "value": 1.6985397162813098,
+   "value": 1.6986527674659686,
    "limit": "\u2264 3",
    "passed": true,
    "unit": "dB"
   },
   {
    "name": "bpf4_rl_db",
-   "value": 20.428006737680207,
+   "value": 20.367765756334208,
    "limit": "\u2265 14",
    "passed": true,
    "unit": "dB"
   },
   {
    "name": "bpf4_rej3f_db",
-   "value": 54.89649616029918,
+   "value": 54.90454457528653,
    "limit": "\u2265 50",
    "passed": true,
    "unit": "dB"
@@ -764,21 +1051,21 @@
   },
   {
    "name": "bpf5_il_db",
-   "value": 1.792559423557651,
+   "value": 1.7929445255631637,
    "limit": "\u2264 3",
    "passed": true,
    "unit": "dB"
   },
   {
    "name": "bpf5_rl_db",
-   "value": 17.774071697631705,
+   "value": 17.685998906379762,
    "limit": "\u2265 14",
    "passed": true,
    "unit": "dB"
   },
   {
    "name": "bpf5_rej3f_db",
-   "value": 62.939529517540656,
+   "value": 62.957479270628944,
    "limit": "\u2265 50",
    "passed": true,
    "unit": "dB"
@@ -792,21 +1079,21 @@
   },
   {
    "name": "bpf6_il_db",
-   "value": 1.877643880895433,
+   "value": 1.87853979844329,
    "limit": "\u2264 3",
    "passed": true,
    "unit": "dB"
   },
   {
    "name": "bpf6_rl_db",
-   "value": 17.61129422754429,
+   "value": 17.463407298440885,
    "limit": "\u2265 14",
    "passed": true,
    "unit": "dB"
   },
   {
    "name": "bpf6_rej3f_db",
-   "value": 67.74610537894502,
+   "value": 67.77978428168241,
    "limit": "\u2265 50",
    "passed": true,
    "unit": "dB"
@@ -820,49 +1107,49 @@
   },
   {
    "name": "bpf7_il_db",
-   "value": 1.5139526219423014,
+   "value": 1.5149443892321788,
    "limit": "\u2264 3",
    "passed": true,
    "unit": "dB"
   },
   {
    "name": "bpf7_rl_db",
-   "value": 17.182712343255957,
+   "value": 17.009978464925947,
    "limit": "\u2265 14",
    "passed": true,
    "unit": "dB"
   },
   {
    "name": "bpf7_rej3f_db",
-   "value": 60.6771274945617,
+   "value": 60.740234185091694,
    "limit": "\u2265 50",
    "passed": true,
    "unit": "dB"
   },
   {
    "name": "bpf7_mc_pass_pct",
-   "value": 99.5,
+   "value": 99.0,
    "limit": "\u2265 95",
    "passed": true,
    "unit": "%"
   },
   {
    "name": "bpf8_il_db",
-   "value": 1.5053563683835847,
+   "value": 1.5076973943153307,
    "limit": "\u2264 2",
    "passed": true,
    "unit": "dB"
   },
   {
    "name": "bpf8_rl_db",
-   "value": 17.41172165387377,
+   "value": 17.170814481624,
    "limit": "\u2265 14",
    "passed": true,
    "unit": "dB"
   },
   {
    "name": "bpf8_rej3f_db",
-   "value": 58.851700302137104,
+   "value": 58.940687968786165,
    "limit": "\u2265 50",
    "passed": true,
    "unit": "dB"
@@ -876,63 +1163,63 @@
   },
   {
    "name": "bpf9_il_db",
-   "value": 1.508506644432421,
+   "value": 1.5115987700631957,
    "limit": "\u2264 2",
    "passed": true,
    "unit": "dB"
   },
   {
    "name": "bpf9_rl_db",
-   "value": 16.696819485272403,
+   "value": 16.359475660624238,
    "limit": "\u2265 14",
    "passed": true,
    "unit": "dB"
   },
   {
    "name": "bpf9_rej3f_db",
-   "value": 59.84566925741565,
+   "value": 59.97098875287872,
    "limit": "\u2265 50",
    "passed": true,
    "unit": "dB"
   },
   {
    "name": "bpf9_mc_pass_pct",
-   "value": 100.0,
+   "value": 99.0,
    "limit": "\u2265 95",
    "passed": true,
    "unit": "%"
   },
   {
    "name": "bpf10_il_db",
-   "value": 1.7119133975257457,
+   "value": 1.7251238744531003,
    "limit": "\u2264 2",
    "passed": true,
    "unit": "dB"
   },
   {
    "name": "bpf10_rl_db",
-   "value": 17.69595966089646,
+   "value": 17.03163922852258,
    "limit": "\u2265 14",
    "passed": true,
    "unit": "dB"
   },
   {
    "name": "bpf10_rej3f_db",
-   "value": 57.596256224381435,
+   "value": 57.74536675185018,
    "limit": "\u2265 50",
    "passed": true,
    "unit": "dB"
   },
   {
    "name": "bpf10_mc_pass_pct",
-   "value": 100.0,
+   "value": 99.0,
    "limit": "\u2265 95",
    "passed": true,
    "unit": "%"
   },
   {
    "name": "bank_mute_isolation_db",
-   "value": 188.62479164153137,
+   "value": 188.64109353844515,
    "limit": "\u2265 40",
    "passed": true,
    "unit": "dB"
