@@ -44,3 +44,22 @@ def test_mds_ignores_the_dc_offset_and_the_tone_image(tmp_path):
     hw = Hardware.load(write_char(tmp_path, dc=2.7e-3, imbalance=(0.16, 0.43)))
     r = measure.measure_mds(hw, 14.1e6, preamp=True)
     assert r.measured_dbm == pytest.approx(r.predicted_dbm, abs=0.5)
+
+
+def _result(overload: tuple, decoded: bool = True):
+    from neosim.adc import AdcStats
+    from neosim.hardware import HardwareStats
+    from neosim.twin import ReceiveResult, ScenarioResult
+    import numpy as np
+    stats = HardwareStats(7, {}, 36.0, 40.0, (), 0, -30.0, (), overload, -200.0, None)
+    return ScenarioResult(sweep.sweep_scenario(-15.0, seed=1, hardware=True), [], AdcStats(0, -30.0, 1.0),
+                          [ReceiveResult("rx", "ft8", "CQ", decoded, "")], np.zeros(4), np.zeros(4), stats)
+
+
+def test_blocker_check_fails_when_a_station_overloads_the_mixer():
+    """Clipping by out-of-window stations is not simulated, so a decode alone must not pass a
+    blocker that is above full scale at the mixer input."""
+    clean = measure.BlockerResult(_result(()), _result(()), ("bcast",), 0.0)
+    loud = measure.BlockerResult(_result(("bcast",)), _result(()), ("bcast",), 2.7)
+    assert clean.passed and not loud.passed
+    assert loud.overload == ("bcast",)

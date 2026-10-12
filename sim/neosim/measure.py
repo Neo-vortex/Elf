@@ -72,8 +72,13 @@ class BlockerResult:
     degradation_db: float           # noise floor in the window, with minus without (median of the PSD)
 
     @property
+    def overload(self) -> tuple[str, ...]:
+        """Stations above full scale at the mixer input (out-of-window clipping is not simulated)."""
+        return self.with_blocker.hardware.overload if self.with_blocker.hardware else ()
+
+    @property
     def passed(self) -> bool:
-        return self.with_blocker.passed
+        return self.with_blocker.passed and not self.overload
 
 
 def blocker_check(path: Path, workdir: Path, hw: hardware.Hardware | None = None) -> BlockerResult:

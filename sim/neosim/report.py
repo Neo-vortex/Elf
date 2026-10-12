@@ -129,7 +129,9 @@ def _checks_html(c: HardwareChecks) -> str:
             f"<p><b>Blocker</b> ({html.escape(b.with_blocker.scenario.name)}): {_badge(b.passed)} decoded "
             f"<code>{html.escape(decoded)}</code>; noise floor in the window {b.degradation_db:+.2f} dB with "
             f"{', '.join(map(html.escape, b.blocker_ids))} against without; reciprocal mixing "
-            f"{b.with_blocker.hardware.reciprocal_dbm_per_hz:.1f} dBm/Hz at the antenna.</p>")
+            f"{b.with_blocker.hardware.reciprocal_dbm_per_hz:.1f} dBm/Hz at the antenna; above full scale at "
+            f"the mixer (fails the check: clipping by out-of-window stations is not simulated): "
+            f"{html.escape(', '.join(b.overload)) or 'none'}.</p>")
 
 
 def write_report(results: list[ScenarioResult], sweep_points: list[SweepPoint] | None, path: Path,

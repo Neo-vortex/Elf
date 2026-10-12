@@ -40,6 +40,9 @@ def main(argv: list[str]) -> int:
         for path, scenario in zip(args.scenarios, scenarios):
             result = run_scenario(scenario, args.workdir / path.stem)
             print(f"{'PASS' if result.passed else 'FAIL'}  {scenario.name}")
+            if result.hardware and result.hardware.overload:
+                print(f"WARN  {scenario.name}: above full scale at the mixer (clipping not simulated): "
+                      f"{', '.join(result.hardware.overload)}")
             results.append(result)
         points = None
         if args.sweep_ft8:
@@ -54,7 +57,9 @@ def main(argv: list[str]) -> int:
             for m in checks.mds:
                 print(f"{'PASS' if m.passed else 'FAIL'}  MDS {m.f_lo_hz / 1e6:.1f} MHz: {m.measured_dbm:.1f} dBm "
                       f"(budget {m.predicted_dbm:.1f})")
-            print(f"{'PASS' if checks.blocker.passed else 'FAIL'}  blocker: floor {checks.blocker.degradation_db:+.2f} dB")
+            ov = checks.blocker.overload
+            print(f"{'PASS' if checks.blocker.passed else 'FAIL'}  blocker: floor {checks.blocker.degradation_db:+.2f} dB"
+                  + (f"; above full scale at the mixer: {', '.join(ov)}" if ov else ""))
     except (ToolNotFoundError, RuntimeError) as e:
         print(f"error: {e}", file=sys.stderr)
         return 2
