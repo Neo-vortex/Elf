@@ -11,7 +11,10 @@ from skidl import Circuit, Net
 from neohw import parts
 from neohw.blocks import Block
 
-RADIAL_FOOTPRINT = "Inductor_THT:L_Radial_D10.0mm_P5.00mm_Fastron_07HCP"   # verify in layout
+# 1 mH drum choke (user-stocked): sized generously, D10 / 5 mm pitch; the layout keeps a ~12 mm
+# keep-out (13 x 13 mm courtyard) so 8-12 mm drum chokes fit (user, 2026-10-12)
+RADIAL_FOOTPRINT = "Inductor_THT:L_Radial_D10.0mm_P5.00mm_Fastron_07P"
+RADIAL_KEEPOUT_MM = 13.0
 # (inductance, parallel C for the SRF, Q, frequency the Q is quoted at, DC resistance, footprint,
 # BOM note). 4.7 µH and 47 µH: axial colour-ring chokes (SRF ~50 / ~15 MHz). 1 mH: a radial
 # drum choke (~10 x 12 mm, SRF ~1.5 MHz) — an axial 1 mH has tens of ohms DCR and is rated
