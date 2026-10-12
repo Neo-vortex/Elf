@@ -102,8 +102,8 @@ make sim       # digital twin scenarios and FT8 sweep; report in build/sim/repor
 - [x] Mixer noise figure and receiver noise budget
 - [x] Digital twin driven by the simulated hardware: filters, attenuator, preamplifier,
       mixer response, image, harmonic responses and ADC clipping
-- [ ] Intermodulation and reciprocal-mixing models; blocker and MDS scenarios
-- [ ] I/Q imbalance correction in the DSP
+- [x] Intermodulation and reciprocal-mixing models; blocker and MDS scenarios
+- [x] I/Q imbalance correction in the DSP
 
 ### Circuits
 
