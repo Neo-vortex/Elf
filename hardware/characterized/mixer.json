@@ -2,7 +2,7 @@
  "schema_version": 1,
  "block": "mixer",
  "status": "pass",
- "generated_by": "7207771",
+ "generated_by": "701dbf8",
  "conv_gain_db": 36.15388244596626,
  "conv_gain_definition": "per-channel differential amplitude at the ADC pins / matched-source amplitude at rf_in",
  "baseband_response": {
@@ -80,22 +80,22 @@
  "iip3_dbm": 32.48118027481935,
  "image_rejection_db": {
   "direct": {
-   "median": 46.94279752134545,
-   "p5": 40.00761254076802,
+   "median": 46.65623682292151,
+   "p5": 39.77258466929925,
    "runs": 40,
-   "median_gain_err_db": -0.04958004970469994,
-   "median_phase_err_deg": -0.3981516759509134,
-   "p5_gain_err_db": 0.16080194076346352,
-   "p5_phase_err_deg": 0.42725672620366595
+   "median_gain_err_db": -0.0673797750509083,
+   "median_phase_err_deg": -0.2933663678396101,
+   "p5_gain_err_db": 0.15032024375720943,
+   "p5_phase_err_deg": 0.6272945225035755
   },
   "div4": {
-   "median": 47.58962502161246,
-   "p5": 40.13347921455722,
+   "median": 48.38372809569823,
+   "p5": 40.033098941707024,
    "runs": 40,
-   "median_gain_err_db": -0.07182461141362635,
-   "median_phase_err_deg": 0.06569979819551008,
-   "p5_gain_err_db": 0.17041028995380214,
-   "p5_phase_err_deg": -0.023466173804877144
+   "median_gain_err_db": -0.06615825008954859,
+   "median_phase_err_deg": 0.010333601456693486,
+   "p5_gain_err_db": -0.1727269348553723,
+   "p5_phase_err_deg": -0.008890083927781234
   }
  },
  "dc_offset_v": {
@@ -104,6 +104,7 @@
   "source": "LM4562 input offset 0.1 mV typ / 0.7 mV max x in-amp gain (the model has none)"
  },
  "adc_full_scale_dbm": -20.13328253268664,
+ "direct_min_hz": 4800000.0,
  "adc_fs_peak_v": 2.8249999999999997,
  "clip_peak_v": 2.0,
  "adc_noise": {
@@ -785,7 +786,7 @@
   },
   {
    "f_lo_hz": 3354101.9662496843,
-   "path": "direct",
+   "path": "div4",
    "flatness_db": 0.33131063416489254,
    "image_min_db": 79.0118516863132,
    "conv_gain_db": 36.34818479559457,
@@ -1083,14 +1084,14 @@
   },
   {
    "name": "image_rejection_p5_direct_db",
-   "value": 40.00761254076802,
+   "value": 39.77258466929925,
    "limit": "\u2265 30",
    "passed": true,
    "unit": "dB"
   },
   {
    "name": "image_rejection_p5_div4_db",
-   "value": 40.13347921455722,
+   "value": 40.033098941707024,
    "limit": "\u2265 30",
    "passed": true,
    "unit": "dB"
