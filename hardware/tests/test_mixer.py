@@ -66,7 +66,7 @@ def test_monte_carlo_varies_sampling_caps_and_baseband_parts():
     varied = {values[r] for r in var}
     assert {"5.6nF", "2.2kΩ", "240Ω", "100Ω", "2.7nF"} <= varied
     assert sum(1 for r in var if values[r] == "5.6nF") == 4
-    assert abs(skew) <= sum(check.LO_SKEW_STAGES_S["direct"]) and all(abs(d) <= check.LO_DUTY_S["direct"] for d in duty)
+    assert abs(skew) <= sum(check.LO_SKEW_STAGES_S["direct"]) and all(abs(d) <= sum(check.LO_DUTY_STAGES_S["direct"]) for d in duty)
 
 
 def test_iq_imbalance_fit_recovers_known_errors():

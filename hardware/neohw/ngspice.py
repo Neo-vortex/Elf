@@ -2,7 +2,10 @@
 from __future__ import annotations
 
 import functools
+import gzip
 import hashlib
+import sys
+import time
 import os
 import shutil
 import subprocess
@@ -36,10 +39,14 @@ def _ngspice_version(ngspice: str) -> str:
     return (proc.stdout + proc.stderr).strip()
 
 
+def _cache_root() -> Path:
+    return Path(os.environ.get("NEOHW_CACHE") or REPO_ROOT / "build" / "hw-cache")
+
+
 def _cache_entry(deck: str, rawfiles: list[str], ngspice: str) -> Path | None:
     """Result-cache entry for a deck, keyed by the whole deck text (models are inlined), the
     requested rawfiles and the ngspice version. NEOHW_CACHE moves it (default build/hw-cache)."""
-    root = Path(os.environ.get("NEOHW_CACHE") or REPO_ROOT / "build" / "hw-cache")
+    root = _cache_root()
     key = hashlib.sha256("\0".join([_ngspice_version(ngspice), *rawfiles, deck]).encode()).hexdigest()
     return root / key[:2] / key
 
@@ -58,17 +65,39 @@ def _parse(workdir: Path, rawfiles: list[str], deck_path: Path, log: str) -> dic
 
 
 def _store(entry: Path, workdir: Path, rawfiles: list[str]) -> None:
-    """Copy a successful run's rawfiles into the cache atomically, replacing an older entry (a fresh
+    """Gzip a successful run's rawfiles into the cache atomically, replacing an older entry (a fresh
     run); if a concurrent run of the same deck stores it at the same time, either copy is kept."""
     entry.parent.mkdir(parents=True, exist_ok=True)
     tmp = Path(tempfile.mkdtemp(prefix=entry.name[:8] + "-", dir=entry.parent))
-    for name in rawfiles:
-        shutil.copy2(workdir / name, tmp / name)
-    shutil.rmtree(entry, ignore_errors=True)
     try:
+        for name in rawfiles:
+            with open(workdir / name, "rb") as src, gzip.open(tmp / f"{name}.gz", "wb", compresslevel=6) as dst:
+                shutil.copyfileobj(src, dst)
+        shutil.rmtree(entry, ignore_errors=True)
         os.rename(tmp, entry)
-    except OSError:
+    finally:
         shutil.rmtree(tmp, ignore_errors=True)
+
+
+def _load(entry: Path, rawfiles: list[str]) -> dict[str, list[Plot]] | None:
+    """Parse a cache entry, or None if it is incomplete (being replaced) or unreadable."""
+    try:
+        return {name: parse_ascii(gzip.decompress((entry / f"{name}.gz").read_bytes()).decode())
+                for name in rawfiles}
+    except (OSError, EOFError, RawfileError, UnicodeDecodeError):
+        return None
+
+
+def prune_cache(before: float) -> int:
+    """Remove cache entries last written before `before` (a time.time() value): after a fresh
+    run, everything it did not produce is stale. Returns the number removed."""
+    root = _cache_root()
+    removed = 0
+    for entry in root.glob("*/*") if root.exists() else ():
+        if entry.is_dir() and entry.stat().st_mtime < before:
+            shutil.rmtree(entry, ignore_errors=True)
+            removed += 1
+    return removed
 
 
 def run_deck(deck: str, rawfiles: list[str], keep_dir: Path | None = None) -> dict[str, list[Plot]]:
@@ -77,8 +106,10 @@ def run_deck(deck: str, rawfiles: list[str], keep_dir: Path | None = None) -> di
     ngspice = tool_path("ngspice")
     entry = None if keep_dir is not None else _cache_entry(deck, rawfiles, str(ngspice))
     fresh = bool(os.environ.get("NEOHW_FRESH"))
-    if entry is not None and not fresh and all((entry / name).exists() for name in rawfiles):
-        return _parse(entry, rawfiles, entry / "deck.cir", "(cached result)")
+    if entry is not None and not fresh:
+        cached = _load(entry, rawfiles)
+        if cached is not None:
+            return cached
     tmp = None
     if keep_dir is None:
         tmp = tempfile.mkdtemp(prefix="neohw-")
@@ -96,7 +127,10 @@ def run_deck(deck: str, rawfiles: list[str], keep_dir: Path | None = None) -> di
         raise _fail(f"ngspice failed (exit {proc.returncode})", deck_path, log)
     results = _parse(workdir, rawfiles, deck_path, log)
     if entry is not None:
-        _store(entry, workdir, rawfiles)
+        try:
+            _store(entry, workdir, rawfiles)
+        except OSError as e:     # e.g. a full disk: the simulation itself succeeded
+            print(f"warning: could not cache a simulation result: {e}", file=sys.stderr)
     # on failure the temp dir is left behind: the error names its deck.cir and ngspice.log
     if tmp is not None:
         shutil.rmtree(tmp, ignore_errors=True)

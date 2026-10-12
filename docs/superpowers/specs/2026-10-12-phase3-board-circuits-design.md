@@ -75,6 +75,12 @@
   - With the 4.8 MHz crossover (band 4's test point is now ÷4), image rejection at the 5th percentile is 39.8 dB direct and 40.0 dB ÷4 (target ≥ 30).
 - **Cal-tone pad:** 100 Ω / 51 Ω / **22 kΩ** (33 kΩ gave −74.3 dB once the Si5351's 50 Ω output impedance is included). Result: −70.8 dB at 1 MHz, −68.9 dB at 54 MHz (the 22 kΩ resistor's 0.1 pF body capacitance is modelled); it loads the RF line by 0.01 dB.
 - **Footprint check:** every footprint must exist in the installed KiCad 9 libraries. It caught the bias-T's 1 mH choke footprint (`…D10.0mm_P5.00mm_Fastron_07HCP` does not exist), now `L_Radial_D10.0mm_P5.00mm_Fastron_07P` with a 13 × 13 mm keep-out (user: leave generous room).
+- **Final review of plan 3.1:**
+  - **Skew** is now ±tsk(o) per stage (tsk(o) bounds the whole output difference): direct ±0.2 + ±1.0 ns, ÷4 ±1.0 + ±1.0 ns.
+  - **Duty error** is now in the budget per stage, with the mux on both paths: direct ±0.5 (Si5351 driver rise/fall asymmetry; an even-integer MultiSynth is exactly 50 %) + ±0.25 ns; ÷4 ±0.25 + ±0.25 ns. These values are assumed, because no datasheet gives opposite-edge mismatch. The Si5351 only guarantees 45–55 % duty below 160 MHz (±3.5 ns at 14 MHz); this is a Rev 0 measurement item, and the software I/Q calibration corrects any static imbalance.
+  - **Crystal:** the BOM matches only a 25 MHz 3225 crystal, not DIP crystals or oscillators, and notes CL ≤ 10 pF (Si5351 internal load 6/8/10 pF).
+  - **Firmware contract:** outside calibration, CLK3 is powered down (CLK3_PDN / MultiSynth 3 off), not just output-disabled. A running MultiSynth 3 beside the pad could couple a spur at LO + offset. That coupling cannot be simulated and is checked on Rev 0.
+  - **Cache:** entries are gzipped, `make hw-fresh` prunes entries it did not produce, and a failure to store never fails a simulation.
 - **`make hw` result cache** (user request), keyed by deck text + ngspice version + rawfiles, in `build/hw-cache`. `make hw-fresh` re-simulates everything and refreshes the cache. Per phase: one `make hw-fresh` plus one cached `make hw` that must give identical files (replaces two full runs).
 
 ### 3.2 Power (plan 3.2)

@@ -38,7 +38,7 @@ def _no_ngspice(monkeypatch):
 
 def test_a_repeated_deck_is_read_from_the_cache(cache, monkeypatch):
     first = run_deck(RC, ["a0.raw"])["a0.raw"][0].data["v(out)"]
-    assert any(cache.rglob("a0.raw"))
+    assert any(cache.rglob("a0.raw.gz"))
     _no_ngspice(monkeypatch)
     again = run_deck(RC, ["a0.raw"])["a0.raw"][0].data["v(out)"]
     assert (again == first).all()
@@ -72,4 +72,28 @@ def test_a_failed_run_is_not_cached(cache):
     bad = RC.replace("C1 out 0 1n", "Q1 out 0 0 NOPE")
     with pytest.raises(ngspice.NgspiceError):
         run_deck(bad, ["a0.raw"])
-    assert not cache.exists() or not any(cache.rglob("a0.raw"))
+    assert not cache.exists() or not any(cache.rglob("a0.raw.gz"))
+
+
+def test_entries_are_compressed(cache):
+    run_deck(RC, ["a0.raw"])
+    assert list(cache.rglob("a0.raw.gz")) and not [p for p in cache.rglob("*") if p.name == "a0.raw"]
+
+
+def test_a_failure_to_store_does_not_fail_the_simulation(cache, monkeypatch):
+    def full_disk(*a, **k):
+        raise OSError(28, "No space left on device")
+    monkeypatch.setattr(ngspice, "_store", full_disk)
+    assert run_deck(RC, ["a0.raw"])["a0.raw"][0].data["v(out)"] is not None
+
+
+def test_prune_removes_entries_older_than_the_fresh_run(cache, monkeypatch):
+    import os
+    import time
+    run_deck(RC, ["a0.raw"])
+    old = next(cache.rglob("a0.raw.gz")).parent
+    os.utime(old, (time.time() - 3600, time.time() - 3600))
+    start = time.time() - 1
+    run_deck(RC.replace("1k\n", "2k\n", 1), ["a0.raw"])
+    removed = ngspice.prune_cache(start)
+    assert removed == 1 and not old.exists() and len(list(cache.rglob("a0.raw.gz"))) == 1

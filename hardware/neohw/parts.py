@@ -294,11 +294,28 @@ def si5351c() -> Part:
                "Si5351C-B-GM1", "SI5351C")
 
 
+_FA_DIGITS = str.maketrans("۰۱۲۳۴۵۶۷۸۹", "0123456789")
+
+
+def crystal_25mhz_hit(name: str) -> bool:
+    """A Torob listing is this crystal if it names 25 MHz and the 3225 package and is not an
+    oscillator (Persian "اسیلاتور", "OSC", or an ECS-…MV oscillator part number)."""
+    n = name.translate(_FA_DIGITS).upper().replace(" ", "")
+    is_25mhz = "25MHZ" in n or "25مگاهرتز" in n or "25.000MHZ" in n
+    oscillator = "اسیلاتور" in name or "OSC" in n or "MV-" in n
+    return is_25mhz and "3225" in n and not oscillator
+
+
 def crystal_25mhz() -> Part:
-    """25 MHz fundamental crystal, 3225 4-pad (pads 2 and 4 are case ground). The Si5351's internal
-    load capacitance (6/8/10 pF, register 183) is set to the crystal's CL; no external caps."""
-    return _ic("25MHz", {"1": "1", "GND1": "2", "2": "3", "GND2": "4"}, "Crystal:Crystal_SMD_3225-4Pin_3.2x2.5mm",
-               "25MHz 3225 CL=8pF", "کریستال 25MHZ")
+    """25 MHz fundamental crystal, 3225 4-pad (pads 2 and 4 are case ground). The Si5351 supplies
+    the load capacitance internally (6/8/10 pF, register 183), so the crystal's CL must be one of
+    those: buy CL ≤ 10 pF (generic 3225 crystals are often 12–20 pF, which pulls the frequency by
+    tens of ppm)."""
+    p = _ic("25MHz", {"1": "1", "GND1": "2", "2": "3", "GND2": "4"}, "Crystal:Crystal_SMD_3225-4Pin_3.2x2.5mm",
+            "25MHz 3225 CL=8pF", "کریستال 25MHZ 3225")
+    p.torob_match = crystal_25mhz_hit
+    p.bom_note = "CL ≤ 10 pF (Si5351 internal load 6/8/10 pF); confirm CL with the seller"
+    return p
 
 
 LVC74_PINS = {"/1RD": "1", "1D": "2", "1CP": "3", "/1SD": "4", "1Q": "5", "/1Q": "6", "GND": "7", "/2Q": "8",

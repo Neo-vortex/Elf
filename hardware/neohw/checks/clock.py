@@ -56,6 +56,7 @@ def run(out_dir: Path, char_dir: Path) -> BlockResult:
     net_check(blk)
     att1 = pad["att_db"][1e6]
     worst = {path: sum(stages) for path, stages in clock.SKEW_STAGES_S.items()}
+    worst_duty = {path: sum(stages) for path, stages in clock.DUTY_STAGES_S.items()}
     checks = [
         CheckResult("lo_plan_points", cov["points"], "report", True, ""),
         CheckResult("lo_plan_failures", len(cov["failures"]), "= 0", not cov["failures"], ""),
@@ -63,6 +64,8 @@ def run(out_dir: Path, char_dir: Path) -> BlockResult:
         CheckResult("direct_min_mhz", lo_plan.DIRECT_MIN_HZ / 1e6, "report (90° phase register limit)", True, "MHz"),
         CheckResult("skew_worst_direct_ns", worst["direct"] * 1e9, "report", True, "ns"),
         CheckResult("skew_worst_div4_ns", worst["div4"] * 1e9, "report", True, "ns"),
+        CheckResult("duty_worst_direct_ns", worst_duty["direct"] * 1e9, "report (assumed)", True, "ns"),
+        CheckResult("duty_worst_div4_ns", worst_duty["div4"] * 1e9, "report (assumed)", True, "ns"),
         CheckResult("cal_pad_att_1mhz_db", att1, f"{CAL_TARGET_DB:g} ± {CAL_TOL_DB:g}",
                     abs(att1 - CAL_TARGET_DB) <= CAL_TOL_DB),
         CheckResult("cal_pad_att_54mhz_db", pad["att_db"][54e6], "report", True),
@@ -81,8 +84,10 @@ def run(out_dir: Path, char_dir: Path) -> BlockResult:
         "characterisation": charfile.write(char_dir / "clock.json", "clock", "pass" if result.passed else "fail", {
             "direct_min_hz": lo_plan.DIRECT_MIN_HZ,
             "skew_stages_s": {k: list(v) for k, v in clock.SKEW_STAGES_S.items()},
-            "skew_source": "74LVC74A / 74LVC157A tsk(o) <= 1.0 ns (Nexperia, VCC 3.0-3.6 V) -> +-0.5 ns each; "
-                           "Si5351 output skew not specified: +-0.2 ns assumed",
+            "skew_source": "74LVC74A / 74LVC157A tsk(o) <= 1.0 ns (Nexperia, VCC 3.0-3.6 V) bounds the output "
+                           "difference: +-1.0 ns per stage; Si5351 output skew not specified: +-0.2 ns assumed",
+            "duty_stages_s": {k: list(v) for k, v in clock.DUTY_STAGES_S.items()},
+            "duty_source": clock.DUTY_SOURCE,
             "lo_plan": {"points": cov["points"], "failures": len(cov["failures"]), "max_error_hz": cov["max_error_hz"]},
             "cal_pad_att_db": {str(int(k)): v for k, v in pad["att_db"].items()},
             "cal_pad_rf_loading_db": pad["rf_insertion_loss_db"],

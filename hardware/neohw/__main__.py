@@ -2,7 +2,9 @@
 from __future__ import annotations
 
 import argparse
+import os
 import sys
+import time
 from pathlib import Path
 
 from neohw.checks import attenuator as attenuator_check
@@ -13,7 +15,7 @@ from neohw.checks import mixer as mixer_check
 from neohw.checks import preamp as preamp_check
 from neohw.checks import protection as protection_check
 from neohw.checks import BlockResult, CheckResult
-from neohw.ngspice import NgspiceError
+from neohw.ngspice import NgspiceError, prune_cache
 from neohw.report import write_report
 from neohw.spice import SpiceError
 from neohw.tools import ToolNotFoundError
@@ -33,6 +35,7 @@ def main(argv: list[str]) -> int:
     run.add_argument("--report", type=Path, default=Path("build/hw/report.html"))
     args = parser.parse_args(argv)
 
+    started = time.time()
     results, errored = [], False
     for name, check in CHECKS.items():
         try:
@@ -46,6 +49,8 @@ def main(argv: list[str]) -> int:
         results.append(result)
     report = write_report(results, args.report)
     print(f"report: {report}")
+    if os.environ.get("NEOHW_FRESH") and not errored:
+        print(f"cache: removed {prune_cache(started)} stale entries")
     if errored:
         return 2
     return 0 if all(r.passed for r in results) else 1

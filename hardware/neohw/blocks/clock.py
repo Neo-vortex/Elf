@@ -15,13 +15,25 @@ from skidl import Circuit, Net
 from neohw import parts
 from neohw.blocks import Block
 
-# select-line skew per stage, uniform ± (seconds): output-to-output skew tsk(o) ≤ 1.0 ns for both
-# the 74LVC74A and the 74LVC157A (Nexperia, VCC 3.0–3.6 V) -> ±0.5 ns each. The Si5351 datasheet
+# S1 − S0 skew per stage, uniform ± (seconds), summed in the mixer Monte Carlo: tsk(o) ≤ 1.0 ns bounds
+# the difference between any two outputs of one package switching the same way (74LVC74A,
+# 74LVC157A, Nexperia, VCC 3.0–3.6 V), so each stage adds up to ±1.0 ns. The Si5351 datasheet
 # specifies no output-to-output skew: ±0.2 ns is assumed (phase 2 spec §5).
 SI5351_SKEW_S = 0.2e-9
 LVC74_TSK_S = 1.0e-9
 LVC157_TSK_S = 1.0e-9
-SKEW_STAGES_S = {"direct": (SI5351_SKEW_S, LVC157_TSK_S / 2), "div4": (LVC74_TSK_S / 2, LVC157_TSK_S / 2)}
+SKEW_STAGES_S = {"direct": (SI5351_SKEW_S, LVC157_TSK_S), "div4": (LVC74_TSK_S, LVC157_TSK_S)}
+# High-time (duty) error per select line and stage, uniform ±. No datasheet bounds the
+# opposite-edge mismatch these come from, so the values are assumed:
+# - Si5351: an even-integer MultiSynth divides to exactly 50 %; what is left is the driver's
+#   rise/fall asymmetry (tr, tf 1 ns typ / 1.5 ns max, 20–80 %; a ramp crosses 50 % at 0.83 × its
+#   20–80 % time) -> ±0.5 ns.
+# - 74LVC74 output and 74LVC157 output rise/fall mismatch: ±0.25 ns each.
+DUTY_STAGES_S = {"direct": (0.5e-9, 0.25e-9), "div4": (0.25e-9, 0.25e-9)}
+DUTY_SOURCE = ("assumed (no datasheet gives opposite-edge mismatch): Si5351 driver rise/fall asymmetry ±0.5 ns "
+               "(even-integer MultiSynth = exact 50 %), 74LVC74 and 74LVC157 ±0.25 ns each. The Si5351 "
+               "datasheet only guarantees 45–55 % duty below 160 MHz (±3.5 ns at 14 MHz): measure on Rev 0; "
+               "the software I/Q calibration corrects the resulting static imbalance either way.")
 
 
 def _r(value, a, b):

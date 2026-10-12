@@ -41,9 +41,8 @@ MC_RUNS = 40
 MC_POINTS = {"direct": 14.2e6, "div4": 1.9e6}
 # S1-vs-S0 skew: the sum of independent uniform ± stages (blocks/clock.py: Si5351 or 74LVC74, then the 74LVC157)
 LO_SKEW_STAGES_S = clock.SKEW_STAGES_S
-# uniform ± error of each select's high time: Si5351 rise/fall asymmetry (its 45–55 % duty spec is
-# at 160 MHz, where the edges are a large part of the period) / 74LVC74 propagation mismatch
-LO_DUTY_S = {"direct": 0.5e-9, "div4": 0.3e-9}
+# select high-time error: sum of independent uniform ± stages (blocks/clock.py DUTY_STAGES_S, assumed)
+LO_DUTY_STAGES_S = clock.DUTY_STAGES_S
 SAMPLE_CAP_TOL = 0.01                             # the four caps are selected to ±1 % (BOM note)
 ADC_GAIN_MISMATCH_DB = 0.1                        # CS5361 interchannel gain mismatch (datasheet), uniform ±
 BASEBAND_VALUES = ("2.2kΩ", "240Ω", "100Ω", "2.7nF")   # in-amp Rf, Rg, anti-alias R and C (their own tolerances)
@@ -183,7 +182,7 @@ def mc_variation(blk, rng, path: str):
     for p in sorted(blk.circuit.parts, key=lambda p: p.ref):
         if p.value in BASEBAND_VALUES:
             var[p.ref] = 1 + rng.uniform(-p.tol, p.tol)
-    duty = tuple(rng.uniform(-LO_DUTY_S[path], LO_DUTY_S[path]) for _ in range(2))
+    duty = tuple(sum(rng.uniform(-d, d) for d in LO_DUTY_STAGES_S[path]) for _ in range(2))
     skew = sum(rng.uniform(-s, s) for s in LO_SKEW_STAGES_S[path])
     return var, duty, skew
 
