@@ -1,0 +1,24 @@
+{
+ "schema_version": 1,
+ "block": "lo_phase_noise",
+ "status": "pass",
+ "generated_by": "hand-entered (plan 2.6)",
+ "reference_hz": 9000000.0,
+ "offset_hz": [
+  100.0,
+  1000.0,
+  10000.0,
+  100000.0,
+  1000000.0
+ ],
+ "dbc_per_hz": [
+  -103.0,
+  -128.0,
+  -136.0,
+  -138.0,
+  -144.0
+ ],
+ "scaling": "L(f_lo) = L(reference) + 20*log10(f_lo / reference_hz); held flat below 100 Hz and above 1 MHz offset. The \u00f74 path (LO < 3.2 MHz) divides a 4*f_lo Si5351 output by 4, which gives the same scaling.",
+ "source": "Si5351A measured at 9 MHz by RFzero (https://rfzero.net/documentation/rf/) on a Rohde & Schwarz FSIQ 26 with the low-phase-noise option B4. Cross-check: ARRL QST product review of the QRP Labs QCX (Aug 2019), Si5351A-driven transmitter output better than -135 dBc/Hz at 10 and 50 kHz (https://qrp-labs.com/qcx/phasenoise). The Si5351 datasheet (Rev. 1.3) gives only period and cycle-to-cycle jitter (70 ps pk-pk typical), no phase-noise curve.",
+ "checks": []
+}
