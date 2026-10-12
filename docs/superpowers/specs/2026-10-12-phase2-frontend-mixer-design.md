@@ -72,29 +72,31 @@ Prototype result (2026-10-12, Q = 30, L ±3 %): every filter passes 200/200 Mont
 
 ## 5. Mixer and baseband (2b)
 
-- **LO** (`lo_quadrature`): behavioural square waves with ~1 ns edges.
-  - Direct-quadrature mode (Si5351, ≥ ~3.2 MHz).
-  - ÷4 mode (74LVC74) with an edge-time mismatch from the datasheet.
+Amended 2026-10-12 from the plan 2.4 prototype.
+
+- **LO** (behavioural `QuadratureLO` stimulus): S0 and S1, two 50 % square waves at f_LO, S1 a quarter period later, 1 ns edges, 3.3 V.
+  - Direct-quadrature mode (Si5351, ≥ 3.2 MHz): skew between S0 and S1 uniform ±0.2 ns in Monte Carlo.
+  - ÷4 mode (74LVC74 Johnson counter, below 3.2 MHz): skew uniform ±0.5 ns.
   - Phase noise is not modelled in SPICE.
-- **Mixer** (`qsd_mixer`): FST3253 model.
-  - 4 voltage-controlled switches, R_on ≈ 4 Ω, C_off from the datasheet, 2-to-4 decode, switching times.
-  - 4 sampling capacitors, nominally ~33 nF, final value chosen by the checks.
-  - Single-ended 50 Ω RF input.
-- **Baseband** (`baseband_amp`): per channel, one LM4562 as an instrumentation-style differential stage (I = C0 − C2, Q = C1 − C3) with a shared gain resistor.
-  - Differential output → anti-alias RC → CS5361 differential input model.
-  - Gain set so that a strong in-band signal sits ~6 dB below ADC full scale (≈ 20–30 dB).
-- **Analyses:**
-  - Transient, 1–2 ms windows, ~0.5 ns steps, parallel across cores.
-  - NF = conversion loss (transient) combined with AC `.noise` of the baseband amplifier, driven by the mixer's real output impedance.
+- **Mixer**: FST3253 behavioural model (`hardware/models/fst3253.lib`).
+  - **VCC 4.0–5.5 V (datasheet): the FST3253 runs from 5V_A, not 3V3_RF** (this corrects parent §5/§7). Select inputs are TTL, so the 3.3 V clock chips drive them directly.
+  - Switches are NMOS fitted to R_on = 4 Ω at V_in = 0 (so R_on rises with the signal level), A port 13 pF, B ports 5 pF; the 2-to-4 decoder is ideal fast switches (its delay mismatch is covered by the LO skew).
+  - RF node AC-coupled and biased at 2.5 V (10 kΩ from a 10k/10k divider on 5V_A).
+  - **4 sampling capacitors 5.6 nF C0G**, selected to ±1 % of each other with the LCR meter. (33 nF puts the RC corner near 22 kHz: −6 dB at 40 kHz.)
+  - Single-ended 50 Ω RF input. (S1, S0) = 00, 01, 11, 10 selects B0, B1, B3, B2, so I = B0 − B3 and Q = B1 − B2.
+- **Baseband**: per channel, one LM4562 as the front half of an instrumentation amplifier (Rf 2.2 kΩ, Rg 240 Ω, gain 19.3 = 25.7 dB), passing the 2.5 V common mode to the CS5361 (VQ); anti-alias 100 Ω + 2.7 nF differential; CS5361 input 7.5 kΩ differential.
+  - LM4562 model: datasheet macromodel (`hardware/models/lm4562.lib`; TI's PSpice model could not be fetched by script and is reported to have swapped inputs). **On 5 V the LM4562 is at its minimum supply (±2.5 V) and swings about ±1 V per output: it, not the ADC, sets full scale** (≈ −20 dBm at the mixer input, about 3 dB below ADC full scale). Phase 3 power must deliver ≥ 5.0 V at the op-amps. No rail-to-rail low-noise op-amp (AD8656, OPA2350, LT6231) was in stock on Torob.
+- **Analyses:** transient, 1 ms window after a 30 µs settle, output on a 0.25 µs grid, solver step ≤ T_LO/280, **Gear integration** (trapezoidal integration rings on the switched capacitors and the run time explodes). Tones on a 3 kHz offset grid, Hann window.
+- **Mixer NF** (conversion loss with the baseband noise) moves to plan 2.5, where the receiver noise budget for the twin and the MDS check are built: AC `.noise` cannot run through the switching mixer.
 
 | Check | Target |
 |---|---|
-| Conversion gain | Chosen for the full-scale mapping; flatness ±0.5 dB across ±40 kHz |
-| IIP3 (preamp bypassed) | ≥ +25 dBm |
-| Raw image rejection (Monte Carlo + LO skew, p95) | ≥ 30 dB |
-| 3f / 5f response | Within 1 dB of ideal 1/3 and 1/5 (−9.5 / −14 dB) |
-| 2f response | ≤ −40 dBc |
-| Test frequencies | One per band (centre of each filter), both LO paths; 1.9 MHz on ÷4 |
+| Conversion gain | Reported (≈ 36 dB per-channel differential at the ADC pins vs the matched source amplitude); flatness within ±0.5 dB of the mean across ±40 kHz at every test point |
+| IIP3 (preamp bypassed) | ≥ +25 dBm, measured on the mixer core (sampling capacitors) with the IMD3 slope reported (2 dB/dB = third order); the op-amp model is linear |
+| Raw image rejection (Monte Carlo of cap mismatch + LO skew, 40 runs per LO path, 5th percentile) | ≥ 30 dB |
+| 3f / 5f response | Within 1 dB of ideal 1/3 and 1/5 (−9.5 / −14 dB) at every test point |
+| 2f response | ≤ −40 dBc at every test point |
+| Test frequencies | One per band (geometric centre of each filter): ÷4 below 3.2 MHz, direct above; plus 1.9 MHz on ÷4 |
 
 ## 6. Characterisation files (the contract between `neohw` and `neosim`)
 
