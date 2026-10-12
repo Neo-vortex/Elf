@@ -62,7 +62,7 @@ Build the best HF receiver we can, from parts buyable in the Iranian market, con
 2. **Bias-T (5 V):** P-MOSFET high-side switch + PTC fuse; INA219 detects over-current (>150 mA → firmware switches off and reports). RF choke chain (large + small inductor in series) flat across 0.1–54 MHz; DC-blocking capacitors. **Off at every power-up.**
 3. **Protection:** gas discharge tube at the connector, 1 MΩ static bleed, light anti-parallel diode limiter after the attenuator, biased so it never conducts at normal signal levels.
 4. **Attenuator:** one 20 dB resistive π-pad, switched in/out by one DPDT relay.
-5. **Band-pass filter bank** — 10 sub-octave filters, each switched by two **Omron G6K-2F (DPDT)** relays, one per side (amended 2026-10-12: one relay carrying both buses couples them; see phase 2 spec §4). Exactly one filter relay is energised at a time; with all relays de-energised (controller not running) no filter is connected and the receiver is muted, which is the defined safe state.
+5. **Band-pass filter bank** — 11 sub-octave filters (amended 2026-10-12: 30–54 MHz split at 40 MHz), each switched by two **Omron G6K-2F (DPDT)** relays, one per side (amended 2026-10-12: one relay carrying both buses couples them; see phase 2 spec §4). Exactly one filter relay is energised at a time; with all relays de-energised (controller not running) no filter is connected and the receiver is muted, which is the defined safe state.
 
    | # | Range (MHz) | Covers |
    |---|---|---|
@@ -75,7 +75,8 @@ Build the best HF receiver we can, from parts buyable in the Iranian market, con
    | 7 | 12–16 | 20 m |
    | 8 | 16–22 | 17 m, 15 m |
    | 9 | 22–30 | 12 m, 10 m |
-   | 10 | 30–54 | 6 m + general |
+   | 10 | 30–40 | general (split 2026-10-12: as one 30–54 MHz filter, the mixer's 2f response at a 30 MHz LO was rejected by only ~45 dB) |
+   | 11 | 40–54 | 6 m + general |
 
    Built from **SMD inductors and capacitors only — no toroids** (no RF toroids were found in Iranian online shops).
 6. **Preamp, 2 modes:** *Bypass* (default on 160–20 m, where band noise dominates) and *5 V LNA* (BFR92A or 2N3866 resistive-feedback stage, ~15 dB gain, ~25 mA).

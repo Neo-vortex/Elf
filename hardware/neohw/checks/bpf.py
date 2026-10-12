@@ -20,7 +20,7 @@ RL_MIN_DB = 14.0
 REJ_MIN_DB = 50.0
 MUTE_MIN_DB = 40.0
 S2P_SWEEP = Sp(0.05e6, 210e6, 50, "dec")  # decade grid: last point 208 MHz, spec asks for 200
-SELECTION_RULE = "filter n with lo_n <= f < hi_n; f = 54 MHz -> 10"
+SELECTION_RULE = "filter n with lo_n <= f < hi_n; f = 54 MHz -> 11"
 
 
 def il_limit_db(index: int) -> float:
@@ -150,7 +150,7 @@ def run(out_dir: Path, char_dir: Path, mc_runs: int = MC_RUNS, filters=None) -> 
         "svg": export.svg_diagram(bank.circuit, out_dir / "bpf_bank.svg"),
         "characterisation": charfile.write(
             char_dir / "bpf_bank.json", "bpf_bank", "pass" if result.passed else "fail",
-            {"ripple_db": bpf.RIPPLE_DB, "q_assumed": bpf.Q_ASSUMED, "selection_rule": SELECTION_RULE,
+            {"ripple_db": list(bpf.RIPPLE_DB), "q_assumed": bpf.Q_ASSUMED, "selection_rule": SELECTION_RULE,
              "filters": entries, "checks": [c.__dict__ for c in checks]}),
     }
     return result

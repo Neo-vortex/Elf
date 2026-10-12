@@ -57,14 +57,17 @@ class Source:
 
 @dataclass(frozen=True)
 class QuadratureLO:
-    """Two 50 % square waves driving the mixer selects: S0 at f_hz, S1 a quarter period later
-    (+ skew_s). The FST3253 decodes (S1, S0) = 00, 01, 11, 10 into four 25 % phases."""
+    """Two square waves driving the mixer selects: S0 at f_hz, S1 a quarter period later (+ skew_s).
+    `duty_err_s0/s1` lengthen (or, negative, shorten) each high time. The FST3253 decodes
+    (S1, S0) = 00, 01, 11, 10 into four 25 % phases."""
     s0: object
     s1: object
     f_hz: float
     skew_s: float = 0.0
     edge_s: float = 1e-9
     high_v: float = 3.3
+    duty_err_s0: float = 0.0
+    duty_err_s1: float = 0.0
 
     @property
     def nets(self) -> tuple:
@@ -73,9 +76,10 @@ class QuadratureLO:
     def lines(self) -> list[str]:
         t = 1 / self.f_hz
         w = t / 2 - self.edge_s
-        return [f"VLO_s0 {node_name(self.s0)} 0 dc 0 pulse(0 {self.high_v:g} 0 {self.edge_s:g} {self.edge_s:g} {w:.12g} {t:.12g})",
+        return [f"VLO_s0 {node_name(self.s0)} 0 dc 0 pulse(0 {self.high_v:g} 0 {self.edge_s:g} {self.edge_s:g} "
+                f"{w + self.duty_err_s0:.12g} {t:.12g})",
                 f"VLO_s1 {node_name(self.s1)} 0 dc 0 pulse(0 {self.high_v:g} {t / 4 + self.skew_s:.12g} "
-                f"{self.edge_s:g} {self.edge_s:g} {w:.12g} {t:.12g})"]
+                f"{self.edge_s:g} {self.edge_s:g} {w + self.duty_err_s1:.12g} {t:.12g})"]
 
 
 @dataclass(frozen=True)

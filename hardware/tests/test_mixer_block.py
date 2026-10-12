@@ -35,3 +35,15 @@ def test_bias_point_is_mid_supply(tools):
     # with the LO frozen at t = 0 only B0 is connected; the other caps float in a DC solve
     assert d["v(mix_a)"][0].real == pytest.approx(2.5, abs=0.05)
     assert d["v(mix_b0)"][0].real == pytest.approx(2.5, abs=0.05)
+
+
+@pytest.mark.integration
+def test_window_common_mode_is_settled_at_mid_supply(tools):
+    from neohw.checks import mixer as check
+    blk = mixer.build()
+    deck, raws, names = check._deck(blk, 14.2e6, [(14.2e6 + 12e3, -40.0)])
+    (res,) = run_decks([deck], raws)
+    v = check._waveforms(res, raws, names)
+    for p, m in ((v[0], v[1]), (v[2], v[3])):
+        cm = (p + m) / 2
+        assert abs(cm[:200].mean() - 2.5) < 0.02 and abs(cm[-200:].mean() - 2.5) < 0.02

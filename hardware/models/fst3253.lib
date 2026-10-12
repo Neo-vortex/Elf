@@ -1,13 +1,15 @@
 * FST3253 dual 4:1 bus switch, behavioural, from the onsemi 74FST3253 datasheet:
-* switches are NMOS (level 1) fitted to RON = 4 ohm at VIN = 0 V, VCC = 4.5 V (vto 0.8 V,
-* kp*W/L = 67.6 mA/V^2, body effect gamma 0.5), so RON rises as the signal nears VCC - 1.5 V;
+* switches are NMOS (level 1) fitted to the three datasheet RON points within ~15 %: 4 ohm at
+* VIN = 0 V / 64 mA / VCC 4.5 V, 8 ohm typ (15 max) at VIN = 2.4 V / 15 mA / VCC 4.5 V and 11 typ
+* (20 max) at VIN = 2.4 V / VCC 4.0 V (vto 0.3 V, kp*W/L = 59.5 mA/V^2, no body effect), so RON
+* rises as the signal nears VCC (13 ohm at the 2.5 V bias with VCC 5 V);
 * A port 13 pF, B ports 5 pF; select inputs TTL (threshold 1.5 V); /OE active low. The
 * 2-to-4 decoder is ideal fast switches (select-to-bus delay, 1-5.3 ns, is not modelled: only
 * its mismatch matters, and that is applied as LO skew). VCC must be 4.0-5.5 V.
 * Truth table (S1 S0): 00 -> B0, 01 -> B1, 10 -> B2, 11 -> B3.
 * Nodes follow the SOIC-16/TSSOP-16 pinout:
 *  1 /1OE  2 S1  3 1B3  4 1B2  5 1B1  6 1B0  7 1A  8 GND  9 2A 10 2B0 11 2B1 12 2B2 13 2B3 14 S0 15 /2OE 16 VCC
-.model FST_NSW nmos(level=1 vto=0.8 kp=67.6m gamma=0.5 phi=0.7 lambda=0)
+.model FST_NSW nmos(level=1 vto=0.3 kp=59.5m gamma=0 lambda=0)
 .model FST_HI sw(vt=1.5 vh=0.05 ron=10 roff=1e9)
 .model FST_LO sw(vt=-1.5 vh=0.05 ron=10 roff=1e9)
 * S model control voltage = v(nc+) - v(nc-); FST_LO with nodes (gnd, x) is on when v(x) < 1.5 V

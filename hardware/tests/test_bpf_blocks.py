@@ -4,7 +4,7 @@ from neohw.blocks import bpf, bpf_bank
 from neohw.spice import Op, Port, to_deck
 
 
-@pytest.mark.parametrize("index", range(1, 11))
+@pytest.mark.parametrize("index", range(1, 12))
 def test_design_has_hpf_then_lpf_with_buyable_parts(index):
     d = bpf.design(index)
     kinds = [p.kind for p in d.positions]
@@ -19,19 +19,19 @@ def test_design_has_hpf_then_lpf_with_buyable_parts(index):
 
 def test_design_rejects_bad_index():
     with pytest.raises(ValueError):
-        bpf.design(11)
+        bpf.design(12)
 
 
 def test_bank_has_one_relay_per_filter_and_valid_deck():
     blk = bpf_bank.build(3)
     relays = [p for p in blk.circuit.parts if p.ref.startswith("K")]
-    assert len(relays) == 20 and sum(p.state == "energised" for p in relays) == 2
+    assert len(relays) == 22 and sum(p.state == "energised" for p in relays) == 2
     deck, _ = to_deck(blk.circuit, "t", [Port(blk.ports["rf_in"], 1), Port(blk.ports["rf_out"], 2)], [Op()])
     assert "f3_in" in deck and "f10_out" in deck
 
 
 @pytest.mark.parametrize("freq, index", [(0.1e6, 1), (0.499e6, 1), (0.5e6, 2), (14.074e6, 7),
-                                         (50.313e6, 10), (54e6, 10)])
+                                         (39.9e6, 10), (40e6, 11), (50.313e6, 11), (54e6, 11)])
 def test_selection_rule(freq, index):
     assert bpf_bank.select(freq) == index
 
@@ -45,7 +45,7 @@ def test_selection_outside_range_rejected(freq):
 def test_bus_in_and_bus_out_never_share_a_relay():
     blk = bpf_bank.build(5)
     relays = [p for p in blk.circuit.parts if p.ref.startswith("K")]
-    assert len(relays) == 20
+    assert len(relays) == 22
     for k in relays:
         nets = {pin.net.name for pin in k.pins if pin.net is not None}
         assert len(nets & {"rf_in", "rf_out"}) == 1, (k.ref, nets)
@@ -68,3 +68,10 @@ def test_worst_case_q_reference_is_the_upper_edge():
     assert r(nominal) != r(worst)
     with pytest.raises(ValueError):
         bpf_bank.build(1, q_ref="lower")
+
+
+def test_band_10_split_keeps_2f_of_its_lower_edge_out_of_the_passband():
+    # final review of plan 2.4: with one 30–54 MHz filter, 2·30 MHz sat just above its cutoff
+    assert bpf.BANDS[9] == (30e6, 40e6) and bpf.BANDS[10] == (40e6, 54e6)
+    for lo, hi in bpf.BANDS[9:]:
+        assert 2 * lo > 1.4 * hi

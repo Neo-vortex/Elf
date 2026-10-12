@@ -1,4 +1,4 @@
-"""The 10-filter bank on common input/output buses (parent spec §4.5)."""
+"""The 11-filter bank on common input/output buses (parent spec §4.5, band 10 split at 40 MHz)."""
 from __future__ import annotations
 
 from skidl import Circuit, Net
@@ -19,7 +19,7 @@ def build(selected: int | None, q_ref: str = "centre") -> Block:
 
 
 def select(freq_hz: float) -> int:
-    """Filter index for an LO frequency: lo <= f < hi, and 54 MHz itself -> filter 10."""
+    """Filter index for an LO frequency: lo <= f < hi, and 54 MHz itself -> the last filter (11)."""
     for index, (lo, hi) in enumerate(bpf.BANDS, 1):
         if lo <= freq_hz < hi or (index == len(bpf.BANDS) and freq_hz == hi):
             return index

@@ -10,15 +10,18 @@ from neohw import eseries, parts
 from neohw.blocks import Block
 from neohw.synth.filters import Element, highpass, lowpass
 
-# Parent spec §4 table; filter n covers BANDS[n - 1] (Hz).
+# Parent spec §4 table; filter n covers BANDS[n - 1] (Hz). 30–54 MHz is split at 40 MHz (final
+# review of plan 2.4): as one filter, the mixer's 2f response at a 30 MHz LO (60 MHz) sat just
+# above its low-pass cutoff and was rejected by only ~45 dB.
 BANDS = ((0.1e6, 0.5e6), (0.5e6, 1.7e6), (1.7e6, 2.5e6), (2.5e6, 4.5e6), (4.5e6, 7.5e6),
-         (7.5e6, 12e6), (12e6, 16e6), (16e6, 22e6), (22e6, 30e6), (30e6, 54e6))
-LPF_ORDER = (9, 9, 9, 9, 9, 9, 7, 7, 7, 9)  # 7 where rejection at 3x has > 5 dB to spare
+         (7.5e6, 12e6), (12e6, 16e6), (16e6, 22e6), (22e6, 30e6), (30e6, 40e6), (40e6, 54e6))
+LPF_ORDER = (9, 9, 9, 9, 9, 9, 7, 7, 7, 7, 7)  # 7 where rejection at 3x has > 5 dB to spare
 HPF_ORDER = 5
-RIPPLE_DB = 0.02
+# Chebyshev ripple per filter: 0.02 dB; lower on 9–11, where ten open relay contacts on each bus
+# (~6 pF) eat into the return loss and the filters have rejection to spare
+RIPPLE_DB = (0.02,) * 8 + (0.01, 0.005, 0.01)
 EDGE_MARGIN = 1.03   # HPF cutoff 3 % below the band's lower edge
-LPF_MARGIN = (1.03,) * 9 + (1.05,)   # LPF cutoff above the upper edge; filter 10 trades
-                                     # 2 dB of its spare rejection for in-band loss
+LPF_MARGIN = (1.03,) * 11            # LPF cutoff 3 % above the upper edge
 Q_ASSUMED = 30.0
 L_MIN = 0.1e-6       # smallest axial colour-ring inductor commonly sold
 C_MIN = 1e-12        # smallest E24 C0G 0805
@@ -54,8 +57,9 @@ def design(index: int) -> FilterDesign:
     if not 1 <= index <= len(BANDS):
         raise ValueError(f"filter index must be 1..{len(BANDS)}, got {index}")
     lo, hi = BANDS[index - 1]
-    elements = (highpass(lo / EDGE_MARGIN, HPF_ORDER, RIPPLE_DB)
-                + lowpass(hi * LPF_MARGIN[index - 1], LPF_ORDER[index - 1], RIPPLE_DB))
+    ripple = RIPPLE_DB[index - 1]
+    elements = (highpass(lo / EDGE_MARGIN, HPF_ORDER, ripple)
+                + lowpass(hi * LPF_MARGIN[index - 1], LPF_ORDER[index - 1], ripple))
     return FilterDesign(index, lo, hi, tuple(_realise(e) for e in elements))
 
 

@@ -15,7 +15,7 @@ def _need_tools():
 
 
 def test_rejection_target_only_where_3f_is_out_of_band():
-    assert [check.has_rejection_target(i) for i in range(1, 11)] == [False, False] + [True] * 8
+    assert [check.has_rejection_target(i) for i in range(1, 12)] == [False, False] + [True] * 9
 
 
 @pytest.mark.integration

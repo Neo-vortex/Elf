@@ -85,5 +85,5 @@ def build() -> Block:
         _c("1u", vq, gnd, "X7R VQ decoupling")
         _c("100n", vcc, gnd, "X7R decoupling")
         _c("10u", vcc, gnd, "X5R decoupling")
-    return Block("mixer", ckt, {"rf_in": rf_in, "vcc": vcc, "s0": s0, "s1": s1, "b": tuple(b),
+    return Block("mixer", ckt, {"rf_in": rf_in, "vcc": vcc, "s0": s0, "s1": s1, "a": a, "b": tuple(b),
                                 "ain_i": (ail_p, ail_n), "ain_q": (air_p, air_n)})
