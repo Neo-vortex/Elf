@@ -13,6 +13,7 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt  # noqa: E402
 
 from neosim.sweep import SweepPoint, implementation_loss_db, wilson_interval  # noqa: E402
+from neosim import hardware  # noqa: E402
 from neosim.twin import ScenarioResult  # noqa: E402
 
 _STYLE = """
@@ -47,10 +48,30 @@ def _scenario_html(r: ScenarioResult) -> str:
         f"<td>{e(x.output)}</td><td>{e(x.detail)}</td></tr>" for x in r.receives)
     excl = "".join(f"<li>{e(x.station_id)}: {e(x.reason)}</li>" for x in r.excluded) or "<li>none</li>"
     return (f"<h2>{e(r.scenario.name)} {_badge(r.passed)}</h2>"
+            f"{_receiver_html(r)}"
             f"<p>ADC: peak {r.adc.peak_dbfs:.1f} dBFS, clipped samples {r.adc.clipped_samples}</p>"
             f"<p>Excluded stations:</p><ul>{excl}</ul>"
             f"<table><tr><th>receive</th><th>decoder</th><th>result</th><th>output</th><th>detail</th></tr>{rows}</table>"
             f'<img alt="spectrum" src="{_png(fig)}">')
+
+
+def _receiver_html(r: ScenarioResult) -> str:
+    rx = r.scenario.receiver
+    if r.hardware is None:
+        return "<p>Receiver: ideal</p>"
+    h = r.hardware
+    rows = "".join(f"<tr><td>{html.escape(x['stage'])}</td><td>{x['gain_db']:+.2f}</td><td>{x['nf_db']:.2f}</td>"
+                   f"<td>{x['added_factor']:.3f}</td></tr>" for x in h.noise["stages"])
+    folded = ", ".join(h.folded) or "none"
+    return (f"<p>Receiver: hardware model (committed characterisation), filter {h.filter_index}, "
+            f"preamp {'on' if rx.preamp else 'off'}, attenuator {rx.attenuator_db} dB; conversion gain "
+            f"{h.conv_gain_db:.2f} dB; image rejection {h.image_rejection_db:.1f} dB (5th-percentile imbalance); "
+            f"stations through LO harmonics: {html.escape(folded)}</p>"
+            f"<p>Noise budget at the LO: cascade NF {h.noise['nf_db']:.2f} dB; preamp noise folded in from LO "
+            f"harmonics {h.noise['harmonic_noise_w_per_hz'] / (hardware.K_B * hardware.T0):.3f} kT0. See the hardware report "
+            f"(<code>build/hw/report.html</code>) for the block checks.</p>"
+            f"<table><tr><th>stage</th><th>gain (dB)</th><th>NF (dB)</th><th>added noise factor (Friis)</th></tr>"
+            f"{rows}</table>")
 
 
 def _sweep_html(points: list[SweepPoint]) -> str:

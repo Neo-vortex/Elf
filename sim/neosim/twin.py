@@ -8,11 +8,11 @@ import numpy as np
 from scipy.io import wavfile
 from scipy.signal import welch
 
-from neosim import decoders
+from neosim import decoders, hardware, sources
 from neosim.adc import AdcStats, ideal_adc
 from neosim.channel import NOISE_POWER, Exclusion, compose
 from neosim.dsp_runner import run_dsp
-from neosim.scenario import FS_HZ, Receive, Scenario
+from neosim.scenario import FS_HZ, WINDOW_HZ, Receive, Scenario
 from neosim.sigmf import write_sigmf
 
 
@@ -33,6 +33,7 @@ class ScenarioResult:
     receives: list[ReceiveResult]
     psd_freqs_hz: np.ndarray
     psd_db: np.ndarray
+    hardware: hardware.HardwareStats | None = None
 
     @property
     def passed(self) -> bool:
@@ -52,12 +53,20 @@ def _evaluate(rx: Receive, wav: Path) -> ReceiveResult:
     return ReceiveResult(rx.id, rx.decoder, text, passed, f"CER {error:.3f} (limit {rx.expect['max_cer']})")
 
 
-def run_scenario(scenario: Scenario, workdir: Path) -> ScenarioResult:
+def run_scenario(scenario: Scenario, workdir: Path, hw: hardware.Hardware | None = None) -> ScenarioResult:
+    """`hw` is the hardware model for receiver.model == hardware (default: the committed files)."""
     workdir = Path(workdir)
     workdir.mkdir(parents=True, exist_ok=True)
     rng = np.random.default_rng(scenario.seed)
-    iq, excluded = compose(scenario, rng)
-    iq_q, adc = ideal_adc(iq, scenario.noise_dbfs, NOISE_POWER)
+    hw_stats = None
+    if scenario.receiver.model == "hardware":
+        hw = hw or hardware.Hardware.load()
+        iq_q, excl, hw_stats = hardware.receive(scenario, rng, hw, sources.render_station, FS_HZ, WINDOW_HZ)
+        excluded = [Exclusion(sid, reason) for sid, reason in excl]
+        adc = AdcStats(hw_stats.clipped_samples, hw_stats.peak_dbfs, 1.0)
+    else:
+        iq, excluded = compose(scenario, rng)
+        iq_q, adc = ideal_adc(iq, scenario.noise_dbfs, NOISE_POWER)
     meta = write_sigmf(workdir / "capture", iq_q, FS_HZ, scenario.lo_hz)
 
     receives = []
@@ -69,4 +78,4 @@ def run_scenario(scenario: Scenario, workdir: Path) -> ScenarioResult:
     freqs, psd = welch(iq_q, fs=FS_HZ, nperseg=8192, return_onesided=False)
     order = np.argsort(freqs)
     return ScenarioResult(scenario, excluded, adc, receives, freqs[order],
-                          10 * np.log10(np.maximum(psd[order], 1e-30)))
+                          10 * np.log10(np.maximum(psd[order], 1e-30)), hw_stats)

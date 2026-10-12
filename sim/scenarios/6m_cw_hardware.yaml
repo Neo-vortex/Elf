@@ -1,0 +1,10 @@
+name: 6 m CW, hardware receiver (preamp on, thermal noise only)
+lo_hz: 50_080_000
+duration_s: 12.0
+seed: 2
+receiver: {model: hardware, preamp: on, attenuator: 0}
+noise: {type: awgn, dbm_per_hz: -174}       # thermal noise only: receiver noise dominates
+stations:
+  - {id: cw6, mode: cw, rf_hz: 50_090_000, level_dbm: -125, text: "VVV DE EP2ABC", wpm: 18}
+receive:
+  - {id: rx_cw6, mode: cw, dial_hz: 50_089_400, decoder: cw, expect: {text: "VVV DE EP2ABC", max_cer: 0.05}}

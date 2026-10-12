@@ -1,0 +1,14 @@
+name: 20 m FT8 + CW, hardware receiver (preamp off)
+lo_hz: 14_060_000
+duration_s: 15.0
+seed: 1
+receiver: {model: hardware, preamp: off, attenuator: 0}
+noise: {type: awgn, dbm_per_hz: -155}       # quiet 20 m band noise at the antenna
+stations:
+  - {id: ft8_weak,   mode: ft8, dial_hz: 14_074_000, audio_hz: 1500, level_dbm: -136, msg: "CQ EP2ABC LL35"}
+  - {id: ft8_strong, mode: ft8, dial_hz: 14_074_000, audio_hz: 2100, level_dbm: -126, msg: "EP2ABC DL1XYZ JO62"}
+  - {id: cw1,        mode: cw,  rf_hz: 14_045_600,  level_dbm: -113, text: "CQ TEST DE EP2ABC", wpm: 20}
+  - {id: bcast,      mode: carrier, rf_hz: 15_400_000, level_dbm: -61}   # outside the window: excluded (plan 2.6)
+receive:
+  - {id: rx_ft8, mode: usb, dial_hz: 14_074_000, decoder: ft8, expect: {contains: ["CQ EP2ABC LL35", "EP2ABC DL1XYZ JO62"]}}
+  - {id: rx_cw,  mode: cw,  dial_hz: 14_045_000, decoder: cw,  expect: {text: "CQ TEST DE EP2ABC", max_cer: 0.05}}
