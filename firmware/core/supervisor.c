@@ -4,6 +4,15 @@
 #include "tables_gen.h"
 
 static sup_status_t st;
+static uint32_t zero_mv = 0;          /* the mirror's own reading with the feed off (0: the table's) */
+
+/* the sense voltage referred to the simulated mirror: this board's zero becomes the table's */
+static uint32_t referred_mv(uint32_t mv)
+{
+    if (!zero_mv) return mv;
+    int64_t v = (int64_t)mv - zero_mv + TABLES_BIAS_SENSE_MV[0];
+    return v < 0 ? 0 : (uint32_t)v;
+}
 
 uint32_t supervisor_bias_ua(uint32_t mv)
 {
@@ -29,6 +38,7 @@ sup_cc_t supervisor_cc_from_mv(uint32_t mv)
 void supervisor_init(void)
 {
     st = (sup_status_t){0};
+    zero_mv = 0;
     hal_gpio_set(HAL_GPIO_BIAS_EN, false);
 }
 
@@ -54,7 +64,7 @@ const sup_status_t *supervisor_poll(void)
     st.flags = (st.flags & (SUP_FLAG_BIAS_ON | SUP_FLAG_BIAS_TRIPPED | SUP_FLAG_TEMP_FAIL));
     if (st.ext_mv >= SUP_EXT_PRESENT_MV) st.flags |= SUP_FLAG_EXT;
     else if (st.vbus_mv < SUP_VBUS_LOW_MV) st.flags |= SUP_FLAG_VBUS_LOW;
-    st.bias_ua = (st.flags & SUP_FLAG_BIAS_ON) ? supervisor_bias_ua(hal_adc_mv(HAL_ADC_BIAS_ISENSE)) : 0;
+    st.bias_ua = (st.flags & SUP_FLAG_BIAS_ON) ? supervisor_bias_ua(referred_mv(hal_adc_mv(HAL_ADC_BIAS_ISENSE))) : 0;
     if ((st.flags & SUP_FLAG_BIAS_ON) && st.bias_ua > TABLES_BIAS_CUTOFF_UA) {
         hal_gpio_set(HAL_GPIO_BIAS_EN, false);
         st.flags = (st.flags & ~SUP_FLAG_BIAS_ON) | SUP_FLAG_BIAS_TRIPPED;
@@ -72,6 +82,7 @@ bool supervisor_bias_enable(bool on)
     }
     supervisor_poll();
     if (!(st.flags & SUP_FLAG_EXT) && st.cc != SUP_CC_1A5 && st.cc != SUP_CC_3A) return false;
+    zero_mv = hal_adc_mv(HAL_ADC_BIAS_ISENSE);   /* the feed is still off: this board's zero */
     st.flags &= ~SUP_FLAG_BIAS_TRIPPED;
     st.flags |= SUP_FLAG_BIAS_ON;
     hal_gpio_set(HAL_GPIO_BIAS_EN, true);

@@ -27,10 +27,17 @@ target_include_directories(elf_vhw PUBLIC host)
 target_link_libraries(elf_vhw PUBLIC elf_core)
 
 enable_testing()
-foreach(t si5351 relays radio supervisor cat audio)
+# the unit tests run under UBSan: undefined behaviour (overflow, bad shifts) fails them
+add_library(elf_core_ubsan STATIC
+    core/lo_plan.c core/si5351.c core/relays.c core/radio.c core/supervisor.c core/cat.c core/audio.c
+    ${GEN_DIR}/tables_gen.c host/vhw.c)
+target_include_directories(elf_core_ubsan PUBLIC core host ${GEN_DIR})
+target_compile_options(elf_core_ubsan PUBLIC -fsanitize=undefined -fno-sanitize-recover=all)
+target_link_options(elf_core_ubsan PUBLIC -fsanitize=undefined)
+foreach(t lo_plan si5351 relays radio supervisor cat audio)
     add_executable(test_${t} tests/test_${t}.c tests/test_hal.c)
     target_include_directories(test_${t} PRIVATE tests)
-    target_link_libraries(test_${t} PRIVATE elf_core elf_vhw)
+    target_link_libraries(test_${t} PRIVATE elf_core_ubsan)
     add_test(NAME ${t} COMMAND test_${t})
 endforeach()
 

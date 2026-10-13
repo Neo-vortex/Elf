@@ -85,8 +85,22 @@ static void low_usb_is_flagged_and_temperature_read(void)
     CHECK(supervisor_poll()->flags & SUP_FLAG_TEMP_FAIL);
 }
 
+static void sense_zero_is_measured_with_the_feed_off(void)
+{
+    /* a board whose mirror reads 0.70 V at zero current (the table's zero is 0.628 V) */
+    supervisor_init();
+    usb_supply(5000, 1680);
+    test_vhw.adc_mv[HAL_ADC_BIAS_ISENSE] = 700;       /* feed off: the zero reading */
+    CHECK(supervisor_bias_enable(true));
+    CHECK(supervisor_poll()->bias_ua < 1000);           /* still no current: reads ≈ 0, not ≈ 14 mA */
+    test_vhw.adc_mv[HAL_ADC_BIAS_ISENSE] = sense_mv_for(100000) + (700 - TABLES_BIAS_SENSE_MV[0]);
+    uint32_t ua = supervisor_poll()->bias_ua;
+    CHECK(ua > 98000 && ua < 102000);
+}
+
 int main(void)
 {
+    RUN(sense_zero_is_measured_with_the_feed_off);
     RUN(sense_table_reads_back_its_own_points);
     RUN(cc_voltage_maps_to_the_advertised_current);
     RUN(bias_needs_the_jack_or_a_1a5_source);

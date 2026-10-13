@@ -61,12 +61,50 @@ frac_t frac_limit_denominator(frac_t x, int64_t max_den)
 static bool frac_le(frac_t a, frac_t b) { return (__int128)a.num * b.den <= (__int128)b.num * a.den; }
 static frac_t frac_int(int64_t v) { return (frac_t){v, 1}; }
 
+static __int128 gcd128(__int128 a, __int128 b)
+{
+    if (a < 0) a = -a;
+    if (b < 0) b = -b;
+    while (b) {
+        __int128 t = a % b;
+        a = b;
+        b = t;
+    }
+    return a;
+}
+
+/* n/d (d > 0) as an int64 fraction: exact when it fits after reduction, otherwise the
+ * continued-fraction convergent with the largest denominator that keeps both parts in range
+ * (an LO's actual frequency off the 1 kHz grid can need ~70 bits exactly; the convergent is
+ * within far less than 1 µHz) */
+static frac_t frac_from128(__int128 n, __int128 d)
+{
+    __int128 g = gcd128(n, d);
+    if (g > 1) {
+        n /= g;
+        d /= g;
+    }
+    const __int128 lim = INT64_MAX;
+    if (n <= lim && n >= -lim && d <= lim) return (frac_t){(int64_t)n, (int64_t)d};
+    __int128 p0 = 0, q0 = 1, p1 = 1, q1 = 0, x = n, y = d;
+    while (y) {
+        __int128 a = x / y;
+        __int128 p2 = p0 + a * p1, q2 = q0 + a * q1;
+        if (p2 > lim || p2 < -lim || q2 > lim) break;
+        p0 = p1;
+        q0 = q1;
+        p1 = p2;
+        q1 = q2;
+        __int128 t = x - a * y;
+        x = y;
+        y = t;
+    }
+    return (frac_t){(int64_t)p1, (int64_t)q1};
+}
+
 static frac_t frac_mul(frac_t a, frac_t b)
 {
-    int64_t g1 = gcd64(a.num, b.den), g2 = gcd64(b.num, a.den);
-    if (!g1) g1 = 1;
-    if (!g2) g2 = 1;
-    return frac_make((a.num / g1) * (b.num / g2), (a.den / g2) * (b.den / g1));
+    return frac_from128((__int128)a.num * b.num, (__int128)a.den * b.den);
 }
 
 static frac_t frac_div(frac_t a, frac_t b) { return frac_mul(a, (frac_t){b.den, b.num}); }

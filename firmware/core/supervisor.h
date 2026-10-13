@@ -37,7 +37,9 @@ const sup_status_t *supervisor_poll(void);
 /* Bias-T on only with the external supply or a USB-C source offering ≥ 1.5 A (an active antenna
  * takes up to 100 mA beyond the USB 2.0 budget); returns false when refused. */
 bool supervisor_bias_enable(bool on);
-/* Current from the sense voltage (piecewise-linear table of the simulated mirror). */
+/* Current from the sense voltage (piecewise-linear table of the simulated mirror). Readings are
+ * first referred to the table: this board's zero, measured with the feed off before each enable,
+ * is subtracted and the table's zero added. */
 uint32_t supervisor_bias_ua(uint32_t sense_mv);
 sup_cc_t supervisor_cc_from_mv(uint32_t cc_mv);
 
