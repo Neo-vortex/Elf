@@ -64,6 +64,10 @@ parts are selected for availability in the Iranian electronics market.
 - Whole-board netlist checks: every pin connected, every supply pin on its rail, every footprint
   in the KiCad libraries, a unique I2C map and an ESP32-S3 pin map that avoids PSRAM, strapping
   and USB pins
+- Firmware core in C (LO planner, Si5351 registers, relay chain, CAT, supervisor, audio) built and
+  unit-tested on Linux against pin-level models of the board's parts; the C LO planner equals the
+  Python reference on every 1 kHz step from 0.1 to 54 MHz, and every Si5351 register image is
+  decoded back to its frequency by an independently written decoder (`make fw-test`)
 - Single-command reports: `make hw` for the circuits, `make sim` for the twin
 - Simulation results cached by netlist content: an unchanged block is not re-simulated
   (`make hw-fresh` re-runs everything)
@@ -149,7 +153,7 @@ make sim       # digital twin scenarios and FT8 sweep; report in build/sim/repor
 ### Firmware
 
 - [ ] ESP32-S3 firmware: USB audio, CAT, radio control, supervisor, calibration
-- [ ] Host build of the firmware modules with unit tests
+- [x] Host build of the firmware modules with unit tests
 
 ### Host software (desktop Linux and Raspberry Pi)
 
