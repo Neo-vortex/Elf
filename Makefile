@@ -5,7 +5,7 @@ PYTHON  ?= python3
 # so each dotnet step gets up to 3 attempts; a real build or test failure still fails after the third.
 RETRY = for i in 1 2 3; do $(1) && exit 0; echo "dotnet attempt $$i failed" >&2; done; exit 1
 
-.PHONY: tools dsp ft8 test sim hw hw-fresh fw fw-test clean
+.PHONY: tools dsp ft8 test sim hw hw-fresh fw fw-test vboard e2e clean
 
 tools: ft8 dsp
 
@@ -43,6 +43,13 @@ fw:
 fw-test: fw
 	ctest --test-dir $(FW_BUILD) --output-on-failure
 	cd firmware && $(PYTHON) -m pytest -q tests
+
+# the kernel path: `make vboard`, then tools/vboard-attach.sh (root) and `make e2e` in another shell
+vboard: fw
+	tools/vboard-run.sh
+
+e2e:
+	$(PYTHON) tools/elf_cw.py
 
 clean:
 	rm -rf build

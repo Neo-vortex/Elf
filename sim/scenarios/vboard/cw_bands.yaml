@@ -1,0 +1,13 @@
+# Stations the virtual board receives (phase 4 acceptance): CW on five bands, both LO paths
+# (80 m is below the 4.8 MHz crossover: the ÷4 path). Levels are at the antenna; the firmware
+# tunes the LO 10 kHz below each station and the host demodulates at the station − 600 Hz.
+name: virtual board CW, five bands
+duration_s: 14.0
+seed: 11
+noise: {type: awgn, dbm_per_hz: -160}       # quiet band noise
+stations:
+  - {id: cw80, mode: cw, rf_hz: 3_550_000, level_dbm: -95, text: "CQ DE EP2ABC 80M", wpm: 24}
+  - {id: cw40, mode: cw, rf_hz: 7_030_000, level_dbm: -95, text: "CQ DE EP2ABC 40M", wpm: 24}
+  - {id: cw20, mode: cw, rf_hz: 14_050_000, level_dbm: -95, text: "CQ DE EP2ABC 20M", wpm: 24}
+  - {id: cw15, mode: cw, rf_hz: 21_050_000, level_dbm: -95, text: "CQ DE EP2ABC 15M", wpm: 24}
+  - {id: cw6, mode: cw, rf_hz: 50_090_000, level_dbm: -95, text: "CQ DE EP2ABC 6M", wpm: 24}

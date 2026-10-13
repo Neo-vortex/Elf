@@ -1,4 +1,5 @@
-"""Command line: python -m neosim run SCENARIO... --report FILE"""
+"""Command line: python -m neosim run SCENARIO... --report FILE
+              python -m neosim vboard STATIONS --socket PATH   (the twin behind elf-virtual)"""
 from __future__ import annotations
 
 import argparse
@@ -27,7 +28,19 @@ def main(argv: list[str]) -> int:
     run.add_argument("--trials", type=int, default=4)
     run.add_argument("--sweep-hardware", action="store_true", help="add the hardware receiver to the FT8 sweep")
     run.add_argument("--hardware-checks", action="store_true", help="MDS at 14.1 and 50.1 MHz and the blocker scenario")
+    vb = sub.add_parser("vboard", help="serve the digital twin to the virtual board (elf-virtual --twin)")
+    vb.add_argument("stations", type=Path)
+    vb.add_argument("--socket", type=Path, default=Path("build/vboard/twin.sock"))
     args = parser.parse_args(argv)
+
+    if args.command == "vboard":
+        from neosim import vboard
+        args.socket.parent.mkdir(parents=True, exist_ok=True)
+        try:
+            vboard.serve(args.stations, args.socket, log=lambda m: print(m, flush=True))
+        except KeyboardInterrupt:
+            pass
+        return 0
 
     try:
         scenarios = [load_scenario(p) for p in args.scenarios]
