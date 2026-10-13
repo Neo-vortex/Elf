@@ -128,6 +128,22 @@
   - Assumption: MIC5205 PSRR 75 dB at 100 Hz (datasheet), then −20 dB/decade from 1 kHz to a 15 dB floor.
 - **Pending (user away 2026-10-13):** confirm the SS34 Schottky on Torob (a very common part).
 
+**Amended 2026-10-13 (user decision: plan 3.4 power rework, replaces the input and rail structure above):**
+- **The barrel jack is the only supply, 9–30 V.** USB carries data only: VBUS reaches the USBLC6 and a sense divider (the firmware sees whether a host is connected) and powers nothing. Reason (user): a host such as a Raspberry Pi cannot be asked for the board's plug-in inrush (5.6 A peak in the plan 3.2 transient) or its current; and with one input the switch-over, its leakage and hand-over cases disappear.
+- **Input:** jack → time-lag 1206 fuse → SS36 Schottky (60 V, 3 A; reverse polarity: a reversed plug conducts nothing) → SMBJ30A TVS (30 V stand-off, ≈ 48 V clamp) → input LC → **LM2576HVS-ADJ** buck (60 V input rating, above the TVS clamp; 3 A; 52 kHz; TO-263-5), 100 µH power inductor (SMD 7.3 × 6.6 mm, 4.6 A), SS36 catch diode.
+- **Rails:** the buck makes **5V_MAIN = 5.5 V**:
+  - relay coils (ULN2803 COM and coils): ≈ 4.6 V on a coil, above the G6K-2F must-operate voltage at 50 °C (≈ 4.15 V): the plan 3.3 relay margin is solved;
+  - 5V_A: LC → MIC5205-5.0 (the MT3608 boost and its 7 V rail are removed);
+  - 3V3_RF: LC → MIC5205-3.3;
+  - 3V3_D: AMS1117-3.3 in SOT-223 (from 5.5 V the TLV74033 in SOT-23-5 would run ≈ 126 °C at 50 °C ambient; the AMS1117's dropout no longer matters);
+  - 5V_BIAS: LC from 5V_MAIN.
+- **Removed:** the USB power path (two AO3401), the SS34 OR diode, the external-input P-MOSFET, the MT3608 and its inductor, the TLV74033, the 500 mA USB budget, the USB-C current gate on the bias-T (the jack is always present when the board runs).
+- **Checks (SPICE):** rails at 9 V and 30 V input and maximum load; reversed input; surge clamp within the buck's rating; regulator junction temperatures; the buck's conducted ripple (fixed frequency: harmonics every f_sw across 0.1–54 MHz) through the LC/LDO chain into the RF path, gate MDS − 20 dB as for the boost; plug-in inrush against the fuse.
+- **External-input sense divider:** 100 k / 10 k (30 V → 2.7 V at the ADC); the 100 k / 100 k of plan 3.2 would put 15 V on an ESP32 pin.
+- **USB-C:** the 5.1 kΩ CC pull-downs stay (a USB-C host only enables a device that presents Rd); the CC voltage is no longer used for power decisions.
+- **Torob (2026-10-13, VPN off; `2026-10-13-parts-survey-power-torob.json`):** LM2576HV-ADJ in stock in many listings, TO-263 (LM2576HVS-ADJ) and TO-220; **buy only listings not marked "copy" / "HIGH COPY"** (a clone's voltage rating cannot be trusted). SS36 (18 listings), SMBJ30A, 100 µH 4.6 A SMD inductor, AMS1117-3.3 in stock. Also confirmed for plan 3.3: the 24.576 MHz oscillator (listed as 2 × 3 mm: the footprint follows the bought package), SS34, 0805 LEDs in green, yellow and red, and a 3 × 6 mm two-pin SMD tactile switch (replacing the SKQG footprint). The LM2596HV appears only as modules; XL7015 (80 V) and MP9486 (100 V) are alternatives.
+- **Switching frequency:** 52 kHz puts a harmonic every 52 kHz across 0.1–54 MHz; the conducted-spur check covers every band as for the boost.
+
 ### 3.3 Controller, USB, ADC interface, relay drive, monitoring (plan 3.3)
 
 - **ESP32-S3-WROOM-1-N16R8** on 3V3_D. Native USB goes on GPIO19/20 to the USB-C receptacle, with 5.1 kΩ CC pull-downs and a USBLC6-2SC6.
