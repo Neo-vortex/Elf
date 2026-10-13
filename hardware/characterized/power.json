@@ -2,7 +2,7 @@
  "schema_version": 1,
  "block": "power",
  "status": "pass",
- "generated_by": "1e82ef2",
+ "generated_by": "c635ddf",
  "loads_typ_a": {
   "v5a": 0.092,
   "v3rf": 0.04,
