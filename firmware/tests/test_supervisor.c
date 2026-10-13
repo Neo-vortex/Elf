@@ -11,12 +11,12 @@ static uint32_t sense_mv_for(uint32_t ua)
     return mv;
 }
 
-static void usb_supply(uint32_t vbus_mv, uint32_t cc_mv)
+/* the board's monitors as the dividers present them (ratios from power.json) */
+static void supplies(uint32_t jack_mv, uint32_t main_mv, uint32_t vbus_mv)
 {
-    test_vhw.adc_mv[HAL_ADC_SENSE_VBUS] = vbus_mv / 2;
-    test_vhw.adc_mv[HAL_ADC_SENSE_MAIN] = (vbus_mv - 100) / 2;
-    test_vhw.adc_mv[HAL_ADC_SENSE_EXT] = 0;
-    test_vhw.adc_mv[HAL_ADC_CC1] = cc_mv;
+    test_vhw.adc_mv[HAL_ADC_SENSE_EXT] = (uint32_t)((uint64_t)jack_mv * 1000 / TABLES_SENSE_DIV_EXT_X1000);
+    test_vhw.adc_mv[HAL_ADC_SENSE_MAIN] = (uint32_t)((uint64_t)main_mv * 1000 / TABLES_SENSE_DIV_MAIN_X1000);
+    test_vhw.adc_mv[HAL_ADC_SENSE_VBUS] = (uint32_t)((uint64_t)vbus_mv * 1000 / TABLES_SENSE_DIV_VBUS_X1000);
 }
 
 static void sense_table_reads_back_its_own_points(void)
@@ -32,33 +32,44 @@ static void sense_table_reads_back_its_own_points(void)
     }
 }
 
-static void cc_voltage_maps_to_the_advertised_current(void)
-{
-    CHECK(supervisor_cc_from_mv(0) == SUP_CC_NONE);
-    CHECK(supervisor_cc_from_mv(410) == SUP_CC_DEFAULT);
-    CHECK(supervisor_cc_from_mv(920) == SUP_CC_1A5);
-    CHECK(supervisor_cc_from_mv(1680) == SUP_CC_3A);
-}
-
-static void bias_needs_the_jack_or_a_1a5_source(void)
+static void monitors_read_through_the_dividers(void)
 {
     supervisor_init();
-    usb_supply(5000, 410);
+    supplies(12000, 5480, 5000);
+    const sup_status_t *s = supervisor_poll();
+    CHECK(s->ext_mv >= 11980 && s->ext_mv <= 12020);              /* 100 k / 10 k: 30 V fits the ADC */
+    CHECK(s->main_mv >= 5470 && s->main_mv <= 5490);
+    CHECK((s->flags & SUP_FLAG_EXT) && (s->flags & SUP_FLAG_HOST) && !(s->flags & SUP_FLAG_INPUT_LOW));
+    supplies(7500, 5480, 0);                                       /* input sagging, no host */
+    s = supervisor_poll();
+    CHECK((s->flags & SUP_FLAG_INPUT_LOW) && !(s->flags & SUP_FLAG_HOST));
+}
+
+static void bias_needs_5v_main_in_regulation(void)
+{
+    supervisor_init();
+    supplies(12000, 4800, 5000);                                   /* buck not up yet */
     CHECK(!supervisor_bias_enable(true));
     CHECK(test_vhw.gpio[HAL_GPIO_BIAS_EN] == false);
-    usb_supply(5000, 920);
+    supplies(12000, 5480, 0);                                      /* no USB host needed: the jack powers it */
     CHECK(supervisor_bias_enable(true));
     CHECK(test_vhw.gpio[HAL_GPIO_BIAS_EN] == true);
-    supervisor_bias_enable(false);
-    usb_supply(5000, 410);
-    test_vhw.adc_mv[HAL_ADC_SENSE_EXT] = 2500;          /* 5.0 V on the jack */
+}
+
+static void bias_drops_when_main_falls(void)
+{
+    supervisor_init();
+    supplies(12000, 5480, 5000);
     CHECK(supervisor_bias_enable(true));
+    supplies(6000, 4600, 5000);                                    /* the jack pulled: main collapsing */
+    const sup_status_t *s = supervisor_poll();
+    CHECK(!(s->flags & SUP_FLAG_BIAS_ON) && test_vhw.gpio[HAL_GPIO_BIAS_EN] == false);
 }
 
 static void over_current_cuts_the_feed(void)
 {
     supervisor_init();
-    usb_supply(5000, 1680);
+    supplies(12000, 5480, 5000);
     CHECK(supervisor_bias_enable(true));
     test_vhw.adc_mv[HAL_ADC_BIAS_ISENSE] = sense_mv_for(140000);
     CHECK(supervisor_poll()->flags & SUP_FLAG_BIAS_ON);
@@ -72,24 +83,11 @@ static void over_current_cuts_the_feed(void)
     CHECK((s->flags & SUP_FLAG_BIAS_ON) && !(s->flags & SUP_FLAG_BIAS_TRIPPED));
 }
 
-static void low_usb_is_flagged_and_temperature_read(void)
-{
-    supervisor_init();
-    usb_supply(4600, 410);
-    vhw_set_temp_mc(&test_vhw, 41500);
-    const sup_status_t *s = supervisor_poll();
-    CHECK(s->flags & SUP_FLAG_VBUS_LOW);
-    CHECK(s->vbus_mv == 4600);
-    CHECK(s->temp_mc == 41500);
-    test_vhw.lm75_present = false;
-    CHECK(supervisor_poll()->flags & SUP_FLAG_TEMP_FAIL);
-}
-
 static void sense_zero_is_measured_with_the_feed_off(void)
 {
     /* a board whose mirror reads 0.70 V at zero current (the table's zero is 0.628 V) */
     supervisor_init();
-    usb_supply(5000, 1680);
+    supplies(12000, 5480, 5000);
     test_vhw.adc_mv[HAL_ADC_BIAS_ISENSE] = 700;       /* feed off: the zero reading */
     CHECK(supervisor_bias_enable(true));
     CHECK(supervisor_poll()->bias_ua < 1000);           /* still no current: reads ≈ 0, not ≈ 14 mA */
@@ -98,13 +96,24 @@ static void sense_zero_is_measured_with_the_feed_off(void)
     CHECK(ua > 98000 && ua < 102000);
 }
 
+static void temperature_is_read_and_a_missing_sensor_flagged(void)
+{
+    supervisor_init();
+    supplies(12000, 5480, 5000);
+    vhw_set_temp_mc(&test_vhw, 41500);
+    CHECK(supervisor_poll()->temp_mc == 41500);
+    test_vhw.lm75_present = false;
+    CHECK(supervisor_poll()->flags & SUP_FLAG_TEMP_FAIL);
+}
+
 int main(void)
 {
-    RUN(sense_zero_is_measured_with_the_feed_off);
     RUN(sense_table_reads_back_its_own_points);
-    RUN(cc_voltage_maps_to_the_advertised_current);
-    RUN(bias_needs_the_jack_or_a_1a5_source);
+    RUN(monitors_read_through_the_dividers);
+    RUN(bias_needs_5v_main_in_regulation);
+    RUN(bias_drops_when_main_falls);
     RUN(over_current_cuts_the_feed);
-    RUN(low_usb_is_flagged_and_temperature_read);
+    RUN(sense_zero_is_measured_with_the_feed_off);
+    RUN(temperature_is_read_and_a_missing_sensor_flagged);
     return CHECK_DONE();
 }

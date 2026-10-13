@@ -14,7 +14,7 @@ find_package(Python3 REQUIRED COMPONENTS Interpreter)
 add_custom_command(
     OUTPUT ${GEN_DIR}/tables_gen.h ${GEN_DIR}/tables_gen.c
     COMMAND Python3::Interpreter ${CMAKE_CURRENT_SOURCE_DIR}/tools/gen_tables.py ${CHAR_DIR} ${GEN_DIR}
-    DEPENDS tools/gen_tables.py ${CHAR_DIR}/bpf_bank.json ${CHAR_DIR}/controller.json
+    DEPENDS tools/gen_tables.py ${CHAR_DIR}/bpf_bank.json ${CHAR_DIR}/controller.json ${CHAR_DIR}/power.json
     COMMENT "Generating firmware tables from the characterisation files")
 
 add_library(elf_core STATIC

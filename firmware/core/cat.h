@@ -8,7 +8,7 @@
  *   PA        preamp: PA0 / PA1 (answer "PAx0;")
  *   RA        attenuator: RA00 / RA01 (answer "RAxx00;")
  *   AI, PS, RX  accepted (AI0, PS1, receive)
- *   ZB        Elf: bias-T, ZB0 / ZB1 (refused with "?;" without ≥ 1.5 A or the jack)
+ *   ZB        Elf: bias-T, ZB0 / ZB1 (refused with "?;" while 5V_MAIN is out of regulation)
  *   ZT        Elf: telemetry "ZT<vbus mV>,<ext mV>,<main mV>,<bias µA>,<temp m°C>,<flags>;"
  *   ZC        Elf: calibration tone, ZC0 / ZC1<offset Hz>, answer "ZC<0|1><offset>;" */
 #ifndef ELF_CAT_H

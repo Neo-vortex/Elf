@@ -1,5 +1,5 @@
 """Generates firmware/core/tables_gen.{h,c} from the committed characterisation files, so the
-firmware's filter edges, relay bit order, GPIO pads and bias-sense table are the hardware
+firmware's filter edges, relay bit order, GPIO pads, bias-sense table and monitor dividers are the hardware
 design's own numbers (phase 4 spec §2). Files are rewritten only when their text changes."""
 from __future__ import annotations
 
@@ -17,6 +17,7 @@ def _array(name: str, values) -> str:
 def render(char_dir: Path) -> tuple[str, str]:
     bank = json.loads((char_dir / "bpf_bank.json").read_text())
     ctl = json.loads((char_dir / "controller.json").read_text())
+    pw = json.loads((char_dir / "power.json").read_text())
     filters = sorted(bank["filters"], key=lambda f: f["index"])
     order = ctl["relay_chain_order"]
     table = ctl["bias_sense_table_27c"]
@@ -34,7 +35,10 @@ def render(char_dir: Path) -> tuple[str, str]:
           "extern const uint32_t TABLES_BIAS_SENSE_MV[];", "extern const uint32_t TABLES_BIAS_SENSE_UA[];",
           f"#define TABLES_BIAS_CUTOFF_UA {round(ctl['bias_cutoff_a'] * 1e6)}u",
           f"#define TABLES_I2C_SI5351 0x{ctl['i2c']['Si5351C']:02x}",
-          f"#define TABLES_I2C_LM75A 0x{ctl['i2c']['LM75A']:02x}", "", "#endif", ""]
+          f"#define TABLES_I2C_LM75A 0x{ctl['i2c']['LM75A']:02x}", "",
+          "/* monitor dividers: node voltage = ADC voltage × ratio / 1000 */"]
+    h += [f"#define TABLES_SENSE_DIV_{k.upper()}_X1000 {round(v * 1000)}u" for k, v in sorted(pw["sense_dividers"].items())]
+    h += ["", "#endif", ""]
     c = [HEADER, '#include "tables_gen.h"', "",
          _array("TABLES_FILTER_LO_HZ", (int(f["lo_hz"]) for f in filters)),
          _array("TABLES_FILTER_HI_HZ", (int(f["hi_hz"]) for f in filters)),

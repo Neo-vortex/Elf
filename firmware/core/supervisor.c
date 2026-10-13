@@ -27,14 +27,6 @@ uint32_t supervisor_bias_ua(uint32_t mv)
     return v < 0 ? 0 : (uint32_t)v;
 }
 
-sup_cc_t supervisor_cc_from_mv(uint32_t mv)
-{
-    if (mv < 200) return SUP_CC_NONE;
-    if (mv < SUP_CC_1A5_MIN_MV) return SUP_CC_DEFAULT;
-    if (mv < SUP_CC_3A_MIN_MV) return SUP_CC_1A5;
-    return SUP_CC_3A;
-}
-
 void supervisor_init(void)
 {
     st = (sup_status_t){0};
@@ -54,21 +46,30 @@ static void read_temp(void)
     st.temp_mc = raw * 125;
 }
 
+static uint32_t divided(hal_adc_t ch, uint32_t ratio_x1000)
+{
+    return (uint32_t)((uint64_t)hal_adc_mv(ch) * ratio_x1000 / 1000u);
+}
+
+static void bias_off(uint32_t why)
+{
+    hal_gpio_set(HAL_GPIO_BIAS_EN, false);
+    st.flags = (st.flags & ~SUP_FLAG_BIAS_ON) | why;
+}
+
 const sup_status_t *supervisor_poll(void)
 {
-    st.vbus_mv = hal_adc_mv(HAL_ADC_SENSE_VBUS) * SUP_DIVIDER;
-    st.ext_mv = hal_adc_mv(HAL_ADC_SENSE_EXT) * SUP_DIVIDER;
-    st.main_mv = hal_adc_mv(HAL_ADC_SENSE_MAIN) * SUP_DIVIDER;
-    uint32_t cc1 = hal_adc_mv(HAL_ADC_CC1), cc2 = hal_adc_mv(HAL_ADC_CC2);
-    st.cc = supervisor_cc_from_mv(cc1 > cc2 ? cc1 : cc2);
-    st.flags = (st.flags & (SUP_FLAG_BIAS_ON | SUP_FLAG_BIAS_TRIPPED | SUP_FLAG_TEMP_FAIL));
+    st.vbus_mv = divided(HAL_ADC_SENSE_VBUS, TABLES_SENSE_DIV_VBUS_X1000);
+    st.ext_mv = divided(HAL_ADC_SENSE_EXT, TABLES_SENSE_DIV_EXT_X1000);
+    st.main_mv = divided(HAL_ADC_SENSE_MAIN, TABLES_SENSE_DIV_MAIN_X1000);
+    st.flags &= SUP_FLAG_BIAS_ON | SUP_FLAG_BIAS_TRIPPED | SUP_FLAG_TEMP_FAIL;
     if (st.ext_mv >= SUP_EXT_PRESENT_MV) st.flags |= SUP_FLAG_EXT;
-    else if (st.vbus_mv < SUP_VBUS_LOW_MV) st.flags |= SUP_FLAG_VBUS_LOW;
+    if (st.ext_mv < SUP_INPUT_LOW_MV) st.flags |= SUP_FLAG_INPUT_LOW;
+    if (st.vbus_mv >= SUP_HOST_MV) st.flags |= SUP_FLAG_HOST;
+    if (st.main_mv < SUP_MAIN_OK_MV) st.flags |= SUP_FLAG_MAIN_LOW;
     st.bias_ua = (st.flags & SUP_FLAG_BIAS_ON) ? supervisor_bias_ua(referred_mv(hal_adc_mv(HAL_ADC_BIAS_ISENSE))) : 0;
-    if ((st.flags & SUP_FLAG_BIAS_ON) && st.bias_ua > TABLES_BIAS_CUTOFF_UA) {
-        hal_gpio_set(HAL_GPIO_BIAS_EN, false);
-        st.flags = (st.flags & ~SUP_FLAG_BIAS_ON) | SUP_FLAG_BIAS_TRIPPED;
-    }
+    if ((st.flags & SUP_FLAG_BIAS_ON) && st.bias_ua > TABLES_BIAS_CUTOFF_UA) bias_off(SUP_FLAG_BIAS_TRIPPED);
+    if ((st.flags & SUP_FLAG_BIAS_ON) && (st.flags & SUP_FLAG_MAIN_LOW)) bias_off(0);
     read_temp();
     return &st;
 }
@@ -81,7 +82,7 @@ bool supervisor_bias_enable(bool on)
         return true;
     }
     supervisor_poll();
-    if (!(st.flags & SUP_FLAG_EXT) && st.cc != SUP_CC_1A5 && st.cc != SUP_CC_3A) return false;
+    if (st.flags & SUP_FLAG_MAIN_LOW) return false;
     zero_mv = hal_adc_mv(HAL_ADC_BIAS_ISENSE);   /* the feed is still off: this board's zero */
     st.flags &= ~SUP_FLAG_BIAS_TRIPPED;
     st.flags |= SUP_FLAG_BIAS_ON;

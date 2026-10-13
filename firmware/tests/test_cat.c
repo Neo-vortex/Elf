@@ -30,8 +30,9 @@ static void start(void)
     radio_init();
     supervisor_init();
     cat_init(collect);
-    test_vhw.adc_mv[HAL_ADC_SENSE_VBUS] = 2500;
-    test_vhw.adc_mv[HAL_ADC_CC1] = 410;
+    test_vhw.adc_mv[HAL_ADC_SENSE_VBUS] = 2500;               /* host present */
+    test_vhw.adc_mv[HAL_ADC_SENSE_EXT] = 1091;               /* 12 V jack through 100 k / 10 k */
+    test_vhw.adc_mv[HAL_ADC_SENSE_MAIN] = 2000;              /* 4.0 V: the buck not up yet */
 }
 
 static void fa_tunes_and_reads_back(void)
@@ -93,11 +94,11 @@ static void preamp_and_attenuator_switch_relays(void)
 static void bias_t_needs_power_and_reports_telemetry(void)
 {
     start();
-    CHECK(strcmp(ask("ZB1;"), "?;") == 0);                 /* USB default current only */
-    test_vhw.adc_mv[HAL_ADC_CC1] = 920;
+    CHECK(strcmp(ask("ZB1;"), "?;") == 0);                 /* 5V_MAIN not in regulation */
+    test_vhw.adc_mv[HAL_ADC_SENSE_MAIN] = 2740;              /* 5.48 V */
     CHECK(strcmp(ask("ZB1;ZB;"), "ZB1;") == 0);
     const char *t = ask("ZT;");
-    CHECK(strncmp(t, "ZT5000,0,", 9) == 0 && t[strlen(t) - 1] == ';');
+    CHECK(strncmp(t, "ZT5000,12001,5480,", 18) == 0 && t[strlen(t) - 1] == ';');
 }
 
 static void calibration_tone_on_and_off(void)
