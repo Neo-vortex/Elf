@@ -2,3 +2,7 @@
 	path = third_party/ft8_lib
 	url = https://github.com/kgoba/ft8_lib.git
 	ignore = untracked
+[submodule "third_party/tinyusb"]
+	path = third_party/tinyusb
+	url = https://github.com/hathach/tinyusb
+	shallow = true

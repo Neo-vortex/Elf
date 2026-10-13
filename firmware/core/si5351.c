@@ -51,7 +51,7 @@ void si5351_image(const lo_plan_t *p, uint8_t reg[SI5351_REG_COUNT])
         reg[SI5351_REG_OE] &= (uint8_t)~(1u << clk);
     }
     reg[SI5351_REG_PLL_RESET] = SI5351_PLL_RESET_BOTH;
-    reg[SI5351_REG_XTAL_LOAD] = SI5351_XTAL_LOAD_10PF;
+    reg[SI5351_REG_XTAL_LOAD] = SI5351_XTAL_LOAD_8PF;
 }
 
 static int put(const uint8_t *reg, uint8_t first, uint8_t count)

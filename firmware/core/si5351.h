@@ -2,7 +2,7 @@
  *
  * The image covers the registers the board uses: 3 (output enable), 15 (PLL source: crystal),
  * 16–19 (CLK0–CLK3 control; CLK4–7 stay powered down), 26–41 (PLLA/PLLB), 42–73 (MultiSynth
- * 0–3), 165–168 (CLK0–3 phase offset), 177 (PLL reset), 183 (crystal load 10 pF). Unused
+ * 0–3), 165–168 (CLK0–3 phase offset), 177 (PLL reset), 183 (crystal load 8 pF, the BOM crystal's CL). Unused
  * outputs are powered down, not only disabled; CLK3 (the calibration tone) runs only when the
  * plan has it. */
 #ifndef ELF_SI5351_H
@@ -33,7 +33,7 @@ enum {
 #define SI5351_CLK_SRC_PLLB 0x20
 #define SI5351_CLK_SRC_MS 0x0C
 #define SI5351_CLK_DRIVE_8MA 0x03
-#define SI5351_XTAL_LOAD_10PF 0xD2      /* XTAL_CL = 11, low bits 010010 as AN619 requires */
+#define SI5351_XTAL_LOAD_8PF 0x92       /* XTAL_CL = 10 (8 pF, the BOM crystal's CL), low bits 010010 as AN619 requires */
 #define SI5351_PLL_RESET_BOTH 0xA0
 
 /* Fills `reg` (all 256 registers, untouched ones 0) for the plan. */

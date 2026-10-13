@@ -43,7 +43,7 @@ static void unused_outputs_are_powered_down_and_disabled(void)
     for (int k = 2; k < 8; k++) CHECK(reg[SI5351_REG_CLK_CTRL + k] == SI5351_CLK_PDN);
     CHECK(reg[SI5351_REG_CLK_CTRL] == (SI5351_CLK_INT | SI5351_CLK_SRC_MS | SI5351_CLK_DRIVE_8MA));
     CHECK(reg[SI5351_REG_PHOFF + 1] == (uint8_t)p.out[0].ms.num && reg[SI5351_REG_PHOFF] == 0);
-    CHECK(reg[SI5351_REG_XTAL_LOAD] == 0xD2 && reg[SI5351_REG_PLL_SRC] == 0);
+    CHECK(reg[SI5351_REG_XTAL_LOAD] == 0x92 && reg[SI5351_REG_PLL_SRC] == 0);   /* 8 pF: the BOM crystal's CL */
 }
 
 static void program_turns_outputs_off_first_and_on_last(void)

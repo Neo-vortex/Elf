@@ -45,3 +45,22 @@ add_executable(lo_plan_dump tests/lo_plan_dump.c)
 target_link_libraries(lo_plan_dump PRIVATE elf_core)
 add_executable(si5351_dump tests/si5351_dump.c)
 target_link_libraries(si5351_dump PRIVATE elf_core)
+
+# ---- USB: TinyUSB (third_party/tinyusb, release 0.21.0) and the virtual board ----
+set(TUSB ${CMAKE_CURRENT_SOURCE_DIR}/../third_party/tinyusb/src)
+add_library(tinyusb STATIC
+    ${TUSB}/tusb.c ${TUSB}/common/tusb_fifo.c ${TUSB}/device/usbd.c
+    ${TUSB}/class/audio/audio_device.c ${TUSB}/class/cdc/cdc_device.c)
+target_include_directories(tinyusb SYSTEM PUBLIC ${TUSB})
+target_include_directories(tinyusb PUBLIC usb host)
+target_compile_definitions(tinyusb PUBLIC CFG_TUSB_MCU=OPT_MCU_NONE)
+# third-party code: build it as it is, without the project's strict warnings
+target_compile_options(tinyusb PRIVATE -w)
+
+# the device controller driver, descriptors and class callbacks are objects, not an archive:
+# TinyUSB calls back into them
+add_library(elf_usb OBJECT usb/usb_desc.c usb/usb_app.c host/dcd_usbip.c)
+target_link_libraries(elf_usb PUBLIC tinyusb elf_core)
+
+add_executable(elf-virtual host/main.c host/hal_virtual.c host/twin_link.c $<TARGET_OBJECTS:elf_usb>)
+target_link_libraries(elf-virtual PRIVATE elf_usb elf_vhw tinyusb elf_core m)
