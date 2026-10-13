@@ -159,3 +159,32 @@ def test_a_malformed_urb_drops_the_client_but_not_the_server(board):
             c.wait(99)
     with _configured(board) as c:                      # a new client imports the device again
         assert c.string(2) == "Elf HF Receiver"
+
+
+def test_a_control_urb_whose_direction_contradicts_its_setup_drops_only_the_client(board):
+    with u.Client("127.0.0.1", board) as c:
+        setup = struct.pack("<BBHHH", 0x80, 6, 0x0100, 0, 18)          # GET_DESCRIPTOR(device) is IN …
+        c.submit(0, u.DIR_OUT, data=bytes(18), setup=setup)             # … sent as OUT with data
+        with pytest.raises((u.UsbipError, ConnectionError, OSError)):
+            c.wait(c.seq)
+    with _configured(board) as c:                                       # the server is still up
+        assert c.string(2) == "Elf HF Receiver"
+
+
+def test_iso_packets_outside_the_buffer_drop_only_the_client(board):
+    with _configured(board) as c:
+        assert c.set_interface(1, 1) == 0
+        c.seq += 1
+        hdr = struct.pack(">IIIIIIiiiI", u.CMD_SUBMIT, c.seq, 0x10002, 1, 1, 0, 8 * 582, 0, 8, 1) + bytes(8)
+        descs = b"".join(struct.pack(">IIIi", off, 582, 0, 0) for off in [582 * k for k in range(7)] + [0x40000000])
+        c.sock.sendall(hdr + descs)
+        with pytest.raises((u.UsbipError, ConnectionError, OSError)):
+            c.wait(c.seq)
+    with _configured(board) as c:
+        assert c.string(2) == "Elf HF Receiver"
+
+
+def test_the_board_declares_itself_self_powered(board):
+    with u.Client("127.0.0.1", board) as c:
+        cfg = c.get_descriptor(2, 0, 9)
+    assert cfg[7] & 0x40 and cfg[8] * 2 <= 100          # bmAttributes self-powered; bMaxPower ≤ 100 mA

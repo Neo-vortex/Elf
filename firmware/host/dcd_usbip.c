@@ -416,10 +416,9 @@ static void drop_connection(void)
         held = u->next;
         urb_free(u);
     }
-    if (ctrl) {
-        urb_free(ctrl);
-        ctrl = NULL;
-    }
+    /* a held control URB was freed with the held list; only a driver-made one is not in it */
+    if (ctrl && ctrl->synthetic) urb_free(ctrl);
+    ctrl = NULL;
     if (imported) dcd_event_bus_signal(0, DCD_EVENT_UNPLUGGED, false);
     imported = false;
 }
@@ -520,6 +519,10 @@ static bool handle_urb(void)
         }
         u->iso[k].offset = get32(d);
         u->iso[k].length = get32(d + 4);
+        if ((uint64_t)u->iso[k].offset + u->iso[k].length > u->len) {   /* outside the buffer: malformed */
+            urb_free(u);
+            return false;
+        }
     }
     stats.urbs_received++;
     if (trace) fprintf(stderr, "urb %u ep %u %s len %d iso %d\n", seq, ep, dir ? "in" : "out", len, n_iso);
@@ -528,6 +531,15 @@ static bool handle_urb(void)
     while (*pp) pp = &(*pp)->next;
     *pp = u;
     if (u->ep == 0) {
+        /* the URB must agree with its setup packet: direction (bmRequestType bit 7) and length */
+        const uint8_t *setup = h + 40;
+        uint16_t w_length = (uint16_t)(setup[6] | setup[7] << 8);
+        bool setup_in = (setup[0] & 0x80) != 0;
+        if (u->len != w_length || (w_length && setup_in != (u->dir == USBIP_DIR_IN))) {
+            unlink_held(u);
+            urb_free(u);
+            return false;
+        }
         if (ctrl) {                                              /* one control transfer at a time */
             reply_submit(u, -16);                                /* -EBUSY */
             return true;
