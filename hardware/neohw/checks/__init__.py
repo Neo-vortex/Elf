@@ -23,6 +23,8 @@ class BlockResult:
     plots: dict[str, tuple[np.ndarray, np.ndarray]] = field(default_factory=dict)
     artefacts: dict[str, Path] = field(default_factory=dict)
     logx: bool = False
+    x_label: str = "frequency (MHz)"      # plot x axis: label, and the unit the values are divided by
+    x_scale: float = 1e6
 
     @property
     def passed(self) -> bool:

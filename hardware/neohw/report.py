@@ -9,6 +9,7 @@ from datetime import datetime
 from pathlib import Path
 
 import matplotlib
+import numpy as np
 
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt  # noqa: E402
@@ -26,13 +27,13 @@ def _badge(ok: bool) -> str:
     return '<span class="pass">PASS</span>' if ok else '<span class="fail">FAIL</span>'
 
 
-def _plot_png(plots: dict, logx: bool = False) -> str:
+def _plot_png(plots: dict, logx: bool = False, x_label: str = "frequency (MHz)", x_scale: float = 1e6) -> str:
     fig, ax = plt.subplots(figsize=(9, 3.2))
     for label, (x, y) in plots.items():
-        ax.plot(x / 1e6, y, label=label)
+        ax.plot(np.asarray(x, dtype=float) / x_scale, np.asarray(y, dtype=float), label=label)
     if logx:
         ax.set_xscale("log")
-    ax.set_xlabel("frequency (MHz)")
+    ax.set_xlabel(x_label)
     ax.grid(alpha=0.3)
     ax.legend(fontsize=8)
     buf = io.BytesIO()
@@ -48,7 +49,7 @@ def _block_html(r: BlockResult) -> str:
     out = [f"<h2>{e(r.block)} {_badge(r.passed)}</h2>",
            f"<table><tr><th>check</th><th>value</th><th>limit</th><th>result</th></tr>{rows}</table>"]
     if r.plots:
-        out.append(f'<img alt="plots" src="{_plot_png(r.plots, r.logx)}">')
+        out.append(f'<img alt="plots" src="{_plot_png(r.plots, r.logx, r.x_label, r.x_scale)}">')
     svg = r.artefacts.get("svg")
     if svg and Path(svg).exists():
         text = Path(svg).read_text()

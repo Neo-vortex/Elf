@@ -20,6 +20,7 @@ I2C_ADDRESSES = {"Si5351C": 0x60, "LM75A": 0x48}
 RELAY_COIL_A = 0.028                             # G6K-2F 5 VDC coil (178 Ω)
 RELAYS_ON_MAX = 4                                # selected filter's 2 + attenuator + preamp
 ULN2803_CHANNEL_A = 0.5
+PLOT_X_LABEL, PLOT_X_SCALE = "bias-T current (mA)", 1e-3
 
 
 def bias_sense() -> dict:
@@ -87,7 +88,8 @@ def run(out_dir: Path, char_dir: Path) -> BlockResult:
     ]
     checks = [CheckResult(c.name, float(c.value), c.limit, bool(c.passed), c.unit) for c in checks]   # plain JSON types
     result = BlockResult("controller", checks, plots={
-        f"bias sense {t:g} °C (V vs A)": ([i for i, _ in tab], [v for _, v in tab]) for t, tab in bs["table"].items()})
+        f"bias sense {t:g} °C (V)": ([i for i, _ in tab], [v for _, v in tab]) for t, tab in bs["table"].items()},
+        x_label=PLOT_X_LABEL, x_scale=PLOT_X_SCALE)
     blk = controller.build()
     data = availability.load()
     result.artefacts = {

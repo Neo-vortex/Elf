@@ -24,3 +24,18 @@ def test_report_with_log_axis(tmp_path):
     res = BlockResult("bpf_bank", [CheckResult("x", 1.0, "≤ 2", True)],
                       plots={"1": (np.array([1e5, 1e6, 1e7]), np.array([-60.0, -1.0, -60.0]))}, logx=True)
     assert "data:image/png;base64," in write_report([res], tmp_path / "r.html").read_text()
+
+
+def test_report_plots_a_non_frequency_axis_given_as_lists(tmp_path):
+    from neohw.checks import BlockResult, CheckResult
+    from neohw.report import write_report
+    r = BlockResult("controller", [CheckResult("x", 1.0, "report", True, "")],
+                    plots={"sense (V vs mA)": ([0.0, 0.05, 0.1], [0.6, 0.9, 1.1])},
+                    x_label="bias-T current (mA)", x_scale=1e-3)
+    text = write_report([r], tmp_path / "r.html").read_text()
+    assert "controller" in text and "data:image/png" in text
+
+
+def test_controller_result_uses_a_current_axis():
+    from neohw.checks import controller as c
+    assert c.PLOT_X_LABEL == "bias-T current (mA)" and c.PLOT_X_SCALE == 1e-3
