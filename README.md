@@ -171,7 +171,7 @@ make sim       # digital twin scenarios and FT8 sweep; report in build/sim/repor
 
 ### System verification
 
-- [ ] Whole-board simulation over virtual USB: firmware with TinyUSB attached through USB/IP
-- [ ] End-to-end test: a Python application reads I/Q from the simulated board and decodes
+- [x] Whole-board simulation over virtual USB: firmware with TinyUSB attached through USB/IP
+- [x] End-to-end test: a Python application reads I/Q from the simulated board and decodes
       CW on several bands
 - [ ] Hardware validation on Rev 0 and Rev A

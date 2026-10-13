@@ -23,7 +23,8 @@ from neosim import usbip_client as u  # noqa: E402
 from neosim.tools import ToolNotFoundError, tool_path  # noqa: E402
 
 MAX_CER = 0.05
-RECORD_S = 15.0           # one loop of the twin (14 s) plus margin: a whole message is inside
+# one loop of the twin plus the longest message: a whole message is inside wherever the window starts
+RECORD_S = float(yaml.safe_load(STATIONS.read_text())["duration_s"]) + 8.0
 
 
 def _free_port() -> int:

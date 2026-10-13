@@ -69,6 +69,12 @@ class Cat:
         os.write(self.fd, cmd.encode())
 
 
+def record_seconds(stations_doc: dict) -> float:
+    """The twin loops its stations every duration_s; a window of one loop plus the longest message
+    (≤ 8 s at the scenario speeds) contains a whole message wherever it starts."""
+    return float(stations_doc.get("duration_s", 16.0)) + 8.0
+
+
 def record(card: int, seconds: float, path: Path) -> bytes:
     subprocess.run(["arecord", "-q", "-D", f"hw:{card},0", "-f", "S24_3LE", "-c", "2", "-r", "96000", "-t", "raw",
                     "-d", str(int(round(seconds))), str(path)], check=True)
@@ -78,7 +84,8 @@ def record(card: int, seconds: float, path: Path) -> bytes:
 def main(argv: list[str]) -> int:
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     ap.add_argument("stations", nargs="?", type=Path, default=ROOT / "sim/scenarios/vboard/cw_bands.yaml")
-    ap.add_argument("--seconds", type=float, default=16.0, help="recording per station")
+    ap.add_argument("--seconds", type=float, default=None,
+                    help="recording per station (default: the stations file's loop + 8 s, so a whole message is inside)")
     ap.add_argument("--settle", type=float, default=3.0, help="wait after tuning (relays, twin rendering)")
     ap.add_argument("--workdir", type=Path, default=ROOT / "build/elf_cw")
     args = ap.parse_args(argv)
@@ -89,7 +96,9 @@ def main(argv: list[str]) -> int:
     print(f"board: card {card}, {port}, {ident}")
     if ident != "ID019;":
         raise SystemExit("the serial port does not answer as an Elf board")
-    stations = [s for s in yaml.safe_load(args.stations.read_text())["stations"] if s["mode"] == "cw"]
+    doc = yaml.safe_load(args.stations.read_text())
+    stations = [s for s in doc["stations"] if s["mode"] == "cw"]
+    seconds = args.seconds or record_seconds(doc)
     failures = 0
     for st in stations:
         rf = int(st["rf_hz"])
@@ -102,7 +111,7 @@ def main(argv: list[str]) -> int:
         time.sleep(args.settle)
         work = args.workdir / st["id"]
         work.mkdir(parents=True, exist_ok=True)
-        raw = record(card, args.seconds, work / "iq.raw")
+        raw = record(card, seconds, work / "iq.raw")
         text = cwrx.decode(cwrx.iq_from_s24le(raw), lo, rf, work)
         cer = cwrx.best_cer(text, st["text"])
         ok = cer <= MAX_CER
