@@ -2,7 +2,7 @@
  "schema_version": 1,
  "block": "controller",
  "status": "pass",
- "generated_by": "e91a4a0-dirty",
+ "generated_by": "c03af06",
  "gpio": {
   "sense_vbus": "IO1",
   "sense_ext": "IO2",

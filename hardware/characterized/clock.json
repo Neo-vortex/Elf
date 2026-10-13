@@ -2,7 +2,7 @@
  "schema_version": 1,
  "block": "clock",
  "status": "pass",
- "generated_by": "5fd6153",
+ "generated_by": "c03af06",
  "direct_min_hz": 4800000.0,
  "skew_stages_s": {
   "direct": [
