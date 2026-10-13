@@ -20,9 +20,9 @@ RADIAL_KEEPOUT_MM = 13.0
 # drum choke (~10 x 12 mm, SRF ~1.5 MHz) — an axial 1 mH has tens of ohms DCR and is rated
 # well under the 50–100 mA an active antenna draws.
 CHOKES = (
-    (4.7e-6, 2.2e-12, 40.0, 8e6, 0.2, parts.INDUCTOR_FOOTPRINT, "choke, axial, rated >= 150 mA, DCR <= 0.3 Ω"),
-    (47e-6, 2.4e-12, 40.0, 2.5e6, 1.0, parts.INDUCTOR_FOOTPRINT, "choke, axial, rated >= 150 mA, DCR <= 1.5 Ω"),
-    (1e-3, 11e-12, 40.0, 0.3e6, 2.5, RADIAL_FOOTPRINT, "choke, radial drum, rated >= 150 mA, DCR <= 3 Ω"),
+    (4.7e-6, 2.2e-12, 40.0, 8e6, 0.2, parts.INDUCTOR_FOOTPRINT, "choke, axial, rated ≥ 0.4 A (the SY6280 limit), DCR <= 0.3 Ω"),
+    (47e-6, 2.4e-12, 40.0, 2.5e6, 1.0, parts.INDUCTOR_FOOTPRINT, "choke, axial, rated ≥ 0.4 A (the SY6280 limit), DCR <= 1.5 Ω"),
+    (1e-3, 11e-12, 40.0, 0.3e6, 2.5, RADIAL_FOOTPRINT, "choke, radial drum, rated ≥ 0.4 A (the SY6280 limit), DCR <= 3 Ω"),
 )
 DAMPING_OHMS = {1: "2.2k"}   # index into CHOKES -> parallel resistor
 

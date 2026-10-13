@@ -36,6 +36,7 @@ BOOST_FB_TOP, BOOST_FB_BOTTOM = "107k", "10k"     # 0.6 V × (1 + 107/10) = 7.02
 FUSE_A = 1.0
 CERAMIC_ESL = 1.0e-9           # 1206 / 0805 MLCC, mounted
 CERAMIC_ESR = 5e-3
+BIAS_FILTER_NOTE = "bias-T feed filter, 1210 wirewound, rated ≥ 0.4 A"   # carries the SY6280's 0.39 A limit
 LC_L = 10e-6                   # filter inductors: 1210 wirewound, SRF ≈ 30 MHz (2.5 pF), DCR ≈ 0.3 Ω
 
 
@@ -169,7 +170,7 @@ def build(ckt: Circuit | None = None) -> Block:
         _c("10u", v3d, gnd, "X5R output", "Capacitor_SMD:C_1206_3216Metric")
         _c("100n", v3d, gnd)
         # bias-T supply
-        _filter_l(main, bias5, "bias-T feed filter, 1210 wirewound, rated ≥ 200 mA")
+        _filter_l(main, bias5, BIAS_FILTER_NOTE)
         _bulk(bias5, gnd)
         # monitoring
         _sense(vbus_f, s_vbus, gnd)

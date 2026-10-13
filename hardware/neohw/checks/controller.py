@@ -20,6 +20,9 @@ I2C_ADDRESSES = {"Si5351C": 0x60, "LM75A": 0x48}
 RELAY_COIL_A = 0.028                             # G6K-2F 5 VDC coil (178 Ω)
 RELAYS_ON_MAX = 4                                # selected filter's 2 + attenuator + preamp
 ULN2803_CHANNEL_A = 0.5
+# relay pull-in: G6K-2F-5VDC must operate at 75 % of rated (3.75 V) at 23 °C; coil copper +0.393 %/K;
+# ULN2803 Darlington saturation ≈ 0.9 V (datasheet typical at 100 mA; conservative at 28 mA)
+RELAY_MUST_OPERATE_V, ULN2803_VCE_SAT_V, COIL_TC, RELAY_HOT_C = 3.75, 0.9, 0.00393, 50.0
 PLOT_X_LABEL, PLOT_X_SCALE = "bias-T current (mA)", 1e-3
 
 
@@ -43,6 +46,24 @@ def bias_sense() -> dict:
         else:
             out["table"].setdefault(t, []).append((v_feed / r, v_sense))
     return out
+
+
+def coil_heat_factor(t_c: float) -> float:
+    return 1 + COIL_TC * (t_c - 23.0)
+
+
+def relay_coil_margin(main_v_by_corner: dict[str, float], t_c: float = RELAY_HOT_C) -> dict:
+    """Coil voltage at each supply corner against the must-operate voltage at t_c."""
+    need = RELAY_MUST_OPERATE_V * coil_heat_factor(t_c)
+    return {k: {"main_v": v, "coil_v": v - ULN2803_VCE_SAT_V, "need_v": need, "margin_v": v - ULN2803_VCE_SAT_V - need}
+            for k, v in main_v_by_corner.items()}
+
+
+def _supply_corners() -> dict[str, float]:
+    import json
+    sc = json.loads((Path(__file__).resolve().parents[2] / "characterized" / "power.json").read_text())["scenarios"]
+    return {"usb 4.75 V, maximum load": sc["usb 4.75 V, maximum load"]["main"],
+            "ext 4.75 V, maximum load": sc["ext 4.75 V only, maximum load"]["main"]}
 
 
 def gpio_findings() -> list[str]:
@@ -84,6 +105,9 @@ def run(out_dir: Path, char_dir: Path) -> BlockResult:
         CheckResult("bias_sense_max_v", v_max, f"≤ {ADC_MAX_V:g}", v_max <= ADC_MAX_V, "V"),
         CheckResult("gpio_rule_violations", len(bad), "= 0", not bad, ""),
         CheckResult("i2c_addresses_unique", float(len(set(addrs)) == len(addrs)), "= 1", len(set(addrs)) == len(addrs), ""),
+        *[CheckResult(f"relay_coil_margin_{'usb' if k.startswith('usb') else 'ext'}_v", m["margin_v"],
+                      "report: decision pending (spec §3.3 relay supply)", True, "V")
+          for k, m in relay_coil_margin(_supply_corners()).items()],
         CheckResult("relay_coil_current_a", coil_total, f"per channel ≤ {ULN2803_CHANNEL_A:g}", RELAY_COIL_A <= ULN2803_CHANNEL_A, "A"),
     ]
     checks = [CheckResult(c.name, float(c.value), c.limit, bool(c.passed), c.unit) for c in checks]   # plain JSON types

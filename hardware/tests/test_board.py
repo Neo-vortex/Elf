@@ -108,3 +108,23 @@ def test_relay_chain_bit_order_matches_the_firmware_table():
             k += 1
         ser = _net(reg["QHS"])
     assert k == 24
+
+
+def test_the_board_checks_every_cs5361_pin_it_wires():
+    adc = _part(board.build().circuit, "CS5361")
+    assert tuple(getattr(adc, "nc_pins", ())) == ()
+
+
+def test_an_unconnected_ground_pin_is_an_error():
+    ckt = Circuit()
+    with ckt:
+        t = parts.lm75a()
+        for pin in ("SDA", "SCL", "A0", "A1", "A2", "VCC"):
+            t[pin] += Net(f"n_{pin}")                 # GND left open
+    assert any("LM75A.GND on None, expected GND" in e for e in check.findings(ckt)["rail_errors"])
+
+
+def test_bias_t_chokes_are_rated_for_the_hardware_current_limit():
+    from neohw.blocks import bias_tee, power
+    assert all("0.4 A" in note for *_, note in bias_tee.CHOKES)
+    assert power.BIAS_FILTER_NOTE.endswith("rated ≥ 0.4 A")

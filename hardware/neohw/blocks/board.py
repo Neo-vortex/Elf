@@ -90,6 +90,7 @@ def build() -> Block:
         adc = next(p for p in own["mixer"] if p.value == "CS5361")
         for pin, (group, name) in CS5361_DIGITAL.items():
             adc[pin] += ctl.ports[group][name]
+        adc.nc_pins = ()                  # the mixer block left these to the board: every pin is checked now
         adc["VD"] += pw.ports["v3d"]
         adc["VL"] += pw.ports["v3d"]
         adc["VA"] += pw.ports["v5a"]

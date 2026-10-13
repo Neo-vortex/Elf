@@ -44,7 +44,8 @@ def findings(ckt) -> dict:
             want = SUPPLY_RAILS.get((p.value, pin.name))
             if want and _net(pin) != want:
                 rails.append(f"{p.ref} {p.value}.{pin.name} on {_net(pin)}, expected {want}")
-            if pin.name in GROUND_PINS and p.value not in ("LM4562",) and _net(pin) not in ("GND", None):
+            if (pin.name in GROUND_PINS and p.value not in ("LM4562",) and _net(pin) != "GND"
+                    and pin.name not in getattr(p, "nc_pins", ())):
                 rails.append(f"{p.ref} {p.value}.{pin.name} on {_net(pin)}, expected GND")
             if p.value == "LM4562" and pin.name == "V-" and _net(pin) != "GND":
                 rails.append(f"{p.ref} LM4562.V- on {_net(pin)}, expected GND (single supply)")
