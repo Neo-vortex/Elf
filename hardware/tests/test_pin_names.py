@@ -6,8 +6,8 @@ from neohw import parts
 
 CONSTRUCTORS = [
     lambda: parts.resistor("1k"), lambda: parts.capacitor("1n"), lambda: parts.inductor(1e-6, 30, 1e6),
-    parts.si5351c, parts.crystal_25mhz, parts.lvc74, parts.lvc157, parts.ao3401, parts.ss34, parts.smbj5,
-    lambda: parts.fuse_1206(1.0), parts.barrel_jack, parts.mt3608, lambda: parts.mic5205(5.0), parts.tlv74033,
+    parts.si5351c, parts.crystal_25mhz, parts.lvc74, parts.lvc157, parts.ss36, parts.smbj30a, parts.lm2576hv, parts.ntc_inrush,
+    lambda: parts.fuse_1206(1.0), parts.barrel_jack, lambda: parts.mic5205(5.0), parts.ams1117_33,
     parts.esp32s3_wroom1, parts.usb_c_16p, parts.usblc6, parts.lm75a, parts.hc595, parts.uln2803,
     lambda: parts.sy6280(17.4e3), parts.oscillator_24m576, parts.led_0805, parts.button, parts.fst3253,
     parts.lm4562_dual, parts.cs5361, parts.pnp_bc857b, parts.npn_bfr92a, parts.diode_pair_bav99, parts.gdt,

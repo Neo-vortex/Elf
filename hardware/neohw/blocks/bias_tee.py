@@ -1,6 +1,6 @@
 """Antenna input: GDT + 1 MΩ bleed at the connector, then the 5 V bias-T (spec §4).
 
-The bias feed (switched by an AO3401 + PTC in phase 3) is decoupled to ground here. The
+The bias feed (switched and current-limited by the SY6280 in the controller block) is decoupled to ground here. The
 choke chain runs smallest-first from the RF line: 4.7 µH, 47 µH (damped by 2.2 kΩ: without
 it the 47 µH and the capacitive 1 mH form a series resonance near 38 MHz) and 1 mH.
 """

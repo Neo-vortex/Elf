@@ -347,35 +347,13 @@ def lvc157(nc=()) -> Part:
 
 # --- power (phase 3 spec §3.2) -----------------------------------------------------------
 
-def ao3401() -> Part:
-    """Alpha & Omega AO3401A P-MOSFET, SOT-23 (G 1, S 2, D 3): −30 V, Rds(on) ≤ 60 mΩ at
-    Vgs −4.5 V, Vgs(th) −0.5 to −1.3 V (typ −0.9). Level-1 fit: vto −0.9 V, kp from 55 mΩ at
-    |Vgs| 4.65 V; body diode drain→source... (anode at drain, cathode at source)."""
-    p = _ic("AO3401", {"G": "1", "S": "2", "D": "3"}, "Package_TO_SOT_SMD:SOT-23", "AO3401A", "AO3401")
-    p.spice_models = (".model AO3401_M pmos(level=1 vto=-0.9 kp=4.85 lambda=0.01)\n"
-                      ".model AO3401_BD d(is=1e-12 n=1.0 rs=0.05)",)
-    p.spice_lines = lambda n, k=1.0: [f"M{p.ref} {n['D']} {n['G']} {n['S']} {n['S']} AO3401_M w=1 l=1",
-                                      f"D{p.ref}_bd {n['D']} {n['S']} AO3401_BD"]
-    return p
-
-
-def ss34() -> Part:
-    """3 A 40 V Schottky, SMA (K 1, A 2). Fit: 0.35 V at 0.3 A, 0.5 V at 3 A (datasheet typical)."""
-    p = _ic("SS34", {"K": "1", "A": "2"}, "Diode_SMD:D_SMA", "SS34", "SS34")
-    p.spice_models = (".model SS34_D d(is=1.4e-6 n=1.0 rs=0.028 cjo=200p bv=40)",)
-    p.spice_lines = lambda n, k=1.0: [f"D{p.ref} {n['A']} {n['K']} SS34_D"]
-    return p
-
-
-def smbj5() -> Part:
-    """SMBJ5.0A 600 W TVS, SMB (K 1, A 2): stand-off 5.0 V, breakdown 6.4 V min."""
-    p = _ic("SMBJ5.0A", {"K": "1", "A": "2"}, "Diode_SMD:D_SMB", "SMBJ5.0A", "SMBJ5.0A")
-    p.spice_models = (".model SMBJ5_D d(is=1e-12 n=1.5 bv=6.6 ibv=1m rs=0.1 cjo=1n)",)
-    p.spice_lines = lambda n, k=1.0: [f"D{p.ref} {n['A']} {n['K']} SMBJ5_D"]
-    return p
-
-
 FUSE_1206_SLOW_I2T_MIN = 0.05     # A²s, melting I²t of a 1 A time-lag 1206 fuse (lower end of the series)
+
+
+def fuse_i2t_min(amps: float) -> float:
+    """Melting I²t of a time-lag 1206 fuse, scaled from the 1 A figure with the rating squared
+    (I²t of a fuse family grows roughly with the rated current squared)."""
+    return FUSE_1206_SLOW_I2T_MIN * amps ** 2
 
 
 def fuse_1206(amps: float) -> Part:
@@ -395,24 +373,70 @@ def barrel_jack() -> Part:
     return p
 
 
-MT3608_EFFICIENCY = 0.85
+NTC_COLD_OHM, NTC_HOT_OHM = 2.5, 0.5
 
 
-def mt3608() -> Part:
-    """Aerosemi MT3608 1.2 MHz boost, SOT23-6 (SW 1, GND 2, FB 3, EN 4, IN 5, NC/OC 6); FB 0.6 V
-    (0.588–0.612), 1.2 MHz typical, PFM at light load (MT3608L datasheet Rev 1.1).
-    DC model (averaged): a current pushed into SW until FB reaches 0.6 V (the external diode
-    and FB divider then set VOUT), and IN drawing that power over the efficiency, η = 0.85. The
-    boost inductor is open in the DC deck (the averaged model replaces its switching); the
-    ripple is analysed separately."""
-    p = _ic("MT3608", {"SW": "1", "GND": "2", "FB": "3", "EN": "4", "IN": "5", "NC": "6"},
-            "Package_TO_SOT_SMD:SOT-23-6", "MT3608", "MT3608", nc=("NC",))
-    reg = "max(0, min(3, 20 * (0.6 - v({fb}))))"
-    p.spice_lines = lambda n, k=1.0: [
-        f"B{p.ref}_reg {n['GND']} {n['SW']} I = " + reg.format(fb=n["FB"]),
-        f"B{p.ref}_in {n['IN']} {n['GND']} I = " + reg.format(fb=n["FB"])
-        + f" * v({n['SW']}) / ({MT3608_EFFICIENCY:g} * max(v({n['IN']}), 0.5))",
-        f"R{p.ref}_en {n['EN']} {n['GND']} 1e9"]
+def ntc_inrush() -> Part:
+    """2.5 Ω inrush-limiting NTC thermistor, 7 mm disc, 5 mm pitch (2.5D-7 class, ≥ 2 A): 2.5 Ω cold
+    limits the plug-in charge of the buck's input capacitor yet still lets the board start cold
+    at 9 V (5 Ω would not: its drop at 0.44 A starves the buck); warm it falls to ≈ 0.3 Ω (the DC
+    model uses 0.5 Ω, conservative; the plug-in check uses 2.5 Ω cold, and the cold-start case
+    too). A passive: the manufacturer sources it."""
+    p = _tagged(_template("NTC", "TH", ["1", "2"], "Varistor:RV_Disc_D7mm_W3.4mm_P5mm")(value="NTC 2.5D-7"))
+    p.mpn, p.torob, p.tol, p.bom_note = "NTC 2.5D-7", None, 0.2, "inrush limiter, 2.5 Ω cold, ≥ 2 A"
+    p.spice_lines = lambda n, k=1.0: [f"R{p.ref} {n['1']} {n['2']} {NTC_HOT_OHM:g}"]
+    return p
+
+
+def ss36() -> Part:
+    """3 A 60 V Schottky, SMC/SMB-class DO-214AB (K 1, A 2): the input's reverse-polarity diode and the
+    buck's catch diode. Fit: 0.45 V at 0.3 A, 0.7 V at 3 A (datasheet typical)."""
+    p = _ic("SS36", {"K": "1", "A": "2"}, "Diode_SMD:D_SMC", "SS36", "SS36")
+    p.spice_models = (".model SS36_D d(is=5e-7 n=1.05 rs=0.06 cjo=150p bv=60)",)
+    p.spice_lines = lambda n, k=1.0: [f"D{p.ref} {n['A']} {n['K']} SS36_D"]
+    return p
+
+
+def smbj30a() -> Part:
+    """SMBJ30A 600 W TVS, SMB (K 1, A 2): stand-off 30 V, breakdown 33.3 V min, clamp 48.4 V at
+    12.4 A (8/20-class surge): the buck's 60 V rating sits above the clamp."""
+    p = _ic("SMBJ30A", {"K": "1", "A": "2"}, "Diode_SMD:D_SMB", "SMBJ30A", "SMBJ30A")
+    p.spice_models = (".model SMBJ30_D d(is=1e-12 n=1.5 bv=35 ibv=1m rs=1.1 cjo=600p)",)
+    p.spice_lines = lambda n, k=1.0: [f"D{p.ref} {n['A']} {n['K']} SMBJ30_D"]
+    return p
+
+
+LM2576_VREF, LM2576_EFFICIENCY, LM2576_VSAT = 1.23, 0.77, 1.4
+
+
+def lm2576hv() -> Part:
+    """TI/ON LM2576HVS-ADJ 3 A buck, 52 kHz, 60 V input (63 V abs.), TO-263-5 (1 VIN, 2 OUTPUT, 3 GND
+    and tab, 4 FEEDBACK, 5 /ON-OFF: low = on). Feedback 1.23 V. Torob: buy listings not marked
+    "copy" (a clone's input rating cannot be trusted).
+    DC model (averaged): the regulator pushes current into the switch node until FEEDBACK reaches
+    1.23 V; the inductor carries it (its DC resistance included); VIN supplies that power over the
+    efficiency η = 0.77 (datasheet curve, 5 V out, 12–30 V in, 0.5 A); the switch cannot raise the
+    output above VIN − 1.4 V (saturation)."""
+    p = _ic("LM2576HV-ADJ", {"VIN": "1", "OUT": "2", "GND": "3", "FB": "4", "ONOFF": "5"},
+            "Package_TO_SOT_SMD:TO-263-5_TabPin3", "LM2576HVS-ADJ", "LM2576HV")
+    def lines(n, k=1.0):
+        reg = (f"max(0, min(3, 50 * ({LM2576_VREF:g} - v({n['FB']})))) "
+               f"* 0.5 * (1 + tanh(10 * (v({n['VIN']}) - v({n['OUT']}) - {LM2576_VSAT:g})))")
+        return [f"B{p.ref}_reg {n['GND']} {n['OUT']} I = {reg}",
+                f"B{p.ref}_in {n['VIN']} {n['GND']} I = {reg} * max(v({n['OUT']}), 0) / "
+                f"({LM2576_EFFICIENCY:g} * max(v({n['VIN']}), 1))",
+                f"R{p.ref}_on {n['ONOFF']} {n['GND']} 1e9"]
+    p.spice_lines = lines
+    return p
+
+
+def ams1117_33() -> Part:
+    """AMS1117-3.3, SOT-223 (GND 1, OUT 2 and tab, IN 3). From 5.5 V its dropout (1.3 V max) is
+    not a limit; the SOT-223 tab carries its 0.33 W (≈ 90 °C/W)."""
+    p = _ic("AMS1117-3.3", {"GND": "1", "OUT": "2", "IN": "3"}, "Package_TO_SOT_SMD:SOT-223-3_TabPin2",
+            "AMS1117-3.3", "AMS1117-3.3")
+    p.v_out, p.dropout_v = 3.3, 1.3
+    p.spice_lines = lambda n, k=1.0: _ldo_lines(p.ref, n, 3.3, 1.3)
     return p
 
 
@@ -425,18 +449,6 @@ def mic5205(v_out: float) -> Part:
             "Package_TO_SOT_SMD:SOT-23-5", f"MIC5205-{v_out:.1f}YM5", "MIC5205-3.3" if v_out < 4 else "MIC5205YM5")
     p.v_out, p.dropout_v = v_out, 0.165
     p.spice_lines = lambda n, k=1.0: _ldo_lines(p.ref, n, v_out, 0.165, "BYP")
-    return p
-
-
-def tlv74033() -> Part:
-    """TI TLV74033PDBVR 300 mA LDO, SOT-23-5 (IN 1, GND 2, EN 3, NC 4, OUT 5), stable with a 1 µF
-    ceramic. Dropout ≈ 0.23 V typical at 300 mA (datasheet SBVS235); the model uses 0.4 V, above
-    the maximum at our ≤ 150 mA. On Torob under the LDL1117S33 search (TLV74033PDBVR listing)."""
-    p = _ic("TLV74033", {"IN": "1", "GND": "2", "EN": "3", "NC": "4", "OUT": "5"},
-            "Package_TO_SOT_SMD:SOT-23-5", "TLV74033PDBVR", "LDL1117S33", nc=("NC",))
-    p.torob_match = lambda name: "TLV74033" in name.upper()
-    p.v_out, p.dropout_v = 3.3, 0.4
-    p.spice_lines = lambda n, k=1.0: _ldo_lines(p.ref, n, 3.3, 0.4) + [f"R{p.ref}_en {n['EN']} {n['GND']} 1e7"]
     return p
 
 
@@ -534,14 +546,20 @@ def oscillator_24m576() -> Part:
     confirm (pending, user away 2026-10-13)."""
     p = _ic("24.576MHz", {"EN": "1", "GND": "2", "OUT": "3", "VDD": "4"},
             "Oscillator:Oscillator_SMD_Abracon_ASE-4Pin_3.2x2.5mm", "24.576MHz 3.3V CMOS XO", "اسیلاتور 24.576")
-    p.bom_note = "Torob availability not yet confirmed"
+    p.bom_note = "on Torob (2026-10-13) as a 2 × 3 mm part: match the footprint to the bought package"
     return p
 
 
+LED_TOROB = {"green": "LED SMD 0805 سبز", "yellow": "LED SMD 0805 زرد", "red": "LED SMD 0805 قرمز"}
+
+
 def led_0805(colour: str = "green") -> Part:
-    p = _ic(f"LED {colour}", {"K": "1", "A": "2"}, "LED_SMD:LED_0805_2012Metric", f"LED 0805 {colour}", None)
+    p = _ic(f"LED {colour}", {"K": "1", "A": "2"}, "LED_SMD:LED_0805_2012Metric", f"LED 0805 {colour}",
+            LED_TOROB.get(colour))
     return p
 
 
 def button() -> Part:
-    return _ic("button", {"1": "1", "2": "2"}, "Button_Switch_SMD:SW_SPST_SKQG_WithoutStem", "SKQG tactile", None)
+    """6 × 3.5 mm two-pin SMD tactile switch (CK PTS636-class; on Torob as a 3 × 6 mm SMD switch)."""
+    return _ic("button", {"1": "1", "2": "2"}, "Button_Switch_SMD:SW_Tactile_SPST_NO_Straight_CK_PTS636Sx25SMTRLFS",
+               "6x3.5 mm SMD tactile", "تک سوئیچ SMD")
