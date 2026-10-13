@@ -29,15 +29,16 @@ parts are selected for availability in the Iranian electronics market.
 - Built-in calibration tone (Si5351 output through a -70 dB pad) for software self-calibration
 - Low-noise instrumentation baseband (LM4562) into a CS5361 audio ADC
 - Muted safe state with all relays released
-- Powered from USB-C or an external 5 V barrel jack with automatic switch-over (external
-  first, no back-feed into the host), reverse-polarity and surge protection; a boost converter
-  and low-noise LDOs give separate analogue, RF and digital rails
+- Powered from a 9–30 V barrel jack (12 V shack supplies, 24 V systems, common adapters): fuse,
+  NTC inrush limiter, reverse-polarity diode and surge clamp ahead of a 60 V buck converter; LC
+  filters and low-noise LDOs give separate analogue, RF and digital rails. USB carries data only,
+  so the host never powers the board
 - ESP32-S3 controller with native USB-C (ESD-protected); the CS5361 runs as clock master from a
   24.576 MHz crystal oscillator, so the sampling clock never depends on the microcontroller
 - 24 relays driven through a 74HC595 shift-register chain and ULN2803 drivers, all released at
   power-up until the firmware enables them
 - Switched bias-T with a 0.39 A hardware current limit, simulated current sensing and a 150 mA
-  firmware cut-off; temperature, supply and USB-C current monitoring
+  firmware cut-off; temperature, input, rail and USB host monitoring
 
 ### Connectivity and software
 
