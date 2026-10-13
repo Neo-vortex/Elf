@@ -71,7 +71,7 @@ def build(ckt: Circuit | None = None) -> Block:
         j["B5"] += cc2
         _r("5.1k", cc1, gnd)
         _r("5.1k", cc2, gnd)
-        _r("10k", cc1, g["cc1"])           # CC voltage (0.41 / 0.92 / 1.68 V = default / 1.5 A / 3 A) to an ADC
+        _r("10k", cc1, g["cc1"])           # CC voltage to an ADC (telemetry only: the jack powers the board)
         _r("10k", cc2, g["cc2"])
         esd = parts.usblc6()
         esd["IO1A"] += dp

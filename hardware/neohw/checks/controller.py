@@ -62,8 +62,7 @@ def relay_coil_margin(main_v_by_corner: dict[str, float], t_c: float = RELAY_HOT
 def _supply_corners() -> dict[str, float]:
     import json
     sc = json.loads((Path(__file__).resolve().parents[2] / "characterized" / "power.json").read_text())["scenarios"]
-    return {"usb 4.75 V, maximum load": sc["usb 4.75 V, maximum load"]["main"],
-            "ext 4.75 V, maximum load": sc["ext 4.75 V only, maximum load"]["main"]}
+    return {name: s["main"] for name, s in sc.items() if "maximum load" in name}
 
 
 def gpio_findings() -> list[str]:
@@ -95,6 +94,7 @@ def run(out_dir: Path, char_dir: Path) -> BlockResult:
     v_max = max(v["sense_v"] for v in bs["short"].values())
     i_short = bs["short"][27.0]["i_a"]
     bad = gpio_findings()
+    coil = relay_coil_margin(_supply_corners())
     addrs = list(I2C_ADDRESSES.values())
     coil_total = RELAY_COIL_A * RELAYS_ON_MAX
     checks = [
@@ -105,9 +105,9 @@ def run(out_dir: Path, char_dir: Path) -> BlockResult:
         CheckResult("bias_sense_max_v", v_max, f"≤ {ADC_MAX_V:g}", v_max <= ADC_MAX_V, "V"),
         CheckResult("gpio_rule_violations", len(bad), "= 0", not bad, ""),
         CheckResult("i2c_addresses_unique", float(len(set(addrs)) == len(addrs)), "= 1", len(set(addrs)) == len(addrs), ""),
-        *[CheckResult(f"relay_coil_margin_{'usb' if k.startswith('usb') else 'ext'}_v", m["margin_v"],
-                      "report: decision pending (spec §3.3 relay supply)", True, "V")
-          for k, m in relay_coil_margin(_supply_corners()).items()],
+        CheckResult("relay_coil_margin_v", min(m["margin_v"] for m in coil.values()),
+                    f"≥ 0 (G6K-2F must-operate at {RELAY_HOT_C:g} °C, every supply corner)",
+                    min(m["margin_v"] for m in coil.values()) >= 0, "V"),
         CheckResult("relay_coil_current_a", coil_total, f"per channel ≤ {ULN2803_CHANNEL_A:g}", RELAY_COIL_A <= ULN2803_CHANNEL_A, "A"),
     ]
     checks = [CheckResult(c.name, float(c.value), c.limit, bool(c.passed), c.unit) for c in checks]   # plain JSON types

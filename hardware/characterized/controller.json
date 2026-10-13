@@ -2,7 +2,7 @@
  "schema_version": 1,
  "block": "controller",
  "status": "pass",
- "generated_by": "5fd6153",
+ "generated_by": "e91a4a0-dirty",
  "gpio": {
   "sense_vbus": "IO1",
   "sense_ext": "IO2",
@@ -136,16 +136,9 @@
    "unit": ""
   },
   {
-   "name": "relay_coil_margin_usb_v",
-   "value": -0.4276770908391341,
-   "limit": "report: decision pending (spec \u00a73.3 relay supply)",
-   "passed": true,
-   "unit": "V"
-  },
-  {
-   "name": "relay_coil_margin_ext_v",
-   "value": -0.7512990054664299,
-   "limit": "report: decision pending (spec \u00a73.3 relay supply)",
+   "name": "relay_coil_margin_v",
+   "value": 0.41632122505887725,
+   "limit": "\u2265 0 (G6K-2F must-operate at 50 \u00b0C, every supply corner)",
    "passed": true,
    "unit": "V"
   },

@@ -27,7 +27,11 @@ def test_bias_sense_is_monotonic_stable_and_within_the_adc_range():
 
 
 def test_relay_coil_voltage_is_reported_for_each_supply_corner():
-    r = ctl_check.relay_coil_margin({"usb 4.75 V": 4.62, "ext 4.75 V": 4.30})
-    assert r["ext 4.75 V"]["coil_v"] == pytest.approx(4.30 - ctl_check.ULN2803_VCE_SAT_V)
-    assert r["ext 4.75 V"]["need_v"] == pytest.approx(ctl_check.RELAY_MUST_OPERATE_V * ctl_check.coil_heat_factor(50.0))
-    assert r["usb 4.75 V"]["margin_v"] > r["ext 4.75 V"]["margin_v"]
+    r = ctl_check.relay_coil_margin({"low": 4.30, "high": 5.46})
+    assert r["low"]["coil_v"] == pytest.approx(4.30 - ctl_check.ULN2803_VCE_SAT_V)
+    assert r["low"]["need_v"] == pytest.approx(ctl_check.RELAY_MUST_OPERATE_V * ctl_check.coil_heat_factor(50.0))
+    assert r["low"]["margin_v"] < 0 < r["high"]["margin_v"]
+
+
+def test_relays_pull_in_at_every_supply_corner_with_the_5v5_rail():
+    assert min(m["margin_v"] for m in ctl_check.relay_coil_margin(ctl_check._supply_corners()).values()) > 0
