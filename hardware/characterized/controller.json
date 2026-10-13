@@ -1,0 +1,146 @@
+{
+ "schema_version": 1,
+ "block": "controller",
+ "status": "pass",
+ "generated_by": "1e82ef2",
+ "gpio": {
+  "sense_vbus": "IO1",
+  "sense_ext": "IO2",
+  "sense_main": "IO4",
+  "bias_isense": "IO5",
+  "cc1": "IO6",
+  "cc2": "IO7",
+  "i2c_sda": "IO8",
+  "i2c_scl": "IO9",
+  "i2s_bclk": "IO10",
+  "i2s_ws": "IO11",
+  "i2s_din": "IO12",
+  "adc_rst": "IO13",
+  "adc_ovfl": "IO14",
+  "adc_ms": "IO41",
+  "adc_fmt": "IO42",
+  "lo_path": "IO15",
+  "sr_ser": "IO16",
+  "sr_clk": "IO17",
+  "sr_latch": "IO18",
+  "sr_oe": "IO21",
+  "bias_en": "IO38",
+  "status_led": "IO40"
+ },
+ "relay_chain_order": [
+  "bank1_in",
+  "bank1_out",
+  "bank2_in",
+  "bank2_out",
+  "bank3_in",
+  "bank3_out",
+  "bank4_in",
+  "bank4_out",
+  "bank5_in",
+  "bank5_out",
+  "bank6_in",
+  "bank6_out",
+  "bank7_in",
+  "bank7_out",
+  "bank8_in",
+  "bank8_out",
+  "bank9_in",
+  "bank9_out",
+  "bank10_in",
+  "bank10_out",
+  "bank11_in",
+  "bank11_out",
+  "atten",
+  "preamp"
+ ],
+ "i2c": {
+  "Si5351C": 96,
+  "LM75A": 72
+ },
+ "bias_sense_table_27c": [
+  {
+   "i_a": 4.999090921757775e-07,
+   "sense_v": 0.6281113131913605
+  },
+  {
+   "i_a": 0.01991036615153054,
+   "sense_v": 0.7295306607544079
+  },
+  {
+   "i_a": 0.04945669334393292,
+   "sense_v": 0.8849740992896815
+  },
+  {
+   "i_a": 0.09786502301302971,
+   "sense_v": 1.149542136570918
+  },
+  {
+   "i_a": 0.14667038031275859,
+   "sense_v": 1.424690020008733
+  },
+  {
+   "i_a": 0.19162965910587296,
+   "sense_v": 1.683477254023894
+  }
+ ],
+ "bias_cutoff_a": 0.15,
+ "gpio_findings": [],
+ "checks": [
+  {
+   "name": "bias_sense_monotonic",
+   "value": 1.0,
+   "limit": "= 1",
+   "passed": true,
+   "unit": ""
+  },
+  {
+   "name": "bias_sense_zero_v",
+   "value": 0.6281113131913605,
+   "limit": "report (subtracted by the firmware, feed off)",
+   "passed": true,
+   "unit": "V"
+  },
+  {
+   "name": "bias_sense_drift_0_50c",
+   "value": 1.3003602064473263,
+   "limit": "\u2264 3",
+   "passed": true,
+   "unit": "%"
+  },
+  {
+   "name": "bias_short_current_a",
+   "value": 0.3907995701204722,
+   "limit": "0.3\u20130.5",
+   "passed": true,
+   "unit": "A"
+  },
+  {
+   "name": "bias_sense_max_v",
+   "value": 2.877330619852643,
+   "limit": "\u2264 3.1",
+   "passed": true,
+   "unit": "V"
+  },
+  {
+   "name": "gpio_rule_violations",
+   "value": 0.0,
+   "limit": "= 0",
+   "passed": true,
+   "unit": ""
+  },
+  {
+   "name": "i2c_addresses_unique",
+   "value": 1.0,
+   "limit": "= 1",
+   "passed": true,
+   "unit": ""
+  },
+  {
+   "name": "relay_coil_current_a",
+   "value": 0.112,
+   "limit": "per channel \u2264 0.5",
+   "passed": true,
+   "unit": "A"
+  }
+ ]
+}

@@ -1,0 +1,73 @@
+{
+ "schema_version": 1,
+ "block": "board",
+ "status": "pass",
+ "generated_by": "1e82ef2",
+ "parts_by_block": {
+  "power": 55,
+  "controller": 57,
+  "bias_tee": 9,
+  "attenuator": 4,
+  "protection": 2,
+  "bank": 270,
+  "preamp": 21,
+  "mixer": 28,
+  "clock": 16,
+  "cal_tone": 3
+ },
+ "bom_lines": 151,
+ "unconfirmed_semiconductors": [
+  "24.576MHz",
+  "LED green",
+  "SS34",
+  "button"
+ ],
+ "single_pin_nets": [],
+ "open_pins": [],
+ "rail_errors": [],
+ "missing_footprints": [],
+ "checks": [
+  {
+   "name": "parts",
+   "value": 471,
+   "limit": "report",
+   "passed": true,
+   "unit": ""
+  },
+  {
+   "name": "single_pin_nets",
+   "value": 0,
+   "limit": "= 0",
+   "passed": true,
+   "unit": ""
+  },
+  {
+   "name": "open_required_pins",
+   "value": 0,
+   "limit": "= 0",
+   "passed": true,
+   "unit": ""
+  },
+  {
+   "name": "supply_rail_errors",
+   "value": 0,
+   "limit": "= 0",
+   "passed": true,
+   "unit": ""
+  },
+  {
+   "name": "missing_footprints",
+   "value": 0,
+   "limit": "= 0",
+   "passed": true,
+   "unit": ""
+  },
+  {
+   "name": "semiconductors_unconfirmed_on_torob",
+   "value": 4,
+   "limit": "report (survey pending)",
+   "passed": true,
+   "unit": ""
+  }
+ ]
+}
