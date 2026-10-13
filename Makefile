@@ -39,9 +39,10 @@ fw:
 	cmake -S firmware -B $(FW_BUILD) -G Ninja -DCMAKE_BUILD_TYPE=Release
 	ninja -C $(FW_BUILD)
 
-# firmware unit tests
+# firmware unit tests and the C-vs-Python cross-checks
 fw-test: fw
 	ctest --test-dir $(FW_BUILD) --output-on-failure
+	cd firmware && $(PYTHON) -m pytest -q tests
 
 clean:
 	rm -rf build

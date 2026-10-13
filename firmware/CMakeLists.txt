@@ -33,3 +33,8 @@ foreach(t si5351 relays radio supervisor cat audio)
     target_link_libraries(test_${t} PRIVATE elf_core elf_vhw)
     add_test(NAME ${t} COMMAND test_${t})
 endforeach()
+
+add_executable(lo_plan_dump tests/lo_plan_dump.c)
+target_link_libraries(lo_plan_dump PRIVATE elf_core)
+add_executable(si5351_dump tests/si5351_dump.c)
+target_link_libraries(si5351_dump PRIVATE elf_core)
