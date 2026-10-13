@@ -2,7 +2,7 @@
  "schema_version": 1,
  "block": "controller",
  "status": "pass",
- "generated_by": "c635ddf",
+ "generated_by": "5fd6153",
  "gpio": {
   "sense_vbus": "IO1",
   "sense_ext": "IO2",
@@ -134,6 +134,20 @@
    "limit": "= 1",
    "passed": true,
    "unit": ""
+  },
+  {
+   "name": "relay_coil_margin_usb_v",
+   "value": -0.4276770908391341,
+   "limit": "report: decision pending (spec \u00a73.3 relay supply)",
+   "passed": true,
+   "unit": "V"
+  },
+  {
+   "name": "relay_coil_margin_ext_v",
+   "value": -0.7512990054664299,
+   "limit": "report: decision pending (spec \u00a73.3 relay supply)",
+   "passed": true,
+   "unit": "V"
   },
   {
    "name": "relay_coil_current_a",
