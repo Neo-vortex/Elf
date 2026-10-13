@@ -1,3 +1,4 @@
+#include <stdio.h>
 #include <string.h>
 
 #include "cat.h"
@@ -5,6 +6,7 @@
 #include "radio.h"
 #include "relays.h"
 #include "supervisor.h"
+#include "tables_gen.h"
 #include "test_hal.h"
 
 static char reply[512];
@@ -30,9 +32,10 @@ static void start(void)
     radio_init();
     supervisor_init();
     cat_init(collect);
-    test_vhw.adc_mv[HAL_ADC_SENSE_VBUS] = 2500;               /* host present */
-    test_vhw.adc_mv[HAL_ADC_SENSE_EXT] = 1091;               /* 12 V jack through 100 k / 10 k */
-    test_vhw.adc_mv[HAL_ADC_SENSE_MAIN] = 2000;              /* 4.0 V: the buck not up yet */
+    /* host present (5.0 V), a 12 V jack, the buck not up yet (4.0 V): ADC readings through the dividers */
+    test_vhw.adc_mv[HAL_ADC_SENSE_VBUS] = (uint32_t)(5000ull * 1000 / TABLES_SENSE_DIV_VBUS_X1000);
+    test_vhw.adc_mv[HAL_ADC_SENSE_EXT] = (uint32_t)(12000ull * 1000 / TABLES_SENSE_DIV_EXT_X1000);
+    test_vhw.adc_mv[HAL_ADC_SENSE_MAIN] = (uint32_t)(4000ull * 1000 / TABLES_SENSE_DIV_MAIN_X1000);
 }
 
 static void fa_tunes_and_reads_back(void)
@@ -95,10 +98,12 @@ static void bias_t_needs_power_and_reports_telemetry(void)
 {
     start();
     CHECK(strcmp(ask("ZB1;"), "?;") == 0);                 /* 5V_MAIN not in regulation */
-    test_vhw.adc_mv[HAL_ADC_SENSE_MAIN] = 2740;              /* 5.48 V */
+    test_vhw.adc_mv[HAL_ADC_SENSE_MAIN] = (uint32_t)(5480ull * 1000 / TABLES_SENSE_DIV_MAIN_X1000);
     CHECK(strcmp(ask("ZB1;ZB;"), "ZB1;") == 0);
     const char *t = ask("ZT;");
-    CHECK(strncmp(t, "ZT5000,12001,5480,", 18) == 0 && t[strlen(t) - 1] == ';');
+    unsigned vbus, ext, main_mv;
+    CHECK(sscanf(t, "ZT%u,%u,%u,", &vbus, &ext, &main_mv) == 3 && t[strlen(t) - 1] == ';');
+    CHECK(vbus > 4980 && vbus < 5020 && ext > 11980 && ext < 12020 && main_mv > 5470 && main_mv < 5490);
 }
 
 static void calibration_tone_on_and_off(void)

@@ -2,10 +2,10 @@
  "schema_version": 1,
  "block": "board",
  "status": "pass",
- "generated_by": "c03af06",
+ "generated_by": "c03af06-dirty",
  "parts_by_block": {
-  "power": 45,
-  "controller": 57,
+  "power": 44,
+  "controller": 55,
   "bias_tee": 9,
   "attenuator": 4,
   "protection": 2,
@@ -24,7 +24,7 @@
  "checks": [
   {
    "name": "parts",
-   "value": 461,
+   "value": 458,
    "limit": "report",
    "passed": true,
    "unit": ""

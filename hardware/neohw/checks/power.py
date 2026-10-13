@@ -1,7 +1,7 @@
 """Power check (phase 3 spec §3.2, plan 3.4 amendment): the 9–30 V jack as the only supply.
 Rails at 9 and 30 V input and maximum load, a reversed plug, the TVS surge clamp against the
 buck's rating, regulator junction temperatures, the buck's conducted ripple per amateur band,
-the hot-plug transient (buck input overshoot, fuse I²t, rails up) and the input current.
+the hot-plug transient (buck input overshoot, peak current, rails up and staying up) and the input current.
 Writes power.json."""
 from __future__ import annotations
 
@@ -29,7 +29,7 @@ RAIL_MIN_V = {"v5a": 4.95, "v3rf": 3.25, "v3d": 3.25}     # every rail in regula
 MAIN_V = (5.3, 5.7)            # 5V_MAIN window: coils, LDO headroom, AMS1117 dissipation
 BUCK_VIN_MAX_V = 60.0          # LM2576HV recommended maximum input (63 V absolute)
 SURGE_A = 12.4                 # SMBJ30A rated peak pulse current (its clamp voltage is specified there)
-FUSE_PULSE_MARGIN = 5.0        # inrush I²t at most 1/5 of the fuse's melting I²t (pulse derating)
+PLUG_IN_V = (8.55, 9.0, 12.0, 30.0)   # 8.55 V: a 9 V adapter at −5 %
 LEAK_MAX_A = 1e-3
 # thermal: θJA (MIC5205 SOT-23-5 220 °C/W; AMS1117 SOT-223 ≈ 90 °C/W; LM2576 TO-263 on ≈ 1 in²
 # copper ≈ 50 °C/W, all of the converter's loss charged to it: conservative); 50 °C ambient
@@ -45,6 +45,7 @@ BANDS = {"160m": 1.9e6, "80m": 3.65e6, "60m": 5.35e6, "40m": 7.1e6, "30m": 10.12
          "15m": 21.2e6, "12m": 24.94e6, "10m": 28.5e6, "6m": 50.1e6}
 # name: (jack volts, loads)
 SCENARIOS = {
+    "jack 8.55 V (9 V − 5 %), maximum load": (8.55, LOADS_MAX),
     "jack 9 V, maximum load": (9.0, LOADS_MAX),
     "jack 12 V, typical load": (12.0, LOADS_TYP),
     "jack 12 V, maximum load": (12.0, LOADS_MAX),
@@ -105,18 +106,17 @@ def junction_temps(dc: dict) -> dict:
 
 def plug_in(blk, volts: float) -> dict:
     """The jack plugged into a live adapter: a step to `volts` through 1 µH / 0.2 Ω of cable, rails
-    loaded as resistors at maximum load. Peak buck input (LC overshoot), peak and I²t of the
-    input current, and the time every rail is up."""
+    loaded as resistors at maximum load. Peak buck input (LC overshoot), peak input current
+    (carried by the SS36: the PTC does not trip on a millisecond pulse), the time every rail is
+    up and 5V_MAIN at the end (still in regulation, not a first crossing)."""
     P = {k: node_name(v) for k, v in blk.ports.items()}
     nominal = {"v5a": 5.0, "v3rf": 3.3, "v3d": 3.3, "main": 5.5, "bias5": 5.5}
     lines = [f"VSRC {P['ext_tip']}_src 0 pwl(0 0 0.1m 0 0.101m {volts})", f"RCAB {P['ext_tip']}_src {P['ext_tip']}_l 0.2",
              f"LCAB {P['ext_tip']}_l {P['ext_tip']} 1u", f"VUSB {P['vbus']} 0 dc 0"]
     lines += [f"RLD_{k} {P[k]} 0 {nominal[k] / i:g}" for k, i in LOADS_MAX.items()]
     lines += [".options method=gear"]        # the input diode blocking the LC's reverse swing is stiff
-    ntc = next(p for p in blk.circuit.parts if p.value.startswith("NTC"))
     deck = to_deck(blk.circuit, f"power plug-in {volts:g} V", _ports(blk), [Tran(2e-6, 20e-3, 0.0, 1e-6)],
-                   extra_lines=lines,
-                   overrides={ntc.ref: lambda n: [f"R{ntc.ref} {n['1']} {n['2']} {parts.NTC_COLD_OHM:g}"]})[0]
+                   extra_lines=lines)[0]
     d = run_decks([deck], ["a0.raw"])[0]["a0.raw"][0].data
     t, i_in = d["time"].real, -d["i(vsrc)"].real
     i_steady = float(np.mean(i_in[t > 18e-3]))
@@ -126,7 +126,7 @@ def plug_in(blk, volts: float) -> dict:
         ok = v >= RAIL_MIN_V[k]
         up.append(float(t[np.argmax(ok)]) if ok.any() else math.inf)
     return {"buck_in_peak_v": float(d[f"v({P['buck_in']})"].real.max()), "peak_a": float(i_in.max()),
-            "i2t_a2s": float(np.trapezoid(np.clip(i_in - i_steady, 0, None) ** 2, t)), "rails_up_s": max(up) - 0.1e-3}
+            "steady_a": i_steady, "rails_up_s": max(up) - 0.1e-3, "main_end_v": float(d[f"v({P['main']})"].real[-1])}
 
 
 def ripple_spurs(blk) -> dict:
@@ -205,14 +205,13 @@ def run(out_dir: Path, char_dir: Path) -> BlockResult:
     tj = junction_temps(dc)
     spurs = ripple_spurs(blk)
     clamp = surge_clamp(blk)
-    hot = {v: plug_in(blk, v) for v in (9.0, 12.0, 30.0)}
+    hot = {v: plug_in(blk, v) for v in PLUG_IN_V}
     powered = [s for name, s in dc.items() if "reversed" not in name]
     rail_min = {k: min(s[k] for s in powered) for k in RAIL_MIN_V}
     main_lo, main_hi = min(s["main"] for s in powered), max(s["main"] for s in powered)
     rev = dc["jack reversed (−12 V)"]
     worst_spur = max(s["total_dbm"] for s in spurs.values())
-    fuse_limit = parts.fuse_i2t_min(power.FUSE_A) / FUSE_PULSE_MARGIN
-    usb_draw = max(abs(s["i_usb"]) - 5.0 / 200e3 for s in powered)        # beyond the sense divider
+    usb_draw = max(abs(s["i_usb"]) - 5.0 / sum(power.VBUS_DIVIDER) for s in powered)   # beyond the sense divider
     checks = [CheckResult(f"{k}_min_v", v, f"≥ {RAIL_MIN_V[k]:g}", v >= RAIL_MIN_V[k], "V") for k, v in rail_min.items()]
     checks += [
         CheckResult("main_min_v", main_lo, f"≥ {MAIN_V[0]:g}", main_lo >= MAIN_V[0], "V"),
@@ -230,10 +229,11 @@ def run(out_dir: Path, char_dir: Path) -> BlockResult:
         tag = f"{v:g}v"
         checks += [
             CheckResult(f"plug_in_{tag}_buck_in_peak_v", h["buck_in_peak_v"], f"≤ {BUCK_VIN_MAX_V:g}", h["buck_in_peak_v"] <= BUCK_VIN_MAX_V, "V"),
-            CheckResult(f"plug_in_{tag}_peak_a", h["peak_a"], "report", True, "A"),
-            CheckResult(f"plug_in_{tag}_i2t_a2s", h["i2t_a2s"], f"≤ {fuse_limit:g} (time-lag fuse / {FUSE_PULSE_MARGIN:g})",
-                        h["i2t_a2s"] <= fuse_limit, "A²s"),
+            CheckResult(f"plug_in_{tag}_peak_a", h["peak_a"], f"≤ {parts.SS36_IFSM_A / 2:g} (SS36 surge / 2)",
+                        h["peak_a"] <= parts.SS36_IFSM_A / 2, "A"),
             CheckResult(f"plug_in_{tag}_rails_up_ms", h["rails_up_s"] * 1e3, "≤ 20", h["rails_up_s"] <= 20e-3, "ms"),
+            CheckResult(f"plug_in_{tag}_main_end_v", h["main_end_v"], f"{MAIN_V[0]:g}–{MAIN_V[1]:g}",
+                        MAIN_V[0] <= h["main_end_v"] <= MAIN_V[1], "V"),
         ]
     checks += [CheckResult(f"tj_{k}", t, f"≤ {TJ_MAX_C:g}", t <= TJ_MAX_C, "°C") for k, t in tj.items()]
     checks.append(CheckResult("conducted_spur_worst_dbm", worst_spur, f"≤ MDS − {SPUR_MARGIN_DB:g} = {MDS_DBM - SPUR_MARGIN_DB:g}",

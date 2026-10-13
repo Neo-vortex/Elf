@@ -2,14 +2,12 @@
  "schema_version": 1,
  "block": "controller",
  "status": "pass",
- "generated_by": "c03af06",
+ "generated_by": "c03af06-dirty",
  "gpio": {
   "sense_vbus": "IO1",
   "sense_ext": "IO2",
   "sense_main": "IO4",
   "bias_isense": "IO5",
-  "cc1": "IO6",
-  "cc2": "IO7",
   "i2c_sda": "IO8",
   "i2c_scl": "IO9",
   "i2s_bclk": "IO10",
@@ -137,7 +135,7 @@
   },
   {
    "name": "relay_coil_margin_v",
-   "value": 0.41632122505887725,
+   "value": 0.41632122462185883,
    "limit": "\u2265 0 (G6K-2F must-operate at 50 \u00b0C, every supply corner)",
    "passed": true,
    "unit": "V"

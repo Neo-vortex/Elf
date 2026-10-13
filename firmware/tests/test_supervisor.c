@@ -56,6 +56,15 @@ static void bias_needs_5v_main_in_regulation(void)
     CHECK(test_vhw.gpio[HAL_GPIO_BIAS_EN] == true);
 }
 
+static void bias_is_allowed_across_the_main_rail_tolerance(void)
+{
+    /* LM2576 Vref 1.193–1.267 V and 1 % divider: 5V_MAIN may sit near 5.2 V on a good board */
+    supervisor_init();
+    supplies(12000, 5200, 5000);
+    CHECK(supervisor_bias_enable(true));
+    CHECK(supervisor_poll()->flags & SUP_FLAG_BIAS_ON);
+}
+
 static void bias_drops_when_main_falls(void)
 {
     supervisor_init();
@@ -111,6 +120,7 @@ int main(void)
     RUN(sense_table_reads_back_its_own_points);
     RUN(monitors_read_through_the_dividers);
     RUN(bias_needs_5v_main_in_regulation);
+    RUN(bias_is_allowed_across_the_main_rail_tolerance);
     RUN(bias_drops_when_main_falls);
     RUN(over_current_cuts_the_feed);
     RUN(sense_zero_is_measured_with_the_feed_off);

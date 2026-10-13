@@ -32,17 +32,15 @@ def test_usb_powers_nothing():
     blk = power.build()
     vbus = blk.ports["vbus"]
     on_vbus = {p.value for p in blk.circuit.parts for pin in p.pins if pin.net is not None and pin.net.name == vbus.name}
-    assert on_vbus == {"100kΩ"}                      # only the sense divider (the USB-C pads are in the controller)
+    assert on_vbus == {"1MΩ"}                        # only the sense divider (the USB-C pads are in the controller)
 
 
-def test_input_chain_is_fuse_ntc_diode_then_tvs():
+def test_input_chain_is_ptc_diode_then_tvs():
     blk = power.build()
-    fuse = by_value(blk, f"{power.FUSE_A:g}A fuse")[0]
-    ntc = next(p for p in blk.circuit.parts if p.value.startswith("NTC"))
+    ptc = next(p for p in blk.circuit.parts if p.value.startswith("PTC"))
     d = next(p for p in by_value(blk, "SS36") if p["K"].net.name == "ext_p")
     tvs = by_value(blk, "SMBJ30A")[0]
-    assert fuse["1"].net.name == "ext_tip" and fuse["2"].net is ntc["1"].net
-    assert ntc["2"].net is d["A"].net and tvs["K"].net.name == "ext_p"
+    assert ptc["1"].net.name == "ext_tip" and ptc["2"].net is d["A"].net and tvs["K"].net.name == "ext_p"
 
 
 def test_buck_feedback_sets_5v5_and_every_net_is_connected():
@@ -96,12 +94,13 @@ def test_surge_clamp_stays_under_the_buck_rating(ngspice):
 
 
 @pytest.mark.integration
-@pytest.mark.parametrize("volts", [9.0, 30.0])
-def test_hot_plug_starts_the_board_within_the_fuse_and_buck_ratings(ngspice, volts):
+@pytest.mark.parametrize("volts", [8.55, 9.0, 30.0])          # 8.55 V: a 9 V adapter at −5 %
+def test_hot_plug_starts_the_board_and_stays_in_regulation(ngspice, volts):
     r = check.plug_in(power.build(), volts)
-    assert r["rails_up_s"] < 20e-3                                       # 9 V: the cold NTC still lets it start
+    assert r["rails_up_s"] < 20e-3
+    assert check.MAIN_V[0] <= r["main_end_v"] <= check.MAIN_V[1]          # still in regulation at the end
     assert r["buck_in_peak_v"] <= check.BUCK_VIN_MAX_V
-    assert r["i2t_a2s"] <= parts.fuse_i2t_min(power.FUSE_A) / check.FUSE_PULSE_MARGIN
+    assert r["peak_a"] <= parts.SS36_IFSM_A / 2                            # the reverse diode's surge rating
 
 
 @pytest.mark.integration
@@ -109,3 +108,30 @@ def test_conducted_spurs_are_far_below_mds(ngspice):
     spurs = check.ripple_spurs(power.build())
     assert set(spurs) == set(check.BANDS)
     assert max(s["total_dbm"] for s in spurs.values()) <= check.MDS_DBM - check.SPUR_MARGIN_DB
+
+
+def test_input_is_protected_by_a_resettable_fuse_not_an_inrush_sensitive_one():
+    blk = power.build()
+    values = {p.value for p in blk.circuit.parts}
+    assert any(v.startswith("PTC") for v in values) and not any(v.startswith("NTC") or "fuse" in v for v in values)
+    assert parts.PTC_V_MAX >= 33.0 and parts.PTC_HOLD_A >= 0.6          # above 30 V in; above the 0.45 A input
+
+
+def test_buck_output_capacitor_meets_the_lm2576_stability_rule():
+    # C_OUT ≥ 13 300 · V_IN(max) / (V_OUT · L[µH]) (LM2576 adjustable, datasheet)
+    need_uf = 13300 * 30.0 / (5.5 * power.BUCK_L * 1e6)
+    assert power.BUCK_C_OUT_UF >= need_uf
+
+
+def test_buck_inductor_is_rated_for_start_up_current():
+    blk = power.build()
+    lb = next(p for p in blk.circuit.parts if p.ref.startswith("L") and "buck inductor" in p.bom_note)
+    assert "Isat ≥ 2 A" in lb.bom_note and power.BUCK_L_DCR >= 0.15
+
+
+def test_usb_cannot_back_power_an_unpowered_board():
+    """With the jack out, VBUS (and CC) must not drive more than a few µA into an ESP32 pin."""
+    top, bottom = power.VBUS_DIVIDER
+    assert top * bottom / (top + bottom) >= 150e3          # Thevenin source behind the pin ≥ 150 kΩ
+    from neohw.blocks import controller
+    assert "cc1" not in controller.GPIO and "cc2" not in controller.GPIO

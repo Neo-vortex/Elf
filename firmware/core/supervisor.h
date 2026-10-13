@@ -9,7 +9,7 @@
 
 #define SUP_EXT_PRESENT_MV 3000u       /* any input on the jack side of the board */
 #define SUP_INPUT_LOW_MV 8000u         /* after the fuse, NTC and SS36: a 9 V adapter sagging below ≈ 8.5 V */
-#define SUP_MAIN_OK_MV 5300u           /* 5V_MAIN in regulation (5.5 V nominal) */
+#define SUP_MAIN_OK_MV 5000u           /* 5V_MAIN in regulation: 5.5 V nominal, 5.27–5.75 V over Vref and divider tolerance */
 #define SUP_HOST_MV 4000u              /* VBUS from a USB host */
 
 enum {

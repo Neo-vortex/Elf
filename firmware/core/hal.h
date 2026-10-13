@@ -28,8 +28,6 @@ typedef enum {
     HAL_ADC_SENSE_EXT,
     HAL_ADC_SENSE_MAIN,
     HAL_ADC_BIAS_ISENSE,    /* bias-T current mirror */
-    HAL_ADC_CC1,
-    HAL_ADC_CC2,
     HAL_ADC_COUNT
 } hal_adc_t;
 

@@ -347,24 +347,6 @@ def lvc157(nc=()) -> Part:
 
 # --- power (phase 3 spec §3.2) -----------------------------------------------------------
 
-FUSE_1206_SLOW_I2T_MIN = 0.05     # A²s, melting I²t of a 1 A time-lag 1206 fuse (lower end of the series)
-
-
-def fuse_i2t_min(amps: float) -> float:
-    """Melting I²t of a time-lag 1206 fuse, scaled from the 1 A figure with the rating squared
-    (I²t of a fuse family grows roughly with the rated current squared)."""
-    return FUSE_1206_SLOW_I2T_MIN * amps ** 2
-
-
-def fuse_1206(amps: float) -> Part:
-    """Time-lag 1206 fuse (cold resistance ≈ 0.1 Ω): rides through the plug-in inrush, which a
-    fast 1 A 1206 (melting I²t ≈ 0.01 A²s) would wear out over repeated plug-ins."""
-    p = _ic(f"{amps:g}A fuse", {"1": "1", "2": "2"}, "Fuse:Fuse_1206_3216Metric", f"1206 time-lag {amps:g}A",
-            "فیوز ریستی 1206")
-    p.spice_lines = lambda n, k=1.0: [f"R{p.ref} {n['1']} {n['2']} 0.1"]
-    return p
-
-
 def barrel_jack() -> Part:
     """5.5/2.1 mm DC jack (DC-005 style): 1 tip (+), 2 sleeve (−), 3 switch (unused)."""
     p = _ic("DC jack 5.5/2.1", {"TIP": "1", "SLEEVE": "2", "SW": "3"}, "Connector_BarrelJack:BarrelJack_Horizontal",
@@ -373,19 +355,21 @@ def barrel_jack() -> Part:
     return p
 
 
-NTC_COLD_OHM, NTC_HOT_OHM = 2.5, 0.5
+PTC_HOLD_A, PTC_TRIP_A, PTC_V_MAX, PTC_OHM = 0.75, 1.5, 33.0, 0.3
 
 
-def ntc_inrush() -> Part:
-    """2.5 Ω inrush-limiting NTC thermistor, 7 mm disc, 5 mm pitch (2.5D-7 class, ≥ 2 A): 2.5 Ω cold
-    limits the plug-in charge of the buck's input capacitor yet still lets the board start cold
-    at 9 V (5 Ω would not: its drop at 0.44 A starves the buck); warm it falls to ≈ 0.3 Ω (the DC
-    model uses 0.5 Ω, conservative; the plug-in check uses 2.5 Ω cold, and the cold-start case
-    too). A passive: the manufacturer sources it."""
-    p = _tagged(_template("NTC", "TH", ["1", "2"], "Varistor:RV_Disc_D7mm_W3.4mm_P5mm")(value="NTC 2.5D-7"))
-    p.mpn, p.torob, p.tol, p.bom_note = "NTC 2.5D-7", None, 0.2, "inrush limiter, 2.5 Ω cold, ≥ 2 A"
-    p.spice_lines = lambda n, k=1.0: [f"R{p.ref} {n['1']} {n['2']} {NTC_HOT_OHM:g}"]
+def ptc_resettable() -> Part:
+    """Resettable PTC fuse (polyfuse), 1812: hold 0.75 A, trip 1.5 A, 33 V maximum (≥ the 30 V input),
+    ≈ 0.3 Ω. It ignores millisecond plug-in pulses (it trips on heat, in seconds, at a sustained
+    fault) and drops only ≈ 0.1 V at the board's 0.45 A maximum input, so the board starts at 9 V
+    whatever the temperature. A passive: the manufacturer sources it (e.g. a 1812L075/33-class part)."""
+    p = _tagged(_template("PTC", "F", ["1", "2"], "Fuse:Fuse_1812_4532Metric")(value="PTC 0.75A 33V"))
+    p.mpn, p.torob, p.tol, p.bom_note = "1812 PTC hold 0.75 A, 33 V", None, 0.3, "resettable fuse, hold 0.75 A, trip 1.5 A, ≥ 33 V"
+    p.spice_lines = lambda n, k=1.0: [f"R{p.ref} {n['1']} {n['2']} {PTC_OHM:g}"]
     return p
+
+
+SS36_IFSM_A = 80.0             # non-repetitive peak forward surge (8.3 ms half sine), conservative end of the family
 
 
 def ss36() -> Part:

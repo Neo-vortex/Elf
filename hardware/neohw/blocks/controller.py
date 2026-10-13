@@ -23,7 +23,7 @@ from neohw import parts
 from neohw.blocks import Block, bias_switch
 
 GPIO = {
-    "sense_vbus": "IO1", "sense_ext": "IO2", "sense_main": "IO4", "bias_isense": "IO5", "cc1": "IO6", "cc2": "IO7",
+    "sense_vbus": "IO1", "sense_ext": "IO2", "sense_main": "IO4", "bias_isense": "IO5",
     "i2c_sda": "IO8", "i2c_scl": "IO9",
     "i2s_bclk": "IO10", "i2s_ws": "IO11", "i2s_din": "IO12",
     "adc_rst": "IO13", "adc_ovfl": "IO14", "adc_ms": "IO41", "adc_fmt": "IO42",
@@ -31,7 +31,7 @@ GPIO = {
     "sr_ser": "IO16", "sr_clk": "IO17", "sr_latch": "IO18", "sr_oe": "IO21",
     "bias_en": "IO38", "status_led": "IO40",
 }
-ADC_FUNCTIONS = ("sense_vbus", "sense_ext", "sense_main", "bias_isense", "cc1", "cc2")
+ADC_FUNCTIONS = ("sense_vbus", "sense_ext", "sense_main", "bias_isense")
 ADC1_PINS = tuple(f"IO{k}" for k in range(1, 11))
 # relay order on the shift-register chain (bit 0 = first 74HC595 QA)
 RELAYS = tuple([f"bank{k}_{end}" for k in range(1, 12) for end in ("in", "out")] + ["atten", "preamp"])
@@ -71,8 +71,8 @@ def build(ckt: Circuit | None = None) -> Block:
         j["B5"] += cc2
         _r("5.1k", cc1, gnd)
         _r("5.1k", cc2, gnd)
-        _r("10k", cc1, g["cc1"])           # CC voltage to an ADC (telemetry only: the jack powers the board)
-        _r("10k", cc2, g["cc2"])
+        # (no CC taps to the ESP32: the jack powers the board, and a live host must not drive an
+        # unpowered ESP32 pin)
         esd = parts.usblc6()
         esd["IO1A"] += dp
         esd["IO1B"] += dp

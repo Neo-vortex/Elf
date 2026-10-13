@@ -1,12 +1,13 @@
 """Power (phase 3 spec §3.2, plan 3.4 amendment): the 9–30 V barrel jack is the only supply.
 
 Input:
-- Jack 9–30 V → 1.5 A time-lag fuse → 2.5 Ω NTC inrush limiter (cold; ≈ 0.3 Ω warm) → SS36 Schottky (a reversed plug conducts nothing; at the
+- Jack 9–30 V → resettable PTC fuse (hold 0.75 A, 33 V: it ignores the plug-in pulse, which
+  the SS36's 80 A surge rating carries) → SS36 Schottky (a reversed plug conducts nothing; at the
   board's ≤ 0.35 A input current its 0.45 V drop costs little) → SMBJ30A TVS (clamps a surge at
   ≈ 48 V, under the buck's 60 V rating) → input LC (10 µH + 100 µF / 50 V electrolytic ‖ 1 µF),
   which also keeps the buck's input pulses off the adapter cable.
-- LM2576HVS-ADJ buck (52 kHz) → 100 µH → 5V_MAIN = 5.5 V (FB 3.48 k / 1 k), 470 µF / 16 V
-  low-ESR electrolytic ‖ 22 µF ‖ 100 nF; SS36 catch diode.
+- LM2576HVS-ADJ buck (52 kHz) → 100 µH (12 × 12 mm, Isat ≥ 2 A) → 5V_MAIN = 5.5 V (FB 3.48 k /
+  1 k), 1000 µF / 16 V low-ESR electrolytic ‖ 22 µF ‖ 100 nF; SS36 catch diode.
 
 Rails from 5V_MAIN:
 - relay coils (ULN2803 COM and coils): ≈ 4.6 V on a coil, above the G6K-2F's must-operate
@@ -20,7 +21,8 @@ Rails from 5V_MAIN:
 USB carries data only: VBUS reaches the USBLC6 and a sense divider (host present) and powers
 nothing.
 
-Monitoring: VBUS 100 k / 100 k, the jack (after the SS36) 100 k / 10 k (30 V → 2.7 V),
+Monitoring: VBUS 1 M / 220 k (a live host never pushes more than ≈ 5 µA into an unpowered
+ESP32 pin), the jack (after the SS36) 100 k / 10 k (30 V → 2.7 V),
 5V_MAIN 100 k / 100 k, each to an ADC pin.
 """
 from __future__ import annotations
@@ -31,13 +33,15 @@ from neohw import parts
 from neohw.blocks import Block
 
 BUCK_FB_TOP, BUCK_FB_BOTTOM = "3.48k", "1k"     # 1.23 V × (1 + 3.48) = 5.51 V
-FUSE_A = 1.5                    # time-lag: rides the cold-NTC plug-in pulse at 30 V; 3 × the 0.44 A maximum input
+BUCK_C_OUT_UF = 1000           # LM2576 adjustable stability: ≥ 13 300 · 30 V / (5.5 V · 100 µH) = 725 µF
+BUCK_L_DCR = 0.15              # 12 × 12 mm 100 µH power inductor (Isat ≥ 2 A)
+VBUS_DIVIDER = (1e6, 220e3)    # high impedance: an unpowered board's ESP32 pin sees ≤ ≈ 5 µA from a live VBUS
 CERAMIC_ESL = 1.0e-9           # 1206 / 0805 MLCC, mounted
 CERAMIC_ESR = 5e-3
 ELECTROLYTIC_ESL = 5e-9
 LC_L = 10e-6                   # filter inductors: 1210 wirewound, SRF ≈ 30 MHz (2.5 pF), DCR ≈ 0.3 Ω
 BUCK_L = 100e-6
-SENSE_DIVIDERS = {"vbus": 2.0, "ext": 11.0, "main": 2.0}   # node voltage / ADC voltage
+SENSE_DIVIDERS = {"vbus": (VBUS_DIVIDER[0] + VBUS_DIVIDER[1]) / VBUS_DIVIDER[1], "ext": 11.0, "main": 2.0}   # node / ADC
 BIAS_FILTER_NOTE = "bias-T feed filter, 1210 wirewound, rated ≥ 0.4 A"   # carries the SY6280's 0.39 A limit
 
 
@@ -89,14 +93,11 @@ def build(ckt: Circuit | None = None) -> Block:
         j = parts.barrel_jack()
         j["TIP"] += tip
         j["SLEEVE"] += gnd
-        f = parts.fuse_1206(FUSE_A)
+        f = parts.ptc_resettable()
         f["1"] += tip
         f["2"] += fused
-        ntc, limited = parts.ntc_inrush(), Net("ext_ntc")
-        ntc["1"] += fused
-        ntc["2"] += limited
         d_rev = parts.ss36()
-        d_rev["A"] += limited
+        d_rev["A"] += fused
         d_rev["K"] += ext_p
         tvs = parts.smbj30a()
         tvs["K"] += ext_p
@@ -114,14 +115,18 @@ def build(ckt: Circuit | None = None) -> Block:
         d_catch = parts.ss36()
         d_catch["K"] += sw
         d_catch["A"] += gnd
-        lb = parts.inductor(BUCK_L, 20.0, 50e3, c_par=10e-12, dcr=0.1, tol=0.2,
-                            footprint="Inductor_SMD:L_Bourns_SRP7028A_7.3x6.6mm",
-                            note="buck inductor, 7.3×6.6 mm power, Isat ≥ 3 A (Torob: 100 µH 4.6 A SMD0630)")
+        lb = parts.inductor(BUCK_L, 20.0, 50e3, c_par=10e-12, dcr=BUCK_L_DCR, tol=0.2,
+                            footprint="Inductor_SMD:L_12x12mm_H8mm",
+                            note="buck inductor, 12×12 mm shielded power, Isat ≥ 2 A, DCR ≤ 0.15 Ω (check the datasheet: "
+                                 "listing titles overstate small parts)")
         lb[1] += sw
         lb[2] += main
         _r(BUCK_FB_TOP, main, fb)
         _r(BUCK_FB_BOTTOM, fb, gnd)
-        _elec("470u", main, gnd, 0.1, "aluminium electrolytic 16 V, low ESR (LM2576 output stability)")
+        c_out = parts.capacitor(f"{BUCK_C_OUT_UF}u", note="aluminium electrolytic 16 V, low ESR 0.05–0.2 Ω (LM2576 stability)",
+                                footprint="Capacitor_SMD:CP_Elec_10x10.5", esr=0.1, esl=ELECTROLYTIC_ESL, tol=0.2)
+        c_out[1] += main
+        c_out[2] += gnd
         _bulk(main, gnd)
         # 5V_A: LC and the low-noise LDO
         _filter_l(main, ldo_a_in)
@@ -161,8 +166,8 @@ def build(ckt: Circuit | None = None) -> Block:
         _filter_l(main, bias5, BIAS_FILTER_NOTE)
         _bulk(bias5, gnd)
         # monitoring
-        _r("100k", vbus, s_vbus)
-        _r("100k", s_vbus, gnd)
+        _r("1M", vbus, s_vbus)
+        _r("220k", s_vbus, gnd)
         _c("100n", s_vbus, gnd, "X7R ADC filter")
         _r("100k", ext_p, s_ext)
         _r("10k", s_ext, gnd)
