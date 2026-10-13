@@ -67,12 +67,20 @@ class Twin:
     """Renders I/Q for a board state from a stations file (absolute levels, band noise)."""
 
     def __init__(self, stations_path: Path, hw: hardware.Hardware | None = None):
+        """`stations_path`: a stations file (imaginary stations) or an antenna file (recordings, with
+        optional imaginary stations; neosim.antenna), told apart by its `recordings` key."""
         d = yaml.safe_load(Path(stations_path).read_text())
-        self.name = d.get("name", Path(stations_path).stem)
-        self.duration_s = float(d.get("duration_s", 16.0))
-        self.seed = int(d.get("seed", 1))
-        self.noise_dbm_per_hz = float(d["noise"]["dbm_per_hz"])
-        self.stations = tuple(_station(s, self.noise_dbm_per_hz) for s in d["stations"])
+        if "recordings" in d:
+            from neosim.antenna import Antenna
+            ant = Antenna.load(Path(stations_path))
+            self.name, self.duration_s, self.seed = ant.name, ant.duration_s, ant.seed
+            self.noise_dbm_per_hz, self.stations = ant.noise_dbm_per_hz, ant.stations
+        else:
+            self.name = d.get("name", Path(stations_path).stem)
+            self.duration_s = float(d.get("duration_s", 16.0))
+            self.seed = int(d.get("seed", 1))
+            self.noise_dbm_per_hz = float(d["noise"]["dbm_per_hz"])
+            self.stations = tuple(_station(s, self.noise_dbm_per_hz) for s in d["stations"])
         self.hw = hw or hardware.Hardware.load()
         self.order = relay_order()
 

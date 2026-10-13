@@ -246,4 +246,43 @@ public sealed class CliTests : IDisposable
         Assert.Equal(0.16, p.IqGainDb);
         Assert.Equal(-0.43, p.IqPhaseDeg);
     }
+
+    static Complex[] AmStation(double carrier, double tone, double m, int n, double amp = 0.1) =>
+        Enumerable.Range(0, n).Select(i =>
+            Complex.FromPolarCoordinates(amp * (1 + m * Math.Cos(2 * Math.PI * tone * i / 96000.0)),
+                                         2 * Math.PI * carrier * i / 96000.0)).ToArray();
+
+    [Theory]
+    [InlineData("am")]
+    [InlineData("sam")]
+    public void Am_modes_demodulate_a_broadcast_station(string mode)
+    {
+        var meta = WriteSigMf("am", "cf32_le", 96000, AmStation(10000, 1000, 0.5, 192000));
+        var wav = Path.Combine(_dir, "am.wav");
+        var (code, err) = Run("--input", meta, "--output", wav, "--mode", mode, "--tune-offset", "10000", "--no-agc");
+        Assert.True(code == 0, err);
+        var bytes = File.ReadAllBytes(wav);
+        var audio = Enumerable.Range(0, (bytes.Length - 44) / 2).Select(k => BitConverter.ToInt16(bytes, 44 + 2 * k) / 32768.0).ToArray();
+        Complex acc = Complex.Zero;
+        for (int k = 6000; k < audio.Length; k++) acc += audio[k] * Complex.FromPolarCoordinates(1, -2 * Math.PI * 1000 * k / 12000);
+        Assert.InRange(2 * acc.Magnitude / (audio.Length - 6000), 0.04, 0.06);       // m · amplitude
+    }
+
+    [Fact]
+    public void Am_bandwidth_too_wide_for_the_audio_rate_is_usage_error()
+    {
+        var meta = WriteSigMf("amw", "cf32_le", 96000, AmStation(10000, 1000, 0.5, 9600));
+        var (code, err) = Run("--input", meta, "--output", Path.Combine(_dir, "x.wav"), "--mode", "am",
+                              "--tune-offset", "10000", "--am-bandwidth", "12000");
+        Assert.Equal(CliApp.UsageError, code);
+        Assert.Contains("bandwidth", err);
+    }
+
+    [Fact]
+    public void Unknown_mode_lists_the_am_modes()
+    {
+        var (code, err) = Run("--input", "x", "--output", "y", "--mode", "fm", "--tune-offset", "0");
+        Assert.Equal(CliApp.UsageError, code);
+        Assert.Contains("am or sam", err);
+    }
 }

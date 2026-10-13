@@ -65,3 +65,28 @@ def test_a_blocked_state_renders_noise_only(hw, tmp_path):
         return spec[int(round(10e3 / 96e3 * len(iq)))]
 
     assert at_10khz(twin.render(good)) > 1e6 * at_10khz(twin.render(bad))   # 60 dB: the carrier is gone
+
+
+def test_the_twin_plays_a_recorded_antenna_for_the_state_the_firmware_set(hw, tmp_path):
+    import json, yaml
+    rate, n = 96000, 96000
+    t = np.arange(n) / rate
+    iq = 0.1 * np.exp(2j * np.pi * 20e3 * t)                       # a tone 20 kHz above the recording's centre
+    np.asarray(iq, dtype="<c8").tofile(tmp_path / "r.sigmf-data")
+    (tmp_path / "r.sigmf-meta").write_text(json.dumps({
+        "global": {"core:datatype": "cf32_le", "core:sample_rate": rate, "core:version": "1.0.0"},
+        "captures": [{"core:sample_start": 0, "core:frequency": 14_000_000}], "annotations": []}))
+    (tmp_path / "ant.yaml").write_text(yaml.safe_dump({"name": "rec", "duration_s": 1.0, "seed": 2,
+                                                       "noise": {"dbm_per_hz": -170},
+                                                       "recordings": [{"file": "r.sigmf-meta", "full_scale_dbm": -40.0}]}))
+    twin = vboard.Twin(tmp_path / "ant.yaml", hw)
+    good = vboard.decode_state(_regs_14mhz(), _bits("bank7_in", "bank7_out"), False, ORDER, hw)
+    frames = twin.render(good)
+    x = frames[:, 0].astype(float) - 1j * frames[:, 1]
+    spec = np.abs(np.fft.fft(x)) ** 2
+    assert int(np.argmax(spec)) == int(round(20e3 / 96e3 * len(x)))      # 14.020 MHz − LO 14.000 MHz
+    bad = vboard.decode_state(_regs_14mhz(), _bits("bank6_in", "bank6_out"), False, ORDER, hw)
+    y = twin.render(bad)
+    yb = y[:, 0].astype(float) - 1j * y[:, 1]
+    k = int(round(20e3 / 96e3 * len(yb)))
+    assert spec[k] > 1e6 * (np.abs(np.fft.fft(yb)) ** 2)[k]               # a wrong filter blocks the recording too

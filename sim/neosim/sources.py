@@ -84,4 +84,6 @@ def render_station(st: Station, lo_hz: float, n: int, fs: int = FS_HZ) -> np.nda
         return cw_baseband(st.text, st.wpm, offset, n, fs)
     if st.mode == "carrier":
         return carrier_baseband(offset, n, fs)
+    if st.mode == "recording":
+        return st.source.baseband(offset, n)
     raise ValueError(f"unknown station mode {st.mode!r}")

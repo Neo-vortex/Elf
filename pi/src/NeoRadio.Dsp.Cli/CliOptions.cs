@@ -18,12 +18,14 @@ public sealed record CliOptions(
     bool AgcEnabled,
     string? MetricsPath,
     double IqGainDb = 0,
-    double IqPhaseDeg = 0)
+    double IqPhaseDeg = 0,
+    double AmBandwidthHz = 9000)
 {
     public const string Usage =
-        "usage: neoradio-dsp --input X.sigmf-meta --output Y.wav --tune-offset HZ [--mode usb|lsb|cw] " +
+        "usage: neoradio-dsp --input X.sigmf-meta --output Y.wav --tune-offset HZ [--mode usb|lsb|cw|am|sam] " +
         "[--audio-rate 12000] [--low-cut 200] [--high-cut 2800] [--cw-pitch 600] [--cw-bandwidth 500] " +
-        "[--no-agc] [--metrics M.json] [--iq-gain-db 0] [--iq-phase-deg 0]";
+        "[--no-agc] [--metrics M.json] [--iq-gain-db 0] [--iq-phase-deg 0] [--am-bandwidth 9000]; " +
+        "for am and sam the tune offset is the carrier's";
 
     public static CliOptions Parse(string[] args)
     {
@@ -34,7 +36,8 @@ public sealed record CliOptions(
             string key = args[i];
             if (key == "--no-agc") { agc = false; continue; }
             if (key is not ("--input" or "--output" or "--mode" or "--tune-offset" or "--audio-rate" or "--low-cut"
-                or "--high-cut" or "--cw-pitch" or "--cw-bandwidth" or "--metrics" or "--iq-gain-db" or "--iq-phase-deg"))
+                or "--high-cut" or "--cw-pitch" or "--cw-bandwidth" or "--metrics" or "--iq-gain-db" or "--iq-phase-deg"
+                or "--am-bandwidth"))
                 throw new CliUsageException($"unknown option {key}");
             if (i + 1 >= args.Length) throw new CliUsageException($"{key} needs a value");
             values[key] = args[++i];
@@ -51,7 +54,8 @@ public sealed record CliOptions(
         }
 
         string mode = values.GetValueOrDefault("--mode", "usb");
-        if (mode is not ("usb" or "lsb" or "cw")) throw new CliUsageException($"--mode must be usb, lsb or cw, got '{mode}'");
+        if (mode is not ("usb" or "lsb" or "cw" or "am" or "sam"))
+            throw new CliUsageException($"--mode must be usb, lsb, cw, am or sam, got '{mode}'");
 
         double iqGain = Number("--iq-gain-db", 0), iqPhase = Number("--iq-phase-deg", 0);
         if (Math.Abs(iqGain) > IqCorrector.MaxGainDb)
@@ -72,8 +76,14 @@ public sealed record CliOptions(
             agc,
             values.GetValueOrDefault("--metrics"),
             iqGain,
-            iqPhase);
+            iqPhase,
+            Number("--am-bandwidth", 9000));
     }
+
+    /// <summary>The demodulator for the mode: AM (envelope or synchronous) or a single-sideband receiver.</summary>
+    public IDemodulator ToDemodulator(double inputRate) => Mode is "am" or "sam"
+        ? new AmReceiver(new AmConfig(inputRate, AudioRate, TuneOffsetHz, AmBandwidthHz, Mode == "sam", AgcEnabled))
+        : new Receiver(ToReceiverConfig(inputRate));
 
     public ReceiverConfig ToReceiverConfig(double inputRate) => Mode switch
     {

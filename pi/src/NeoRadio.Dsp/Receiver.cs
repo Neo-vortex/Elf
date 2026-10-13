@@ -6,7 +6,7 @@ namespace NeoRadio.Dsp;
 /// Single-sideband receiver: shift the wanted passband centre to 0 Hz, decimate, apply the channel
 /// filter, shift back to the audio centre and take the real part.
 /// </summary>
-public sealed class Receiver
+public sealed class Receiver : IDemodulator
 {
     private readonly Nco _shiftIn;
     private readonly Decimator _decimator;

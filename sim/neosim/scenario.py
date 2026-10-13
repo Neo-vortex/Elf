@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 import math
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from pathlib import Path
 
 import yaml
@@ -14,7 +14,7 @@ USABLE_FRACTION = 0.45
 WINDOW_HZ = USABLE_FRACTION * FS_HZ  # 43 200 Hz either side of the LO
 RECEIVE_MARGIN_HZ = 3_000.0
 
-STATION_MODES = {"ft8", "cw", "carrier"}
+STATION_MODES = {"ft8", "cw", "carrier"}     # plus "recording", made only by neosim.antenna
 RECEIVE_MODES = {"usb", "lsb", "cw"}
 DECODERS = {"ft8", "cw"}
 _BANDWIDTH_HZ = {"ft8": 50.0, "cw": 100.0, "carrier": 1.0}
@@ -40,10 +40,19 @@ class Station:
     wpm: float | None = None
     audio_hz: float | None = None
     level_dbm: float | None = None
+    span_hz: float = 0.0                                          # recordings: the frequency span they cover
+    source: object = field(default=None, compare=False, repr=False)   # recordings: the neosim.antenna.Recording
 
     @property
     def bandwidth_hz(self) -> float:
-        return _BANDWIDTH_HZ[self.mode]
+        return self.span_hz if self.mode == "recording" else _BANDWIDTH_HZ[self.mode]
+
+    def reaches(self, f_ref_hz: float, window_hz: float) -> bool:
+        """Whether the station falls in the window f_ref ± window: an ordinary station whole, a
+        recording partly (the baseband response cuts the rest)."""
+        if self.mode == "recording":
+            return abs(self.rf_hz - f_ref_hz) - self.span_hz / 2 < window_hz
+        return abs(self.rf_hz - f_ref_hz) + self.bandwidth_hz / 2 <= window_hz
 
 
 @dataclass(frozen=True)

@@ -391,11 +391,11 @@ def receive(scenario, rng: np.random.Generator, hw: Hardware, render, fs: int, w
     harmonics = hw.harmonics(lo)
     for st in scenario.stations:
         amp = math.sqrt(2 * R0 * 1e-3 * 10 ** (st.level_dbm / 10))
-        if abs(st.rf_hz - lo) + st.bandwidth_hz / 2 <= window_hz:
+        if st.reaches(lo, window_hz):
             x += render(st, lo, n) * amp
             continue
         for k, (_, side) in harmonics.items():
-            if abs(st.rf_hz - k * lo) + st.bandwidth_hz / 2 <= window_hz:
+            if st.reaches(k * lo, window_hz):
                 if not f_lo_s2p <= st.rf_hz <= f_hi_s2p:
                     excluded.append((st.id, f"{st.rf_hz / 1e6:.6f} MHz near {k}·LO is beyond the filter "
                                             f"data ({f_hi_s2p / 1e6:g} MHz)"))

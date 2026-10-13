@@ -34,10 +34,10 @@ public static class CliApp
             return InputError;
         }
 
-        Receiver receiver;
+        IDemodulator receiver;
         try
         {
-            receiver = new Receiver(options.ToReceiverConfig(recording.SampleRate));
+            receiver = options.ToDemodulator(recording.SampleRate);
         }
         catch (ArgumentException e)
         {
