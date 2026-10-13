@@ -32,6 +32,12 @@ parts are selected for availability in the Iranian electronics market.
 - Powered from USB-C or an external 5 V barrel jack with automatic switch-over (external
   first, no back-feed into the host), reverse-polarity and surge protection; a boost converter
   and low-noise LDOs give separate analogue, RF and digital rails
+- ESP32-S3 controller with native USB-C (ESD-protected); the CS5361 runs as clock master from a
+  24.576 MHz crystal oscillator, so the sampling clock never depends on the microcontroller
+- 24 relays driven through a 74HC595 shift-register chain and ULN2803 drivers, all released at
+  power-up until the firmware enables them
+- Switched bias-T with a 0.39 A hardware current limit, simulated current sensing and a 150 mA
+  firmware cut-off; temperature, supply and USB-C current monitoring
 
 ### Connectivity and software
 
@@ -55,6 +61,9 @@ parts are selected for availability in the Iranian electronics market.
   simulations and the digital twin
 - Digital twin in Python: scenarios with imaginary stations and noise, rendered to I/Q, run
   through the shipping C# DSP and decoded by real FT8 and CW decoders
+- Whole-board netlist checks: every pin connected, every supply pin on its rail, every footprint
+  in the KiCad libraries, a unique I2C map and an ESP32-S3 pin map that avoids PSRAM, strapping
+  and USB pins
 - Single-command reports: `make hw` for the circuits, `make sim` for the twin
 - Simulation results cached by netlist content: an unchanged block is not re-simulated
   (`make hw-fresh` re-runs everything)
@@ -123,10 +132,10 @@ make sim       # digital twin scenarios and FT8 sweep; report in build/sim/repor
 - [x] Preamplifier with bypass
 - [x] Tayloe mixer, baseband amplifier and ADC input
 - [x] Clock generation: Si5351C, divide-by-four, path selection
-- [ ] ADC digital interface (CS5361, I2S)
-- [ ] Controller and USB: ESP32-S3, USB-C, ESD protection
+- [x] ADC digital interface (CS5361, I2S)
+- [x] Controller and USB: ESP32-S3, USB-C, ESD protection
 - [x] Power: source selection, boost converter, low-noise regulators
-- [ ] Relay drivers, bias-T switching, current and temperature monitoring
+- [x] Relay drivers, bias-T switching, current and temperature monitoring
 - [x] Calibration tone path
 - [ ] Availability survey for the remaining parts
 
