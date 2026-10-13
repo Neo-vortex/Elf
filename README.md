@@ -69,6 +69,11 @@ parts are selected for availability in the Iranian electronics market.
   unit-tested on Linux against pin-level models of the board's parts; the C LO planner equals the
   Python reference on every 1 kHz step from 0.1 to 54 MHz, and every Si5351 register image is
   decoded back to its frequency by an independently written decoder (`make fw-test`)
+- Virtual board: the real firmware and its TinyUSB stack run on Linux as `elf-virtual`, serving the
+  USB device over USB/IP; a digital twin renders the I/Q for exactly the LO and relays the
+  firmware set (decoded independently from its registers), so CW on five bands decodes end to end
+  through the shipping DSP (`make fw-test` without root; `make vboard` and `make e2e` attach it to
+  the kernel as a standard sound card and serial port)
 - Single-command reports: `make hw` for the circuits, `make sim` for the twin
 - Simulation results cached by netlist content: an unchanged block is not re-simulated
   (`make hw-fresh` re-runs everything)
