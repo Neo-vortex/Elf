@@ -1626,6 +1626,7 @@ class Client:
 #include "hal_virtual.h"
 #include "radio.h"
 #include "supervisor.h"
+#include "tables_gen.h"
 #include "tusb.h"
 #include "twin_link.h"
 #include "usb_app.h"
@@ -1639,13 +1640,13 @@ static void on_signal(int sig)
     stop = 1;
 }
 
-/* board state the supervisor reads: USB at 5.0 V, no jack, a default-current USB-C port */
+/* board state the supervisor reads: a 12 V adapter on the jack, 5V_MAIN in regulation, a USB
+ * host connected (the monitors see the node voltages through the dividers in power.json) */
 static void set_supplies(void)
 {
-    vboard.adc_mv[HAL_ADC_SENSE_VBUS] = 2500;
-    vboard.adc_mv[HAL_ADC_SENSE_MAIN] = 2450;
-    vboard.adc_mv[HAL_ADC_SENSE_EXT] = 0;
-    vboard.adc_mv[HAL_ADC_CC1] = 410;
+    vboard.adc_mv[HAL_ADC_SENSE_EXT] = (uint32_t)(11600ull * 1000 / TABLES_SENSE_DIV_EXT_X1000);
+    vboard.adc_mv[HAL_ADC_SENSE_MAIN] = (uint32_t)(5480ull * 1000 / TABLES_SENSE_DIV_MAIN_X1000);
+    vboard.adc_mv[HAL_ADC_SENSE_VBUS] = (uint32_t)(5000ull * 1000 / TABLES_SENSE_DIV_VBUS_X1000);
     vboard.adc_mv[HAL_ADC_BIAS_ISENSE] = 628;
 }
 
