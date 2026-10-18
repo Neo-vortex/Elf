@@ -120,6 +120,22 @@ The step that matters is 2 → 4 (a solid ground under all RF). Signals stop at 
 - Fab notes PDF: stackup, impedance target, ENIG, thickness, which BOM to use
 - STEP model and ray-traced renders
 
+## 7a. Process animations (user request 2026-10-18)
+
+Every stage of the layout and its verification is recorded as a GIF and **committed to the repo** in `docs/media/rev-a/`, with the README showing them. They are made by scripts (`make media`, regenerated when their inputs change), not by hand, so the next build makes the same set.
+
+| GIF | Made from | Plan |
+|---|---|---|
+| `placement.gif` | The layout script saves a frame after each block is placed (`kicad-cli pcb export svg` of the board, rasterised) | 5.3 |
+| `rf-routing.gif` | One frame per routed RF / LO / power step of the layout script | 5.3 |
+| `freerouting.gif` | Screen recording of the Freerouting GUI window while it routes (the user watches the same window live): `xwininfo` finds the window, `ffmpeg -f x11grab` records it, then a palette-optimised GIF | 5.3 |
+| `em-<study>.gif` (50 Ω line, LO coupling, filter leakage, digital into baseband) | openEMS time-domain E-field dumps on a plane, rendered frame by frame (matplotlib) | 5.3 |
+| `board-3d.gif` | Turntable: `kicad-cli pcb render` at evenly spaced angles, top and bottom | 5.4 |
+| `layers.gif` | The Gerber layers stacked one at a time, rendered from the fab package with `gerbonara` | 5.4 |
+| `filter-bank.gif` | The 11 filters' simulated responses stepping through the bands, China and Iran populations overlaid | 5.1 |
+
+Size: each GIF at most 8 MB (GitHub renders up to 10 MB), achieved with ffmpeg's palettegen/paletteuse and frame-rate or size reduction; a test fails if one is larger. Raw frames and recordings stay in `build/media/` (not committed).
+
 ## 8. Tooling on this machine (installed 2026-10-18)
 
 Everything below survives reboots. Nothing project-related lives under `/tmp` (session scratchpads there are wiped; that is how the earlier Freerouting install and its layout files were lost).
