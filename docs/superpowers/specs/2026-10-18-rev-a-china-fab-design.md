@@ -112,7 +112,7 @@ The step that matters is 2 → 4 (a solid ground under all RF). Signals stop at 
 
 | What | Check |
 |---|---|
-| Part changes | Re-simulated in `make hw`: INA180 sense (0–200 mA and a short, ≤ 3.1 V at the ADC); TPS7A20 and TLV75733 rails, and the MIC5205 and AMS1117 fallbacks (dropout at the low corner, thermal, transients, noise); BPF Monte Carlo with per-part Q(f) |
+| Part changes | Re-simulated in `make hw`: INA180 sense (0–200 mA and a short, ≤ 3.3 V at the ADC: the STM32F411's VDDA range, which replaces the ESP32-S3's 3.1 V limit; user 2026-10-18); TPS7A20 and TLV75733 rails, and the MIC5205 and AMS1117 fallbacks (dropout at the low corner, thermal, transients, noise); BPF Monte Carlo with per-part Q(f) |
 | Dual population | Each affected block simulated with the China set and the Iran set; both pass the existing targets. Parallel-capacitor pairs for missing E24 values are computed and simulated |
 | Controller | Board check with STM32 rules; crystal on the AN2606 list; USB FIFO budget |
 | Firmware | `make fw-test` and the virtual-board CW test unchanged and passing; STM32F411 target builds with `arm-none-eabi-gcc` |
