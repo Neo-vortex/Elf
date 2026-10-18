@@ -186,7 +186,7 @@ Everything below survives reboots. Nothing project-related lives under `/tmp` (s
 | Java | apt, OpenJDK 25 | runs Freerouting |
 | `arm-none-eabi-gcc` 14.2, newlib | apt (`gcc-arm-none-eabi`, `libnewlib-arm-none-eabi`) | Cortex-M4F link verified (`-mcpu=cortex-m4 -mthumb -mfloat-abi=hard -mfpu=fpv4-sp-d16`) |
 | `dfu-util` 0.11 | apt | udev rule `/etc/udev/rules.d/50-stm32-dfu.rules` (0483:df11, uaccess) so flashing needs no root |
-| openEMS + CSXCAD | built from source: sources `~/opt/src/openEMS-Project`, install prefix `~/opt/openEMS`, build log `~/opt/src/openEMS-build.log` | build dependencies from apt (libhdf5, VTK 9, Boost, CGAL, TinyXML, Qt5, Cython). Python bindings: see the note added when they are built |
+| openEMS + CSXCAD | built from source: sources `~/opt/src/openEMS-Project`, install prefix `~/opt/openEMS`, build log `~/opt/src/openEMS-build.log` | build dependencies from apt (libhdf5, VTK 9, Boost, CGAL, TinyXML, Qt5, Cython). Python bindings (`openEMS`, `CSXCAD`) import in `/usr/bin/python3` only (checked 2026-10-18). Viewer: `~/opt/openEMS/bin/AppCSXCAD` (links the system Qt6 and VTK 9.5), **not on `PATH`**: call it by its full path or add `~/opt/openEMS/bin` to `PATH` in the Makefile target |
 | gerbonara | pip, installed in plan 5.4 | Gerber re-check |
 | Distributor catalogues | — | not used (§2b). For reference: LCSC refuses scripted requests from this network and JLCPCB's API timed out on 2026-10-18 |
 | `sudo` | — | needs a password: the agent cannot run it. Give the user exact commands to run with `!` |
