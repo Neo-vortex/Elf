@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import math
+import re
 from pathlib import Path
 
 from skidl import SKIDL, TEMPLATE, Part, Pin
@@ -34,6 +35,28 @@ def _num(v: float) -> str:
     return f"{v:.6g}"
 
 
+def package_of(footprint: str) -> str:
+    """The footprint's short name: `0805` from `Capacitor_SMD:C_0805_2012Metric`; other
+    footprints keep their library name (`CP_Elec_8x10`)."""
+    name = footprint.split(":")[-1]
+    m = re.fullmatch(r"[RCL]_(\d{4})_\d+Metric", name)
+    return m.group(1) if m else name
+
+
+def _spaced(value: float, unit: str) -> str:
+    """`47 pF`, `61.9 Ω`, `400 mA` (capacitors from 1 mF up stay in µF)."""
+    if unit == "F" and value >= 1e-3:
+        return f"{value * 1e6:g} µF"
+    m = re.fullmatch(r"([0-9.]+)(\D*)", format_si(value, unit))
+    return f"{m.group(1)} {m.group(2).replace('u', 'µ')}"
+
+
+def _stated(note: str, fallback: str, *keywords: str) -> str:
+    """First keyword (case-insensitive) found in a part's note, else `fallback`."""
+    low = note.lower()
+    return next((k for k in keywords if k.lower() in low), fallback)
+
+
 def resistor(value, footprint: str = "Resistor_SMD:R_0805_2012Metric", mpn: str | None = None,
              torob: str | None = None, tol: float = 0.01, c_par: float = 0.0) -> Part:
     """`c_par` adds the body's parallel capacitance to the SPICE model only (high-value
@@ -41,6 +64,8 @@ def resistor(value, footprint: str = "Resistor_SMD:R_0805_2012Metric", mpn: str 
     ohms = _positive(value)
     p = _tagged(_template("R", "R", ["1", "2"], footprint)(value=format_si(ohms, "Ω")))
     p.mpn, p.torob, p.tol = mpn, torob, tol
+    p.package = package_of(footprint)
+    p.spec = f"{_spaced(ohms, 'Ω')} ±{tol * 100:g} % {p.package}"
 
     def lines(n, k=1.0):
         out = [f"R{p.ref} {n['1']} {n['2']} {_num(ohms * k)}"]
@@ -52,13 +77,27 @@ def resistor(value, footprint: str = "Resistor_SMD:R_0805_2012Metric", mpn: str 
     return p
 
 
+CAP_CLASS_TOL = {"X7R": 0.10, "X5R": 0.10, "tantalum": 0.20, "aluminium electrolytic": 0.20}
+
+
 def capacitor(value, footprint: str = "Capacitor_SMD:C_0805_2012Metric", mpn: str | None = None,
               torob: str | None = None, esr: float = 0.0, tol: float = 0.02, note: str = "",
-              esl: float = 0.0) -> Part:
-    """`esr` and `esl` are SPICE-only parasitics (power filtering at MHz needs the ESL)."""
+              esl: float = 0.0, dielectric: str | None = None, voltage: str | None = None) -> Part:
+    """`esr` and `esl` are SPICE-only parasitics (power filtering at MHz needs the ESL).
+
+    `dielectric` and `voltage` go into the BOM specification. Left out, the dielectric is the one
+    the note names (X7R, X5R, tantalum, aluminium electrolytic; else C0G) and the voltage is the
+    "<n> V" in the note (else 50 V)."""
     farads = _positive(value)
     p = _tagged(_template("C", "C", ["1", "2"], footprint)(value=format_si(farads, "F")))
     p.mpn, p.torob, p.tol, p.bom_note = mpn, torob, tol, note
+    dielectric = dielectric or _stated(note, "C0G", "X7R", "X5R", "tantalum", "aluminium electrolytic")
+    if voltage is None:
+        m = re.search(r"(\d+(?:\.\d+)?) V\b", note)
+        voltage = f"{m.group(1)} V" if m else "50 V"
+    p.package = package_of(footprint)
+    spec_tol = max(tol, CAP_CLASS_TOL.get(dielectric, 0.0))   # X7R/X5R are not sold tighter than ±10 %
+    p.spec = f"{_spaced(farads, 'F')} ±{spec_tol * 100:g} % {dielectric} {p.package} {voltage}"
 
     def lines(n, k=1.0):
         if esr <= 0 and esl <= 0:
@@ -126,7 +165,8 @@ INDUCTOR_C_PAR = 2.5e-12  # SRF: 1 µH ≈ 100 MHz, 10 µH ≈ 32 MHz, 100 µH �
 def inductor(value, q: float, q_freq_hz: float, tol: float = 0.03, trim: float = 1.0,
              mpn: str | None = None, torob: str | None = None, note: str | None = None,
              c_par: float = INDUCTOR_C_PAR, dcr: float | None = None,
-             footprint: str = INDUCTOR_FOOTPRINT) -> Part:
+             footprint: str = INDUCTOR_FOOTPRINT, construction: str | None = None,
+             current: str | None = None) -> Part:
     """L + series R (giving `q` at `q_freq_hz`) with a parallel C for the self-resonance.
 
     `value` is the part to buy. `trim` scales it to what the builder selects with an LCR
@@ -135,6 +175,10 @@ def inductor(value, q: float, q_freq_hz: float, tol: float = 0.03, trim: float =
 
     With `dcr` (chokes that carry DC), the series R is the DC resistance and the Q loss
     becomes a parallel resistor Q·2πf·L instead.
+
+    The BOM specification states the minimum Q at `q_freq_hz`, the minimum self-resonance the
+    model assumes (from `c_par`) and a rated current. `construction` and `current` default to
+    what the footprint and the note say (moulded axial, 100 mA when the note gives none).
     """
     henries = _positive(value)
     if q <= 0 or q_freq_hz <= 0:
@@ -147,6 +191,17 @@ def inductor(value, q: float, q_freq_hz: float, tol: float = 0.03, trim: float =
     p.mpn, p.torob, p.tol, p.dcr = mpn, torob, tol, dcr
     p.torob_match = lambda name: inductor_hit(name, henries)
     p.bom_note = note or f"select to ±{tol * 100:g} % with LCR meter; Q={q:g} assumed"
+    p.package = package_of(footprint)
+    if construction is None:
+        construction = ("axial moulded" if "Axial" in footprint else "wirewound" if "1210" in footprint
+                        else "shielded power" if "12x12" in footprint else "radial drum" if "Radial" in footprint
+                        else "wirewound")
+    if current is None:
+        m = re.search(r"(?:rated|Isat) ≥ ?([\d.]+) ?(m?A)", p.bom_note)
+        current = f"I≥{m.group(1)} {m.group(2)}" if m else "I≥100 mA"
+    srf = 1 / (2 * math.pi * math.sqrt(henries * c_par))
+    p.spec = (f"{_spaced(henries, 'H')} ±{tol * 100:g} % {p.package} {construction}, "
+              f"Q≥{q:g} at {_spaced(q_freq_hz, 'Hz')}, SRF≥{_spaced(math.floor(srf / 1e5) * 1e5, 'Hz')}, {current}")
 
     def lines(n, k=1.0):
         mid = f"{p.ref}_m"
@@ -215,12 +270,16 @@ def diode_pair_bav99(mpn: str = "BAV99", torob: str | None = "BAV99") -> Part:
     return p
 
 
+GDT_MPN = "2038-09-SM-RPLF"   # Bourns 90 V two-electrode SMD tube
+
+
 def gdt(capacitance: float = 1.5e-12, torob: str | None = "گازی برقگیر GDT") -> Part:
     """Gas discharge tube at the connector: an open circuit with its capacitance below the
     breakdown voltage (only small-signal behaviour is simulated). Footprint is project-local,
     created in the layout phase."""
     p = _tagged(_template("GDT", "GDT", ["1", "2"], "NeoRadio:GDT_SMD_2pin")(value="GDT 90V"))
-    p.mpn, p.torob, p.tol = None, torob, 0.0
+    p.mpn, p.torob, p.tol = GDT_MPN, torob, 0.0
+    p.bom_note = "90 V two-electrode SMD gas discharge tube, or equivalent"
     p.spice_lines = lambda n, k=1.0: [f"C{p.ref} {n['1']} {n['2']} {_num(capacitance)}",
                                       f"R{p.ref} {n['1']} {n['2']} {_num(G6K_INSULATION_OHMS)}"]
     return p
@@ -282,10 +341,15 @@ def cs5361(mpn: str = "CS5361-KZZ", torob: str | None = "CS5361") -> Part:
     return p
 
 
-def _ic(value: str, pins: dict[str, str], footprint: str, mpn: str, torob: str | None, nc=()) -> Part:
-    """An IC used for the netlist and BOM only (board-level blocks are not simulated in SPICE)."""
+def _ic(value: str, pins: dict[str, str], footprint: str, mpn: str | None, torob: str | None, nc=(),
+        spec: str | None = None) -> Part:
+    """An IC used for the netlist and BOM only (board-level blocks are not simulated in SPICE).
+    `spec` identifies a part no manufacturer number fits (an LED, a crystal) by its full specification."""
     p = _tagged(_template(value, "U", pins, footprint)(value=value))
     p.mpn, p.torob, p.tol = mpn, torob, 0.0
+    if spec:
+        p.spec = spec
+    p.package = package_of(footprint)
     p.nc_pins = tuple(nc)
     return p
 
@@ -321,7 +385,8 @@ def crystal_25mhz() -> Part:
     tens of ppm)."""
     # pin names must not be digits: SKiDL resolves x["2"] as pad number 2 (a case-ground pad)
     p = _ic("25MHz", {"X1": "1", "GND1": "2", "X2": "3", "GND2": "4"}, "Crystal:Crystal_SMD_3225-4Pin_3.2x2.5mm",
-            "25MHz 3225 CL=8pF", "کریستال 25MHZ 3225")
+            None, "کریستال 25MHZ 3225",
+            spec="25 MHz fundamental crystal, 3.2 × 2.5 mm 4-pad, CL 8 pF, ±20 ppm, ESR ≤ 60 Ω")
     p.torob_match = crystal_25mhz_hit
     p.bom_note = "CL ≤ 10 pF (Si5351 internal load 6/8/10 pF); confirm CL with the seller"
     return p
@@ -351,6 +416,7 @@ def barrel_jack() -> Part:
     """5.5/2.1 mm DC jack (DC-005 style): 1 tip (+), 2 sleeve (−), 3 switch (unused)."""
     p = _ic("DC jack 5.5/2.1", {"TIP": "1", "SLEEVE": "2", "SW": "3"}, "Connector_BarrelJack:BarrelJack_Horizontal",
             "DC-005", "جک آداپتور 5.5 2.1", nc=("SW",))
+    p.bom_note = "5.5 × 2.1 mm horizontal DC jack, or equivalent"
     p.spice_lines = lambda n, k=1.0: []          # the source is the stimulus
     return p
 
@@ -364,7 +430,8 @@ def ptc_resettable() -> Part:
     fault) and drops only ≈ 0.1 V at the board's 0.45 A maximum input, so the board starts at 9 V
     whatever the temperature. A passive: the manufacturer sources it (e.g. a 1812L075/33-class part)."""
     p = _tagged(_template("PTC", "F", ["1", "2"], "Fuse:Fuse_1812_4532Metric")(value="PTC 0.75A 33V"))
-    p.mpn, p.torob, p.tol, p.bom_note = "1812 PTC hold 0.75 A, 33 V", None, 0.3, "resettable fuse, hold 0.75 A, trip 1.5 A, ≥ 33 V"
+    p.mpn, p.torob, p.tol, p.bom_note = "1812L075/33DR", None, 0.3, "resettable fuse, hold 0.75 A, trip 1.5 A, ≥ 33 V, or equivalent"
+    p.package = package_of("Fuse:Fuse_1812_4532Metric")
     p.spice_lines = lambda n, k=1.0: [f"R{p.ref} {n['1']} {n['2']} {PTC_OHM:g}"]
     return p
 
@@ -529,8 +596,8 @@ def oscillator_24m576() -> Part:
     the CS5361's master clock (master mode, MDIV = 1 → 96 kHz double speed). Torob availability to
     confirm (pending, user away 2026-10-13)."""
     p = _ic("24.576MHz", {"EN": "1", "GND": "2", "OUT": "3", "VDD": "4"},
-            "Oscillator:Oscillator_SMD_Abracon_ASE-4Pin_3.2x2.5mm", "24.576MHz 3.3V CMOS XO", "اسیلاتور 24.576")
-    p.bom_note = "on Torob (2026-10-13) as a 2 × 3 mm part: match the footprint to the bought package"
+            "Oscillator:Oscillator_SMD_Abracon_ASE-4Pin_3.2x2.5mm", "ASE-24.576MHZ-LC-T", "اسیلاتور 24.576")
+    p.bom_note = "24.576 MHz 3.3 V CMOS oscillator, 3.2 × 2.5 mm, or equivalent: match the footprint to the bought package"
     return p
 
 
@@ -538,12 +605,14 @@ LED_TOROB = {"green": "LED SMD 0805 سبز", "yellow": "LED SMD 0805 زرد", "r
 
 
 def led_0805(colour: str = "green") -> Part:
-    p = _ic(f"LED {colour}", {"K": "1", "A": "2"}, "LED_SMD:LED_0805_2012Metric", f"LED 0805 {colour}",
-            LED_TOROB.get(colour))
+    p = _ic(f"LED {colour}", {"K": "1", "A": "2"}, "LED_SMD:LED_0805_2012Metric", None, LED_TOROB.get(colour),
+            spec=f"LED {colour} 0805, 20 mA, Vf ≤ 2.4 V")
     return p
 
 
 def button() -> Part:
     """6 × 3.5 mm two-pin SMD tactile switch (CK PTS636-class; on Torob as a 3 × 6 mm SMD switch)."""
-    return _ic("button", {"1": "1", "2": "2"}, "Button_Switch_SMD:SW_Tactile_SPST_NO_Straight_CK_PTS636Sx25SMTRLFS",
-               "6x3.5 mm SMD tactile", "تک سوئیچ SMD")
+    p = _ic("button", {"1": "1", "2": "2"}, "Button_Switch_SMD:SW_Tactile_SPST_NO_Straight_CK_PTS636Sx25SMTRLFS",
+            "PTS636SL25SMTRLFS", "تک سوئیچ SMD")
+    p.bom_note = "6 × 3.5 mm SMD tactile switch, or equivalent"
+    return p

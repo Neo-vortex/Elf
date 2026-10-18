@@ -11,6 +11,7 @@ from pathlib import Path
 
 from skidl import KICAD9
 
+from neohw import ident, population as pop
 from neohw.availability import lookup
 from neohw.tools import tool_path
 
@@ -28,32 +29,66 @@ def _natural(refs: str) -> list:
     return [int(t) if t.isdigit() else t for t in re.split(r"(\d+)", refs.split()[0])]
 
 
-def bom_rows(circuit, data: dict) -> list[dict]:
+def _row_fields(part, population: str) -> tuple[str, str, str, str | None, object]:
+    """(value, ident, note, torob key, torob matcher) of a fitted part in a population."""
+    v = pop.variant(part, population)
+    if v is None:
+        return (part.value, ident.of(part, population), getattr(part, "bom_note", ""),
+                getattr(part, "torob", None), getattr(part, "torob_match", None))
+    return v.value, ident.of(part, population), v.note, v.torob, v.torob_match
+
+
+def bom_rows(circuit, data: dict, population: str = pop.DEFAULT) -> list[dict]:
+    """One row per (value, package, ident) of the parts fitted in `population`. The Iranian
+    population also gets the Torob availability of each row."""
     groups: dict[tuple, dict] = {}
     for part in circuit.parts:
-        mpn = getattr(part, "mpn", None) or ""
-        key = (part.value, part.footprint, mpn)
-        availability = lookup(getattr(part, "torob", None), data, getattr(part, "torob_match", None))
-        row = groups.setdefault(key, {"refs": [], "value": part.value, "footprint": part.footprint,
-                                      "mpn": mpn, "qty": 0, "availability": availability,
-                                      "note": getattr(part, "bom_note", "")})
+        if not pop.fitted(part, population):
+            continue
+        value, ident_, note, torob, match = _row_fields(part, population)
+        package = getattr(part, "package", None) or part.footprint.split(":")[-1]
+        row = groups.setdefault((value, package, ident_), {
+            "refs": [], "qty": 0, "value": value, "package": package, "ident": ident_, "notes": []})
+        if population == "iran" and "availability" not in row:
+            row["availability"] = lookup(torob, data, match)
         row["refs"].append(part.ref)
         row["qty"] += 1
+        if note and note not in row["notes"]:
+            row["notes"].append(note)
     rows = list(groups.values())
     for row in rows:
         row["refs"] = " ".join(sorted(row["refs"]))
+        row["note"] = "; ".join(row.pop("notes"))
     return sorted(rows, key=lambda r: _natural(r["refs"]))
 
 
-def write_bom(circuit, path: Path, data: dict) -> Path:
+def fitted_rows(circuit) -> list[dict]:
+    """Per ref, what is fitted in each population (`—` where nothing is)."""
+    rows = []
+    for part in sorted(circuit.parts, key=lambda p: _natural(p.ref)):
+        rows.append({"ref": part.ref, **{
+            population: ident.of(part, population) if pop.fitted(part, population) else "—"
+            for population in pop.POPULATIONS}})
+    return rows
+
+
+def _write_csv(path: Path, fields: list[str], rows: list[dict]) -> Path:
     path = Path(path)
     path.parent.mkdir(parents=True, exist_ok=True)
-    rows = bom_rows(circuit, data)
     with path.open("w", newline="", encoding="utf-8") as f:
-        writer = csv.DictWriter(f, fieldnames=["refs", "value", "footprint", "mpn", "qty", "availability", "note"])
+        writer = csv.DictWriter(f, fieldnames=fields)
         writer.writeheader()
         writer.writerows(rows)
     return path
+
+
+def write_bom(circuit, path: Path, data: dict, population: str = pop.DEFAULT) -> Path:
+    fields = ["refs", "qty", "value", "package", "ident", "note"] + (["availability"] if population == "iran" else [])
+    return _write_csv(path, fields, bom_rows(circuit, data, population))
+
+
+def write_fitted(circuit, path: Path) -> Path:
+    return _write_csv(path, ["ref", *pop.POPULATIONS], fitted_rows(circuit))
 
 
 def svg_diagram(circuit, path: Path) -> Path:

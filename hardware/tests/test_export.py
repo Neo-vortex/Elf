@@ -24,11 +24,12 @@ def small():
 
 
 def test_bom_groups_identical_parts():
-    rows = export.bom_rows(small(), {"G6K-2F": {"ok": True, "hits": [{"name": "G6K-2F", "instock": True}]}})
+    rows = export.bom_rows(small(), {"G6K-2F": {"ok": True, "hits": [{"name": "G6K-2F", "instock": True}]}}, "iran")
     by_value = {r["value"]: r for r in rows}
     assert by_value["61.9Ω"]["qty"] == 2
     assert by_value["61.9Ω"]["availability"] == "available"
     assert by_value["10nF"]["availability"] == "unknown"
+    assert "availability" not in export.bom_rows(small(), {})[0]
 
 
 def test_write_bom_csv(tmp_path):
@@ -60,3 +61,20 @@ def test_kicad_netlist_tags_are_the_refs(tmp_path):
     text = export.kicad_netlist(small(), tmp_path / "block.net").read_text()
     comps = re.findall(r'\(ref "([^"]+)"\).*?\(name "SKiDL Tag"\) "([^"]+)"', text, re.S)
     assert len(comps) == 3 and all(ref == tag for ref, tag in comps)
+
+
+def test_bom_is_per_population_and_unfitted_parts_are_left_out():
+    from neohw import population as pop
+    ckt = Circuit()
+    with ckt:
+        a, b = Net("a"), Net("b")
+        r1, r2 = parts.resistor("1k"), parts.resistor("2k")
+        for r in (r1, r2):
+            r[1] += a
+            r[2] += b
+        pop.only(r2, "iran")
+    china = export.bom_rows(ckt, {}, "china")
+    iran = export.bom_rows(ckt, {}, "iran")
+    assert [r["value"] for r in china] == ["1kΩ"] and {r["value"] for r in iran} == {"1kΩ", "2kΩ"}
+    assert {"refs", "qty", "value", "package", "ident", "note"} <= set(china[0])
+    assert [r["china"] for r in export.fitted_rows(ckt)] == [r1.spec, "—"]

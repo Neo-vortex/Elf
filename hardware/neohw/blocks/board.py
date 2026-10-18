@@ -104,7 +104,8 @@ def build() -> Block:
             c[2] += adc["GND"].net
         for value in ("10u", "100n"):
             for rail in (pw.ports["v3d"], pw.ports["v5a"]):
-                c = parts.capacitor(value, note="CS5361 supply decoupling")
+                c = parts.capacitor(value, note="CS5361 supply decoupling",
+                                    dielectric="X5R" if value == "10u" else "X7R")
                 c[1] += rail
                 c[2] += adc["GND"].net
         # bias-T feed and the USB supply

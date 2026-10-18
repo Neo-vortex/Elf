@@ -5,7 +5,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from neohw import availability, charfile, export
+from neohw import availability, charfile, export, ident
 from neohw.blocks import board
 from neohw.checks import BlockResult, CheckResult
 from neohw.spice import _canonical
@@ -60,7 +60,9 @@ def run(out_dir: Path, char_dir: Path) -> BlockResult:
     f = findings(b.circuit)
     data = availability.load()
     rows = export.bom_rows(b.circuit, data)
-    semis = [r for r in rows if r["refs"].split()[0].rstrip("0123456789") in ("U", "Q", "D", "K", "X", "GDT")]
+    iran_rows = export.bom_rows(b.circuit, data, "iran")
+    bad_ident = ident.violations(b.circuit)
+    semis = [r for r in iran_rows if r["refs"].split()[0].rstrip("0123456789") in ("U", "Q", "D", "K", "X", "GDT")]
     unconfirmed = sorted(r["value"] for r in semis if r["availability"] != "available")
     checks = [
         CheckResult("parts", len(b.circuit.parts), "report", True, ""),
@@ -68,15 +70,18 @@ def run(out_dir: Path, char_dir: Path) -> BlockResult:
         CheckResult("open_required_pins", len(f["open_pins"]), "= 0", not f["open_pins"], ""),
         CheckResult("supply_rail_errors", len(f["rail_errors"]), "= 0", not f["rail_errors"], ""),
         CheckResult("missing_footprints", len(f["missing_footprints"]), "= 0", not f["missing_footprints"], ""),
+        CheckResult("ident_violations", len(bad_ident), "= 0", not bad_ident, "; ".join(bad_ident[:5])),
         CheckResult("semiconductors_unconfirmed_on_torob", len(unconfirmed), "report (survey pending)", True, ""),
     ]
     result = BlockResult("board", checks)
     result.artefacts = {
         "kicad_netlist": export.kicad_netlist(b.circuit, out_dir / "board.net"),
-        "bom": export.write_bom(b.circuit, out_dir / "board_bom.csv", data),
+        "bom": export.write_bom(b.circuit, out_dir / "board_bom_china.csv", data, "china"),
+        "bom_iran": export.write_bom(b.circuit, out_dir / "board_bom_iran.csv", data, "iran"),
+        "fitted": export.write_fitted(b.circuit, out_dir / "board_fitted.csv"),
         "characterisation": charfile.write(char_dir / "board.json", "board", "pass" if result.passed else "fail", {
             "parts_by_block": {k: len(v) for k, v in b.ports["parts_by_block"].items()},
-            "bom_lines": len(rows), "unconfirmed_semiconductors": unconfirmed, **f,
+            "bom_lines": len(rows), "bom_lines_iran": len(iran_rows), "ident_violations": bad_ident, "unconfirmed_semiconductors": unconfirmed, **f,
             "checks": [c.__dict__ for c in checks]}),
     }
     return result

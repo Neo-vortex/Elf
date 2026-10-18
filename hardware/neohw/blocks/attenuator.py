@@ -22,13 +22,13 @@ def build(state: str, ckt: Circuit | None = None) -> Block:
         k["NC2"] += bypass
         k["NO1"] += pad_a
         k["NO2"] += pad_b
-        r_a = parts.resistor(SHUNT_OHMS, mpn="RC0805FR-0761R9L")
+        r_a = parts.resistor(SHUNT_OHMS)
         r_a[1] += pad_a
         r_a[2] += gnd
-        r_s = parts.resistor(SERIES_OHMS, mpn="RC0805FR-07249RL")
+        r_s = parts.resistor(SERIES_OHMS)
         r_s[1] += pad_a
         r_s[2] += pad_b
-        r_b = parts.resistor(SHUNT_OHMS, mpn="RC0805FR-0761R9L")
+        r_b = parts.resistor(SHUNT_OHMS)
         r_b[1] += pad_b
         r_b[2] += gnd
     return Block("attenuator", ckt, {"rf_in": rf_in, "rf_out": rf_out})

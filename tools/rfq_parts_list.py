@@ -15,6 +15,7 @@ from openpyxl.styles import Font, PatternFill
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "hardware"))
 
+from neohw import ident  # noqa: E402
 from neohw.blocks import board  # noqa: E402
 
 FA = {
@@ -70,7 +71,7 @@ def main() -> Path:
     groups = defaultdict(list)
     for p in b.circuit.parts:
         pre = p.ref.rstrip("0123456789")
-        groups[(pre, p.value, getattr(p, "mpn", "") or "", p.footprint.split(":")[-1], getattr(p, "bom_note", "") or "")].append(p.ref)
+        groups[(pre, p.value, ident.of(p), p.footprint.split(":")[-1], getattr(p, "bom_note", "") or "")].append(p.ref)
     rows = []
     for (pre, val, mpn, fp, note), refs in groups.items():
         cat = SPECIAL.get(val) or ("3 Diodes / LEDs" if val.startswith("LED") else GROUP.get(pre, "1 ICs"))
