@@ -5,7 +5,7 @@ from pathlib import Path
 
 import numpy as np
 
-from neohw import availability, charfile, export
+from neohw import availability, charfile, export, population
 from neohw.blocks import bpf, bpf_bank
 from neohw.checks import BlockResult, CheckResult, db
 from neohw.ngspice import run_decks
@@ -51,9 +51,10 @@ def _passes(index: int, il: float, rl: float, rej: float) -> bool:
             and (not has_rejection_target(index) or rej >= REJ_MIN_DB))
 
 
-def _variation(circuit, rng) -> dict[str, float]:
-    return {p.ref: 1 + rng.uniform(-p.tol, p.tol) for p in sorted(circuit.parts, key=lambda p: p.ref)
-            if getattr(p, "tol", 0) > 0}
+def _variation(circuit, rng, pop: str = population.DEFAULT) -> dict[str, float]:
+    return {p.ref: 1 + rng.uniform(-population.tol(p, pop), population.tol(p, pop))
+            for p in sorted(circuit.parts, key=lambda p: p.ref)
+            if population.fitted(p, pop) and population.tol(p, pop) > 0}
 
 
 def _ports(blk) -> list[Port]:

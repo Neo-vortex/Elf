@@ -6,6 +6,7 @@ import re
 from dataclasses import dataclass, field
 from pathlib import Path
 
+from neohw import population as pops
 from neohw.ngspice import run_deck
 from neohw.rawfile import Plot
 
@@ -182,14 +183,17 @@ def node_name(net) -> str:
     return re.sub(r"[^a-z0-9_]", "_", net.name.lower())
 
 
-def _check_nets(circuit, ports: list[Port], exempt: frozenset[str] = frozenset()) -> None:
+def _check_nets(circuit, ports: list[Port], exempt: frozenset[str] = frozenset(),
+                population: str = pops.DEFAULT) -> None:
     """Reject what KiCad and SPICE would read differently, or a part cut out of the circuit.
-    Nets driven by a port, or whose node is in `exempt` (cascade interfaces), may have one pin."""
+    Only parts fitted in `population` count. Nets driven by a port, or whose node is in `exempt` (cascade interfaces), may have one pin."""
     port_nets = {id(_canonical(n)) for p in ports for n in (p.nets if hasattr(p, "nets") else (p.net,))
                  if not isinstance(n, str)}
     pins_on: dict[int, int] = {}
     nets: dict[int, object] = {}
     for part in circuit.parts:
+        if not pops.fitted(part, population):
+            continue
         for pin in part.pins:
             if pin.net is not None and pin.name not in getattr(part, "nc_pins", ()):
                 net = _canonical(pin.net)
@@ -215,10 +219,13 @@ def _models(circuits) -> list[str]:
     return models
 
 
-def _part_lines(circuit, variation: dict, overrides: dict, node=lambda n: n) -> list[str]:
-    """Element lines of every part; `node` maps each net's node name (cascade prefixes)."""
+def _part_lines(circuit, variation: dict, overrides: dict, node=lambda n: n,
+                population: str = pops.DEFAULT) -> list[str]:
+    """Element lines of every part fitted in `population`; `node` maps each net's node name (cascade prefixes)."""
     lines = []
     for part in circuit.parts:
+        if not pops.fitted(part, population):
+            continue
         if not hasattr(part, "spice_lines"):
             raise SpiceError(f"{part.ref} has no SPICE model")
         nodes = {}
@@ -232,7 +239,9 @@ def _part_lines(circuit, variation: dict, overrides: dict, node=lambda n: n) -> 
         if part.ref in overrides:
             lines.extend(overrides[part.ref](nodes))
         else:
-            lines.extend(part.spice_lines(nodes, variation.get(part.ref, 1.0)))
+            var = pops.variant(part, population)
+            model = var.spice_lines if var is not None and var.spice_lines else part.spice_lines
+            lines.extend(model(nodes, variation.get(part.ref, 1.0)))
     return lines
 
 
@@ -252,12 +261,13 @@ def _control(ports, analyses, extra_lines) -> tuple[list[str], list[str]]:
 
 
 def to_deck(circuit, title: str, ports: list[Port], analyses: list, extra_lines=(),
-            variation: dict[str, float] | None = None, overrides: dict | None = None) -> tuple[str, list[str]]:
+            variation: dict[str, float] | None = None, overrides: dict | None = None,
+            population: str = pops.DEFAULT) -> tuple[str, list[str]]:
     """`variation` maps a part ref to a value multiplier (Monte Carlo); missing refs use 1.
     `overrides` maps a part ref to a function of its pin -> node map that returns the SPICE
-    lines used instead of the part's own model (a linear stand-in for one analysis)."""
-    lines = [title, *_models([circuit]), *_part_lines(circuit, variation or {}, overrides or {})]
-    _check_nets(circuit, ports)
+    lines used instead of the part's own model (a linear stand-in for one analysis). `population` selects the parts fitted and their variants."""
+    lines = [title, *_models([circuit]), *_part_lines(circuit, variation or {}, overrides or {}, population=population)]
+    _check_nets(circuit, ports, population=population)
     control, raws = _control(ports, analyses, extra_lines)
     return "\n".join(lines + control), raws
 
@@ -272,7 +282,8 @@ class Stage:
     joins: dict = field(default_factory=dict)
 
 
-def cascade_to_deck(stages: list[Stage], title: str, ports: list, analyses: list, extra_lines=()) -> tuple[str, list[str]]:
+def cascade_to_deck(stages: list[Stage], title: str, ports: list, analyses: list, extra_lines=(),
+                    population: str = pops.DEFAULT) -> tuple[str, list[str]]:
     """Several blocks in one deck (a receive chain), each simulated with its own models."""
     tags = [s.tag for s in stages]
     if len(set(tags)) != len(tags):
@@ -283,14 +294,15 @@ def cascade_to_deck(stages: list[Stage], title: str, ports: list, analyses: list
         circuit = st.block.circuit
         # a net may have one pin when it is an interface or a port drives its (mapped) node
         mapped = {node_name(n): st.joins.get(node_name(n), f"{st.tag}_{node_name(n)}") for n in circuit.get_nets()}
-        _check_nets(circuit, [], exempt=frozenset(st.joins) | {n for n, m in mapped.items() if m in driven})
+        _check_nets(circuit, [], exempt=frozenset(st.joins) | {n for n, m in mapped.items() if m in driven},
+                    population=population)
         renamed = []
         try:
             for part in circuit.parts:
                 renamed.append((part, part.ref))
                 part.ref = f"{part.ref}_{st.tag}"
             node = lambda n, st=st: "0" if n == "0" else st.joins.get(n, f"{st.tag}_{n}")
-            lines += _part_lines(circuit, {}, {}, node)
+            lines += _part_lines(circuit, {}, {}, node, population)
         finally:
             for part, ref in renamed:
                 part.ref = ref
