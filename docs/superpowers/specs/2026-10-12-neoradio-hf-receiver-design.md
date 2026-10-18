@@ -1,5 +1,7 @@
 # NeoRadio — HF SDR Receiver (Rev A) — Design Spec
 
+> **Superseded in part (2026-10-18):** see `2026-10-18-rev-a-china-fab-design.md` §0. Chinese fab and assembly with Iranian parts as fallbacks (dual population), STM32F411 instead of the ESP32-S3, straight to Rev A (no Rev 0 coupon), 4-layer fab package. Decisions below that conflict with it are historical.
+
 - **Date:** 2026-10-12
 - **Status:** Draft for review
 - **Scope of this spec:** receive-only HF board v1, its ESP32-S3 firmware, the Raspberry Pi software, and the simulation framework that must validate all of it before the board is ordered.

@@ -1,5 +1,7 @@
 # NeoRadio Phase 3: Board Circuits as Code (Design Spec)
 
+> **Superseded in part (2026-10-18):** see `2026-10-18-rev-a-china-fab-design.md` §0. Chinese fab and assembly with Iranian parts as fallbacks (dual population), STM32F411 instead of the ESP32-S3, straight to Rev A (no Rev 0 coupon), 4-layer fab package. Decisions below that conflict with it are historical.
+
 - **Date:** 2026-10-12
 - **Status:** Draft, written for autonomous execution (user instruction: work phase by phase)
 - **Parent spec:** `2026-10-12-neoradio-hf-receiver-design.md` (§5 LO, §6 controller and USB, §7 power, §10 parts)

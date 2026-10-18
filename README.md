@@ -151,10 +151,11 @@ make sim       # digital twin scenarios and FT8 sweep; report in build/sim/repor
 
 ### Board
 
-- [ ] Rev 0 test board layout: front end, mixer and baseband
-- [ ] Electromagnetic simulation of the layout
-- [ ] Rev A full schematic
-- [ ] Rev A layout and post-layout verification
+- [ ] Rev A parts for a Chinese board maker, with Iranian parts as fallbacks on the same PCB
+      (spec `docs/superpowers/specs/2026-10-18-rev-a-china-fab-design.md`)
+- [ ] Rev A controller: STM32F411 with USB DFU firmware update and a BOOT switch
+- [ ] Rev A 4-layer layout, electromagnetic simulation and post-layout verification
+- [ ] Fab package: Gerber, drill, pick-and-place and BOMs
 
 ### Firmware
 
