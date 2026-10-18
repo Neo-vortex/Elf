@@ -136,6 +136,27 @@ Every stage of the layout and its verification is recorded as a GIF and **commit
 
 Size: each GIF at most 8 MB (GitHub renders up to 10 MB), achieved with ffmpeg's palettegen/paletteuse and frame-rate or size reduction; a test fails if one is larger. Raw frames and recordings stay in `build/media/` (not committed).
 
+## 7b. Documentation site on GitHub Pages (user request 2026-10-18)
+
+The repository gets a documentation site that explains the whole project to a reader who is new to it: every board block, every component choice and every technique, with the simulation results and the GIFs of §7a.
+
+- **Tool:** MkDocs with the Material theme (Markdown sources in `site/docs/`, config `site/mkdocs.yml`; search, Mermaid diagrams, maths, image and GIF embedding). Installed through the PyPI mirror (§8).
+- **Published by GitHub Actions:** `.github/workflows/pages.yml` builds the site on every push to `main` and deploys it to GitHub Pages (Pages source "GitHub Actions"; switching it on in the repository settings is confirmed with the user first). `make site` builds it locally into `build/site/`.
+- **Content:**
+
+| Section | What it explains |
+|---|---|
+| Overview | What Elf is, the signal chain from antenna to Linux host, block diagram |
+| Board blocks (one page each) | Bias-T and protection, attenuator, band-pass filter bank, preamp, Tayloe mixer and baseband, ADC, clock and LO path, controller and USB, relay drive, power, monitoring. Per block: what it does, the circuit, why each part was chosen (China primary and Iranian fallback), its simulation targets and results, plots |
+| Techniques | Quadrature sampling detection, Chebyshev filter synthesis, Si5351 quadrature by phase offset and the ÷4 path, Monte Carlo over tolerances, dual population, circuits as code (SKiDL to SPICE and KiCad), layout as code, grounded coplanar lines, EM simulation with openEMS, the digital twin, the virtual board over USB/IP |
+| Layout and manufacturing | Stackup, floor plan, routing, the GIFs, the 3D board, the fab package and how to order |
+| Firmware and host software | Firmware structure, USB audio and CAT, DFU update and the BOOT switch, the receiver software |
+| Reports | The `make hw` and `make sim` HTML reports, published with the site |
+| Building it yourself | Tool installation (the §8 list), `make` targets |
+
+- **Kept current:** each plan from 5.1 on adds or updates the pages for what it changed, in the same commit series. A test checks that every block in `hardware/neohw/blocks/` has a page and that every GIF in `docs/media/rev-a/` is referenced by a page.
+- **The phase 3 spec's three.js board viewer** becomes a page of this site (plan 5.4).
+
 ## 8. Tooling on this machine (installed 2026-10-18)
 
 Everything below survives reboots. Nothing project-related lives under `/tmp` (session scratchpads there are wiped; that is how the earlier Freerouting install and its layout files were lost).
@@ -154,6 +175,7 @@ Everything below survives reboots. Nothing project-related lives under `/tmp` (s
 
 ## 9. Plans
 
+0. **5.0 Documentation site:** MkDocs Material skeleton, the pages for what exists today (overview, every current block, techniques), `make site`, the Pages workflow. Later plans add their pages.
 1. **5.1 Parts and dual population:** start from branch `china-parts` (§2a), drop what §2a excludes; MPN/LCSC fields in `parts.py` and `availability.py` (Torob stays as the fallback source); INA180, ADP7118, real inductors and capacitors; alternate and parallel pads; both populations in `make hw`; README sourcing statement updated.
 2. **5.2 STM32F411 controller:** controller block, BOOT switch, RESET, pin map, board-check rules, firmware target and DFU jump; README and phase 4 spec updated.
 3. **5.3 Layout:** openEMS install, placement, RF routing, pours, Freerouting, DRC, netlist comparison, EM checks.
