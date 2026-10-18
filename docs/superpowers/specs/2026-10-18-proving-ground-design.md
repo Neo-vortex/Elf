@@ -10,7 +10,7 @@
 | Topic | Decision |
 |---|---|
 | Environments | **City apartment** and **suburban house** (ITU-R P.372 "city" and "residential" man-made noise). Quiet rural and "next to a broadcast site" are out of scope |
-| Antennas | **Active mini-whip on a balcony** (fed by Elf's bias-T) and **random wire / end-fed** from a window (9:1 unun) |
+| Antennas | **Active mini-whip on a balcony** (our own design, §9; fed by Elf's 5 V / 12 V bias-T) and **random wire / end-fed** from a window (9:1 unun) |
 | Missions | **FT8/WSPR, CW, SSB voice, AM broadcast**: each an end-to-end pass/fail test scored on decoded output |
 | Compute | **Overnight sign-off** (8–12 h, full campaign) plus a **10–20 min daily subset** in `make sim`; heavy EM results cached like characterisation files |
 | Approach | **Synthetic, calibrated environments gate fab**; real KiwiSDR city recordings run as a **non-gating realism cross-check** |
@@ -139,6 +139,24 @@ No model is trusted before it passes its own check:
 - every scorer gives its best score on a clean known signal and its worst on noise alone;
 - the ideal receiver meets each mission's absolute targets (otherwise the scenario, not Elf, is wrong).
 
-## 9. Out of scope
+## 9. Active antenna: our own mini-whip and a 5 V / 12 V bias-T (user, 2026-10-18)
+
+The user will use a remote mini-whip. Its amplifier sits at the antenna (a coax run in between would load the whip's ≈ 10–20 pF source by ≈ 100 pF/m), so it is a **second board of our own design**, ordered with Elf; Elf feeds it over the coax.
+
+**Elf side (Rev A circuit change, plan 5.1b, after 5.1 and before 5.2):**
+- **Bias-T slide switch OFF / 5 V / 12 V** beside the BNC (silkscreen). The switch is the master: in OFF the feed is never powered. The firmware keeps its enable, current sense and short-circuit cut-off as a safety layer, reads the switch position (one GPIO/ADC line) and reports it in telemetry.
+- **12 V:** a boost converter 5V_MAIN → 12 V, enabled only in the 12 V position (works on USB power too); fixed switching frequency, LC π output filter, layout keep-out. PG-5 must show its harmonics below the band noise at the antenna input.
+- **12 V current limit:** the SY6280 is a 5.5 V part; the 12 V path gets its own current-limited switch rated ≥ 15 V (eFuse class). Current is sensed through the existing shunt and INA180 / mirror; the sense tables gain a 12 V calibration.
+- **Budget:** a 12 V mini-whip at 60–80 mA costs ≈ 0.2–0.25 A at 5 V; on USB it needs a USB-C source offering 1.5 A, or the DC jack (as the README already says for active antennas).
+- **DC input range 9–20 V** (user, 2026-10-18; was 9–30 V). The TVS is re-chosen for 20 V (≈ 22–24 V stand-off instead of SMBJ30A); done in plan 5.1 Task 5 with the rest of the power block.
+
+**Mini-whip board (plan 6.6; PCB in the plan 5.3 layout flow; 2 layers):**
+- Probe: copper plate ≈ 3 × 5 cm on the PCB, in a plastic tube on a 1.5 m pole.
+- JFET high-impedance buffer (J310 / BF862 class) → push-pull emitter follower; designed for OIP3 ≥ +30 dBm at 12 V; also works at 5 V with less headroom (both voltages are simulated and reported).
+- MW high-pass ≈ 1.8 MHz, selectable by a solder jumper; the proving ground decides the default (MW reception versus overload from the local MW station).
+- GDT and diode clamp at the probe; ferrite common-mode choke at the coax feed point.
+- Same flow as Elf: SKiDL circuit, SPICE checks (gain, noise, IP3, stability, both supply voltages, both populations where parts differ), openEMS probe model inside the PG-4 balcony scene, its own BOMs and fab files inside the fab package.
+
+## 10. Out of scope
 
 Quiet rural and broadcast-site environments; transmit; antennas other than the two of §0; measuring the real board (after fab); real-time operation of the campaign.

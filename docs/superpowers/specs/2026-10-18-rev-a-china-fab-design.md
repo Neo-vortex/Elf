@@ -20,6 +20,8 @@
 | Buck converter | LM2576HV (plan 3.4) | **LM2576HV kept** (user, 2026-10-18): already simulated, sold in both countries. The branch's TPS54360 is not used |
 | Reference clock | 25 MHz crystal | **26 MHz TCXO** (KDS 1XXD26000MAA, ±1.5 ppm, from the branch); Iranian fallback a 26 MHz crystal on shared pads, so the LO planner sees 26 MHz either way |
 | Relay drivers | 74HC595 + ULN2803 | **Kept.** The branch's TPIC6C595 + AHCT125 is not used (coil margin is already +0.42 V; a 3.3 V controller would need the level shifter) |
+| DC input | 9–30 V | **9–20 V** (user, 2026-10-18); TVS re-chosen in plan 5.1 Task 5 |
+| Bias-T | 5 V, firmware-switched | **Slide switch OFF / 5 V / 12 V** (12 V from a boost converter), firmware cut-off kept; plus our own mini-whip board (plan 5.1b and 6.6, proving-ground spec §9) |
 | Final deliverable | — | **Fab package:** Gerber X2, Excellon drill, IPC-D-356, CPL, both BOMs, fab notes, STEP, renders (`make fab`) |
 
 ## 1. Goal and success criteria
