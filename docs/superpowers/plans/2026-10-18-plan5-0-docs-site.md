@@ -469,7 +469,7 @@ def test_glossary_defines_the_terms_the_site_uses():
     gloss = (SITE / "docs/glossary.md").read_text(encoding="utf-8")
     terms = ("HF", "SDR", "I/Q", "LO", "SSB", "CW", "FT8", "Tayloe", "band-pass", "Chebyshev", "Monte Carlo",
              "S-parameters", "noise figure", "IP3", "image rejection", "UAC2", "CAT", "DFU", "SPICE", "netlist",
-             "Gerber", "stackup", "GCPW", "FDTD", "bias-T", "LDO", "buck converter", "BOM", "LCSC", "Torob")
+             "Gerber", "stackup", "GCPW", "FDTD", "bias-T", "LDO", "buck converter", "BOM", "MPN", "Torob")
     missing = [t for t in terms if f"**{t}**" not in gloss]
     assert not missing, f"glossary lacks {missing}"
 
@@ -538,7 +538,7 @@ Expected: FAIL (pages hold only a heading).
 Sections per page:
 - `## What it does`: two to four sentences, its place in the signal chain.
 - `## Circuit`: the topology in words, explained component by component for a reader new to it, with the block's `schemdraw` drawing from Task 2a (`![…](../img/circuits/<name>.svg)`) and, where it helps, a Mermaid diagram.
-- `## Parts`: a table, one row per significant part: part, role, why chosen, China primary (MPN, LCSC if known), Iranian fallback. Parts the Rev A spec changes but plan 5.1 has not yet implemented are marked "planned (plan 5.1)".
+- `## Parts`: a table, one row per significant part: part, role, why chosen, China primary and Iranian fallback, each identified generically (MPN or specification, spec §2b). Parts the Rev A spec changes but plan 5.1 has not yet implemented are marked "planned (plan 5.1)".
 - `## Verification`: the targets in words, then `See the [results](../results/<block>.md).`
 - Optional `## Notes`: decisions and what was rejected and why (from the specs' amendment notes).
 

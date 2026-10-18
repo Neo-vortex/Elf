@@ -10,8 +10,8 @@
 
 | Topic | Before | Now |
 |---|---|---|
-| Fab and assembly | Iranian fab (Aryamadar, Maher PCB), parts from Torob | **A Chinese board maker** (JLCPCB or PCBWay, not chosen yet) builds and assembles the board from its own parts library |
-| Sourcing rule | Every BOM line on Torob | **Dual population:** every line has a China primary (MPN + LCSC number) and an Iranian fallback (Torob key). One PCB accepts either part on every line, and both populations must pass every simulation target |
+| Fab and assembly | Iranian fab (Aryamadar, Maher PCB), parts from Torob | **A Chinese board maker** builds and assembles the board (which one is not chosen, and **nothing in the design depends on it**) |
+| Sourcing rule | Every BOM line on Torob | **Dual population:** every line has a China primary and an Iranian fallback, each identified **generically** (§2b), never by a distributor's catalogue number. One PCB accepts either part on every line, and both populations must pass every simulation target |
 | Scope of circuit changes | — | **Fix the Torob workarounds only.** The architecture, GPIO-level functions, relay chain, I2C map, LO plan and 96 kHz bandwidth stay |
 | Controller | ESP32-S3-WROOM-1 N16R8 | **STM32F411CEU6** (no radio, better ADC, ROM USB DFU, buyable in China and Iran) |
 | Firmware update | ESP32 USB download mode | **ROM USB DFU**, entered by a CAT command or by a **BOOT/RUN slide switch** (unbrickable); plus a **RESET** button |
@@ -31,29 +31,39 @@ Rev A succeeds (before ordering) when:
 3. `make fw-test` and the virtual-board CW test still pass, and the STM32F411 target builds.
 4. The layout passes KiCad DRC with zero errors against the fab rule set, the PCB nets equal the SKiDL nets, and the openEMS line and coupling checks meet their targets.
 5. `make fab` produces the package of §7 and its own checks pass.
-6. Every BOM-China line is in stock at LCSC, and every BOM-Iran line has a Torob result or is marked as China-only.
+6. Every BOM line identifies its part generically (§2b): a manufacturer part number for active parts, relays, crystals, oscillators and connectors; a full specification for passives. Every BOM-Iran line has a Torob result or is marked as China-only (the Torob check is how the Iranian fallback is defined; it does not appear in the BOM itself).
 
 ## 2. Part changes (approved section 1)
 
 | Block | Now (Torob workaround) | China primary | Iranian fallback | Same footprint? |
 |---|---|---|---|---|
-| Relays, CS5361, LM2576HV, Si5351C, FST3253, LM4562, logic, connectors | — | same part, MPN pinned + LCSC number | same part | **Yes** |
-| Relays (detail) | G6K-2F 5 V | **G6K-2F-Y 5 VDC** (LCSC C2982926 per the branch survey, or C47190 for the -TR reel). Omron marks it "not recommended for new designs"; **G6KU-2F-Y** is recorded as the successor | G6K-2F 5 V | Yes. Coil margin is already +0.42 V at 50 °C on the 5.5 V main rail (`controller.json`, `relay_coil_margin_v`), so no driver change |
-| Bias-T current sense | BC857B current mirror (0.63 V zero, 1.3 % drift, table in firmware) | **INA180A2** (gain 50, SOT-23-5, LCSC C192764) across the existing 1 Ω shunt | the BC857B mirror (today's circuit) | **No:** both circuits on the board, one fitted. The firmware detects which: with the feed off the mirror reads ≈ 0.63 V, the INA180 ≈ 0 V |
-| 5V_A, 3V3_RF LDOs | MIC5205 | **TPS7A2050 / TPS7A2033** (SOT-23-5, 300 mA, ultra-low noise; C2864504 / C2862740, from the branch survey). ADP7118 was the first candidate; TPS7A20 is cheaper and quieter | MIC5205 | Pins 1, 2, 3, 5 expected to match (IN, GND, EN, OUT); pin 4 differs (MIC5205 BYP, 470 pF to GND). Two small pads on pin 4, one fitted. **Confirm both pinouts from the datasheets before freeze** |
-| 3V3_D LDO | TLV74033 | **TLV75733PDBV** (1 A, C485517, from the branch) | TLV74033 | Both SOT-23-5 TI LDOs; confirm the pinouts match |
-| Si5351C reference | 25 MHz crystal | **26 MHz TCXO** KDS 1XXD26000MAA (C135223), clipped sine into CLKIN or XA as the Si5351C datasheet requires | 26 MHz crystal | **No:** shared pads (TCXO footprint with crystal pads, one fitted). Firmware: reference 26 MHz either way; input selection (CLKIN vs XTAL) is a firmware setting detected or configured at first boot (plan 5.1 decides) |
+| Relays, CS5361, LM2576HV, Si5351C, FST3253, LM4562, logic, connectors | — | same part, MPN pinned | same part | **Yes** |
+| Relays (detail) | G6K-2F 5 V | **Omron G6K-2F-Y DC5**. Omron marks it "not recommended for new designs"; **G6KU-2F-Y** is recorded as the successor | G6K-2F 5 V | Yes. Coil margin is already +0.42 V at 50 °C on the 5.5 V main rail (`controller.json`, `relay_coil_margin_v`), so no driver change |
+| Bias-T current sense | BC857B current mirror (0.63 V zero, 1.3 % drift, table in firmware) | **INA180A2IDBVR** (gain 50, SOT-23-5) across the existing 1 Ω shunt | the BC857B mirror (today's circuit) | **No:** both circuits on the board, one fitted. The firmware detects which: with the feed off the mirror reads ≈ 0.63 V, the INA180 ≈ 0 V |
+| 5V_A, 3V3_RF LDOs | MIC5205 | **TPS7A2050 / TPS7A2033** (TPS7A2050PDBVR / TPS7A2033PDBVR, SOT-23-5, 300 mA, ultra-low noise; from the branch's survey). ADP7118 was the first candidate; TPS7A20 is cheaper and quieter | MIC5205 | Pins 1, 2, 3, 5 expected to match (IN, GND, EN, OUT); pin 4 differs (MIC5205 BYP, 470 pF to GND). Two small pads on pin 4, one fitted. **Confirm both pinouts from the datasheets before freeze** |
+| 3V3_D LDO | TLV74033 | **TLV75733PDBVR** (1 A, from the branch) | TLV74033 | Both SOT-23-5 TI LDOs; confirm the pinouts match |
+| Si5351C reference | 25 MHz crystal | **26 MHz TCXO**, 2016 size, ±1.5 ppm or better, 3.3 V, clipped sine (reference part KDS 1XXD26000MAA), clipped sine into CLKIN or XA as the Si5351C datasheet requires | 26 MHz crystal | **No:** shared pads (TCXO footprint with crystal pads, one fitted). Firmware: reference 26 MHz either way; input selection (CLKIN vs XTAL) is a firmware setting detected or configured at first boot (plan 5.1 decides) |
 | Filter capacitors | values the designer chose; 18 E24 values missing on Torob | **exact E24 C0G, 1 %** (Murata GCM/GRM, Samsung CL), 0805 | nearest stocked value | Yes, plus a **spare 0805 pad pair beside each filter capacitor** (not fitted) so a missing value is built from two common values in parallel. The tooling computes the pair |
 | Filter inductors | axial moulded parts, Q = 30 assumed, LCR-selected pairs (`Inductor_THT:L_Axial_L6.6mm_D2.7mm_P10.16mm…`) | **SMD wirewound chips with datasheet Q(f)**: the branch's choice, TDK NLV32 (1210, 5 %) for 22 values and named substitutes for 180 nH, 390 nH, 680 nH, 8.2 µH and 12 µH, with the branch's NLV32 model in `parts.py` | today's axial parts | **No:** a **combined footprint** per inductor position, chip pads inside the axial pad span, one fitted. Q is modelled per part over frequency, not one constant |
-| Everything else | — | unchanged, MPN pinned + LCSC number | unchanged | Yes |
+| Everything else | — | unchanged, MPN pinned | unchanged | Yes |
 
 Any filter that misses its targets with the real chip values is re-synthesised on obtainable values (phase 2 synthesis), then both populations are re-run.
 
 ## 2a. What is taken from the `china-parts` branch
 
-- **Taken:** the LCSC survey JSON and `tools/jlc_survey.py`; the SMD inductor model and values (NLV32 and substitutes); G6K-2F-Y; 26 MHz TCXO; TPS7A20 RF LDOs; TLV75733; the LCSC-number fields in `parts.py` and `test_parts_lcsc.py`.
+- **Taken:** the part choices: the SMD inductor model and values (NLV32 class and substitutes), G6K-2F-Y, 26 MHz TCXO, TPS7A20 RF LDOs, TLV75733; the survey JSON stays in the branch history as background only.
+- **Not taken from it either:** the LCSC numbers (`lcsc` fields, `lcsc_of`, `test_parts_lcsc.py`'s LCSC assertions) and `tools/jlc_survey.py`: the BOM identifies parts generically (§2b, user 2026-10-18).
 - **Not taken:** TPS54360 (LM2576HV stays), TPIC6C595 + SN74AHCT125 (74HC595 + ULN2803 stay), "no Iranian fallback" (dual population instead), ESP32-S3 (STM32F411 instead).
 - The branch spec gets a note pointing here when plan 5.1 merges it.
+
+## 2b. Generic part identification (user, 2026-10-18)
+
+No component supplier is assumed. The BOMs, part factories and notes identify every part so that any distributor or assembler can source it:
+
+- **Active parts, relays, crystals and oscillators, connectors, protection parts:** the manufacturer part number (e.g. `TPS7A2050PDBVR`, `Omron G6K-2F-Y DC5`), with an equivalent named where several manufacturers make the same function.
+- **Passives:** a full specification: value, tolerance, package, dielectric (C0G/NP0, X7R, X5R) and voltage for capacitors; value, tolerance and package for resistors; value, tolerance, package, construction, minimum Q at a test frequency, minimum self-resonance and current rating for inductors. A manufacturer series may be given as an example ("TDK NLV32 or equivalent"), never as the only acceptable part.
+- **Never:** a distributor's or assembler's catalogue number (LCSC `C…`, Torob keys, JLCPCB part classes) in a BOM. Torob search keys stay in the code as the Iranian fallback's availability check only.
+- A test checks every BOM row against this rule.
 
 ## 3. Controller: STM32F411CEU6 (approved section 2)
 
@@ -89,8 +99,8 @@ Any filter that misses its targets with the real chip values is re-synthesised o
 | L3 | Power pours (5V_MAIN, 5V_A, 3V3_RF, 3V3_D, 5V_BIAS) and slow digital |
 | L4 | Slow digital and ground pour, stitched to L2 |
 
-- **50 Ω lines:** grounded coplanar waveguide referenced to L2; width and gap computed for both JLC04161H-7628 and PCBWay's standard 4-layer stackup, checked in openEMS; ordered with controlled impedance.
-- **Rules (both fabs):** 0.15 mm trace/space default, 0.127 mm minimum; vias 0.3 mm drill / 0.6 mm pad, none in pads; 0.5 mm copper to edge; board ≤ 140 × 100 mm; **all SMD parts on top** (single-sided assembly). Through-hole only for the BNC, DC jack, 1 mH choke (13 × 13 mm keep-out), axial-inductor fallback pads, SWD header and the BOOT switch if no SMD part fits.
+- **50 Ω lines:** grounded coplanar waveguide referenced to L2; width and gap computed for a generic 4-layer 1.6 mm stackup (outer prepreg 0.2 mm, εr 4.3–4.6, the common 7628 build) and checked in openEMS; the fab notes state the impedance target so whichever fab builds it adjusts the width to its own stackup.
+- **Rules (common 4-layer capabilities, no particular fab):** 0.15 mm trace/space default, 0.127 mm minimum; vias 0.3 mm drill / 0.6 mm pad, none in pads; 0.5 mm copper to edge; board ≤ 140 × 100 mm; **all SMD parts on top** (single-sided assembly). Through-hole only for the BNC, DC jack, 1 mH choke (13 × 13 mm keep-out), axial-inductor fallback pads, SWD header and the BOOT switch if no SMD part fits.
 - **Floor plan:** the phase 3 §5 rules: one signal-flow direction (BNC → protection → filter bank → preamp → mixer → baseband → ADC); clock between filter bank and mixer; STM32 and USB in the far corner; buck converter in its own corner; via fences around each filter; inductors at right angles to their neighbours; optional shield-can footprints; test points and 0 Ω links between blocks; educational silkscreen.
 - **Layout as code:** a `pcbnew` script (system `/usr/bin/python3`; Anaconda's `python3` has no `pcbnew`) reads the SKiDL netlist, places blocks by rule, routes the RF path, LO lines and power pours. Slow digital nets go to Freerouting (§8) through Specctra DSN/SES, run in its GUI so the user can watch the routing live.
 
@@ -109,14 +119,14 @@ The step that matters is 2 → 4 (a solid ground under all RF). Signals stop at 
 | Layout | DRC zero errors against the fab rule set; netlist comparison (every SKiDL net equals the PCB's); courtyards and keep-outs |
 | EM (openEMS) | 50 Ω lines; coupling of LO/clock lines into the antenna input and filter bank; filter-to-filter leakage around an unselected filter; I2S, USB and shift chain into the baseband. Each path gets an isolation target from the receiver budget; a failure blocks the fab package |
 | Fab package | Gerbers re-read with `gerbonara`: 4 copper layers, outline equals the board, drill count equals the PCB's holes, nothing outside the outline; every BOM line has a CPL entry and the reverse; both BOMs agree with the netlist |
-| Sourcing | BOM-China against LCSC (web lookup: LCSC refuses scripted requests from this network); BOM-Iran with the existing Torob tooling |
+| Sourcing | Every BOM line passes the §2b identification rule (tested); BOM-Iran with the existing Torob tooling |
 
 ## 7. Fab package (`make fab` → `build/fab/revA/`, one zip per fab)
 
 - Gerber X2 for all layers (L1–L4 copper, mask, paste, silkscreen, edge cuts), Excellon drill (plated and unplated separate) and drill map
 - IPC-D-356 netlist for the fab's bare-board electrical test
-- Pick-and-place (CPL) in JLCPCB column format (PCBWay accepts it), with a rotation-offset table per footprint
-- **BOM-China** (designator, value, footprint, MPN, LCSC number), **BOM-Iran** (Torob key, fallback parts, parallel-capacitor pairs), and a fitted / not-fitted list per population
+- Pick-and-place in KiCad's standard position format (designator, value, package, X, Y, rotation, side; CSV), the format board makers accept or convert; no maker-specific columns or rotation tables
+- **BOM-China** and **BOM-Iran** (designators, quantity, value, package, manufacturer part number or generic specification, notes; BOM-Iran also lists the parallel-capacitor pairs), and a fitted / not-fitted list per population
 - Fab notes PDF: stackup, impedance target, ENIG, thickness, which BOM to use
 - STEP model and ray-traced renders
 
@@ -176,13 +186,13 @@ Everything below survives reboots. Nothing project-related lives under `/tmp` (s
 | `dfu-util` 0.11 | apt | udev rule `/etc/udev/rules.d/50-stm32-dfu.rules` (0483:df11, uaccess) so flashing needs no root |
 | openEMS + CSXCAD | built from source: sources `~/opt/src/openEMS-Project`, install prefix `~/opt/openEMS`, build log `~/opt/src/openEMS-build.log` | build dependencies from apt (libhdf5, VTK 9, Boost, CGAL, TinyXML, Qt5, Cython). Python bindings: see the note added when they are built |
 | gerbonara | pip, installed in plan 5.4 | Gerber re-check |
-| LCSC | — | refuses scripted requests from this network (Akamai "Access Denied"); the earlier agent's `tools/jlc_survey.py` on branch `china-parts` reached JLCPCB's library; otherwise use web search |
+| Distributor catalogues | — | not used (§2b). For reference: LCSC refuses scripted requests from this network and JLCPCB's API timed out on 2026-10-18 |
 | `sudo` | — | needs a password: the agent cannot run it. Give the user exact commands to run with `!` |
 
 ## 9. Plans
 
 0. **5.0 Documentation site:** MkDocs Material skeleton, the pages for what exists today (overview, every current block, techniques), `make site`, the Pages workflow. Later plans add their pages.
-1. **5.1 Parts and dual population:** start from branch `china-parts` (§2a), drop what §2a excludes; MPN/LCSC fields in `parts.py` and `availability.py` (Torob stays as the fallback source); INA180, ADP7118, real inductors and capacitors; alternate and parallel pads; both populations in `make hw`; README sourcing statement updated.
+1. **5.1 Parts and dual population:** start from branch `china-parts` (§2a), drop what §2a excludes; generic identification (§2b) in `parts.py` and the BOM (Torob stays as the fallback check); INA180, TPS7A20, real inductors and capacitors; alternate and parallel pads; both populations in `make hw`; README sourcing statement updated.
 2. **5.2 STM32F411 controller:** controller block, BOOT switch, RESET, pin map, board-check rules, firmware target and DFU jump; README and phase 4 spec updated.
 3. **5.3 Layout:** openEMS install, placement, RF routing, pours, Freerouting, DRC, netlist comparison, EM checks.
 4. **5.4 Fab package:** `make fab`, Gerber re-check, both BOMs, CPL, fab notes, renders.
@@ -194,4 +204,4 @@ transmitter (power, frequency, CW keying) → path model (distance to field stre
 
 ## 10. Out of scope
 
-Choosing between JLCPCB and PCBWay (the design suits both); 192 kHz / High-Speed USB; transmit; ordering.
+Choosing a board maker or distributor (nothing in the design depends on one); 192 kHz / High-Speed USB; transmit; ordering.
