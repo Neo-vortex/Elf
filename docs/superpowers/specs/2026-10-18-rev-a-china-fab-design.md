@@ -1,7 +1,7 @@
 # Elf Rev A for a Chinese board maker (Design Spec)
 
 - **Date:** 2026-10-18
-- **Status:** Approved in conversation (sections 1–4, 2026-10-18); written spec awaiting user review
+- **Status:** Approved by the user (2026-10-18)
 - **Parent specs:** `2026-10-12-neoradio-hf-receiver-design.md` (§2 requirements, §12 phases), `2026-10-12-phase3-board-circuits-design.md` (§5 layout deliverables), `2026-10-13-phase4-firmware-virtual-board-design.md` (firmware layout)
 - **Earlier China work:** branch `china-parts` (spec `2026-10-13-china-assembly-parts-design.md`, plan `2026-10-13-china-assembly-parts.md`, LCSC survey `2026-10-13-parts-survey-lcsc.json`, `tools/jlc_survey.py`, commit ed5be14). It was written by another agent before this spec and never merged. §2a says what is taken from it and what is not; plan 5.1 starts from that branch.
 - **Supersedes:** the sourcing rule "all parts from Iranian shops", the ESP32-S3 controller, the Aryamadar/Maher PCB fab target, and the Rev 0 coupon stage. Everything else in the parent specs stands.
