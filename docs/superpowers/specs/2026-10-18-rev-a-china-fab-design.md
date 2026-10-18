@@ -187,6 +187,11 @@ Everything below survives reboots. Nothing project-related lives under `/tmp` (s
 3. **5.3 Layout:** openEMS install, placement, RF routing, pours, Freerouting, DRC, netlist comparison, EM checks.
 4. **5.4 Fab package:** `make fab`, Gerber re-check, both BOMs, CPL, fab notes, renders.
 
+## 9a. Next sub-project after the Rev A plans (user, 2026-10-18): physical antenna end-to-end test
+
+To be brainstormed as its own spec once plans 5.0–5.4 are written. Agreed shape so far:
+transmitter (power, frequency, CW keying) → path model (distance to field strength at the antenna, µV/m: ITU-R P.368 ground wave or a simple skywave model, optional fading) → **receiving antenna simulated in openEMS** (plane wave from azimuth/elevation onto a dipole or whip; the voltage into the board's 50 Ω input per frequency and angle, computed once and stored like a characterisation file; FDTD cannot model km-scale or ionospheric paths, or real-time Morse, so only the antenna is EM-simulated) → the existing twin board chain (later with the plan 5.3 coupling parasitics) → the virtual board over USB/IP → Python tunes, records, decodes the CW and prints it. Relates to the parked recorded-antenna input (`2026-10-13-recorded-antenna-design.md`, branch `wip-recorded-antenna-am`).
+
 ## 10. Out of scope
 
 Choosing between JLCPCB and PCBWay (the design suits both); 192 kHz / High-Speed USB; transmit; ordering.
