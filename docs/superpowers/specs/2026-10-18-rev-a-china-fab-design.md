@@ -140,6 +140,12 @@ Size: each GIF at most 8 MB (GitHub renders up to 10 MB), achieved with ffmpeg's
 
 The repository gets a documentation site that explains the whole project to a reader who is new to it: every board block, every component choice and every technique, with the simulation results and the GIFs of §7a.
 
+**Fully self-contained (user, 2026-10-18):** the site explains everything from start to end and needs no outside knowledge or links. A reader who knows basic electronics but nothing about radio can follow it from the first page to the last. Concretely:
+- a **Start here** path read in order: radio waves and the HF spectrum; bands and modes (AM, SSB, CW, FT8); what a software-defined receiver is; Elf's signal chain from antenna to decoded text; then each block in depth;
+- **pictures on every page:** circuit drawings of every block drawn from code with `schemdraw`, signal-chain diagrams (Mermaid), simulation plots, 3D board renders and per-block close-ups (from plans 5.3/5.4), and the §7a GIFs;
+- a **glossary** defining every technical term the site uses;
+- **no external assets at run time:** MathJax and Mermaid are served from the site itself, so it works offline.
+
 - **Tool:** MkDocs with the Material theme (Markdown sources in `site/docs/`, config `site/mkdocs.yml`; search, Mermaid diagrams, maths, image and GIF embedding). Installed through the PyPI mirror (§8).
 - **Published by GitHub Actions:** `.github/workflows/pages.yml` builds the site on every push to `main` and deploys it to GitHub Pages (Pages source "GitHub Actions"; switching it on in the repository settings is confirmed with the user first). `make site` builds it locally into `build/site/`.
 - **Content:**
