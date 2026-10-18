@@ -99,13 +99,14 @@ def build() -> Block:
         filt = Net("adc_filt")
         adc["FILT+"] += filt
         for value, note in (("47u", "X5R FILT+ reserve (typical connection)"), ("10n", "C0G FILT+")):
-            c = parts.capacitor(value, note=note)
+            c = parts.capacitor(value, note=note, voltage="10 V" if value == "47u" else "50 V")
             c[1] += filt
             c[2] += adc["GND"].net
         for value in ("10u", "100n"):
             for rail in (pw.ports["v3d"], pw.ports["v5a"]):
                 c = parts.capacitor(value, note="CS5361 supply decoupling",
-                                    dielectric="X5R" if value == "10u" else "X7R")
+                                    dielectric="X5R" if value == "10u" else "X7R",
+                                    voltage="16 V" if value == "10u" else "25 V")
                 c[1] += rail
                 c[2] += adc["GND"].net
         # bias-T feed and the USB supply

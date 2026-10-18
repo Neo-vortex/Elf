@@ -11,6 +11,13 @@ CATALOGUE = re.compile(r"\bC\d{4,}\b|LCSC|JLC|torob", re.I)
 PASSIVES = ("R", "C", "L")
 
 
+def _needs_mpn(part) -> bool:
+    """By the factory's `ident_kind` (parts.py), not the ref prefix: a crystal, oscillator, jack,
+    relay or protection part uses prefix U/X/K/F/GDT but is built by its own factory. Only
+    resistors, capacitors, inductors, LEDs and buttons may be specified instead."""
+    return getattr(part, "ident_kind", "mpn") != "spec"
+
+
 def of(part, population: str = pop.DEFAULT) -> str:
     """The variant's identification, else the part's MPN, else its specification."""
     v = pop.variant(part, population)
@@ -32,6 +39,10 @@ def violations(circuit) -> list[str]:
             note = v.note if v is not None else getattr(part, "bom_note", "")
             if not ident:
                 out.append(f"{part.ref} ({population}): no identification")
+            elif _needs_mpn(part) and (ident == getattr(part, "spec", None) or "±" in ident or " %" in ident
+                                       or (v is None and not getattr(part, "mpn", None))):
+                out.append(f"{part.ref} ({population}): {ident!r} is a specification, "
+                           "this class needs a manufacturer part number")
             elif CATALOGUE.search(ident) or CATALOGUE.search(note or ""):
                 out.append(f"{part.ref} ({population}): catalogue number in {ident!r} / {note!r}")
         spec = getattr(part, "spec", "")

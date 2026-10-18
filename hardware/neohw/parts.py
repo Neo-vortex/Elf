@@ -11,9 +11,16 @@ from neohw.availability import inductor_hit
 from neohw.units import format_si, parse_si
 
 
-def _tagged(part: Part) -> Part:
+# What identifies a part in a BOM: "mpn" (active parts, relays, crystals, oscillators, connectors,
+# protection: a manufacturer part number) or "spec" (resistors, capacitors, inductors, LEDs and
+# buttons: a full specification). Strict by default; `ident.violations` enforces it.
+IDENT_MPN, IDENT_SPEC = "mpn", "spec"
+
+
+def _tagged(part: Part, ident_kind: str = IDENT_MPN) -> Part:
     """A stable tag (the ref) instead of SKiDL's random one: quiet, reproducible netlists."""
     part.tag = part.ref
+    part.ident_kind = ident_kind
     return part
 
 
@@ -52,9 +59,10 @@ def _spaced(value: float, unit: str) -> str:
 
 
 def _stated(note: str, fallback: str, *keywords: str) -> str:
-    """First keyword (case-insensitive) found in a part's note, else `fallback`."""
+    """The keyword (case-insensitive) that appears first in a part's note, else `fallback`."""
     low = note.lower()
-    return next((k for k in keywords if k.lower() in low), fallback)
+    found = [(low.index(k.lower()), k) for k in keywords if k.lower() in low]
+    return min(found)[1] if found else fallback
 
 
 def resistor(value, footprint: str = "Resistor_SMD:R_0805_2012Metric", mpn: str | None = None,
@@ -62,7 +70,7 @@ def resistor(value, footprint: str = "Resistor_SMD:R_0805_2012Metric", mpn: str 
     """`c_par` adds the body's parallel capacitance to the SPICE model only (high-value
     resistors at RF)."""
     ohms = _positive(value)
-    p = _tagged(_template("R", "R", ["1", "2"], footprint)(value=format_si(ohms, "Ω")))
+    p = _tagged(_template("R", "R", ["1", "2"], footprint)(value=format_si(ohms, "Ω")), IDENT_SPEC)
     p.mpn, p.torob, p.tol = mpn, torob, tol
     p.package = package_of(footprint)
     p.spec = f"{_spaced(ohms, 'Ω')} ±{tol * 100:g} % {p.package}"
@@ -77,6 +85,16 @@ def resistor(value, footprint: str = "Resistor_SMD:R_0805_2012Metric", mpn: str 
     return p
 
 
+def default_voltage(farads: float, dielectric: str) -> str:
+    """A buyable rating when none is given: large ceramics are not sold at 50 V (22 µF X5R 1206
+    16 V, 47 µF 0805 10 V). Callers pass `voltage` for the rail when they know it."""
+    if dielectric in ("C0G", "X7R", "X5R") and farads >= 47e-6:
+        return "10 V"
+    if dielectric in ("X7R", "X5R") and farads >= 4.7e-6:
+        return "16 V"
+    return "50 V"
+
+
 CAP_CLASS_TOL = {"X7R": 0.10, "X5R": 0.10, "tantalum": 0.20, "aluminium electrolytic": 0.20}
 
 
@@ -89,12 +107,12 @@ def capacitor(value, footprint: str = "Capacitor_SMD:C_0805_2012Metric", mpn: st
     the note names (X7R, X5R, tantalum, aluminium electrolytic; else C0G) and the voltage is the
     "<n> V" in the note (else 50 V)."""
     farads = _positive(value)
-    p = _tagged(_template("C", "C", ["1", "2"], footprint)(value=format_si(farads, "F")))
+    p = _tagged(_template("C", "C", ["1", "2"], footprint)(value=format_si(farads, "F")), IDENT_SPEC)
     p.mpn, p.torob, p.tol, p.bom_note = mpn, torob, tol, note
     dielectric = dielectric or _stated(note, "C0G", "X7R", "X5R", "tantalum", "aluminium electrolytic")
     if voltage is None:
         m = re.search(r"(\d+(?:\.\d+)?) V\b", note)
-        voltage = f"{m.group(1)} V" if m else "50 V"
+        voltage = f"{m.group(1)} V" if m else default_voltage(farads, dielectric)
     p.package = package_of(footprint)
     spec_tol = max(tol, CAP_CLASS_TOL.get(dielectric, 0.0))   # X7R/X5R are not sold tighter than ±10 %
     p.spec = f"{_spaced(farads, 'F')} ±{spec_tol * 100:g} % {dielectric} {p.package} {voltage}"
@@ -187,7 +205,7 @@ def inductor(value, q: float, q_freq_hz: float, tol: float = 0.03, trim: float =
         raise ValueError(f"trim {trim:.3f} is outside the ±10 % a selected part can reach")
     henries_built = henries * trim
     r_s = 2 * math.pi * q_freq_hz * henries_built / q
-    p = _tagged(_template("L", "L", ["1", "2"], footprint)(value=format_si(henries, "H")))
+    p = _tagged(_template("L", "L", ["1", "2"], footprint)(value=format_si(henries, "H")), IDENT_SPEC)
     p.mpn, p.torob, p.tol, p.dcr = mpn, torob, tol, dcr
     p.torob_match = lambda name: inductor_hit(name, henries)
     p.bom_note = note or f"select to ±{tol * 100:g} % with LCR meter; Q={q:g} assumed"
@@ -342,10 +360,10 @@ def cs5361(mpn: str = "CS5361-KZZ", torob: str | None = "CS5361") -> Part:
 
 
 def _ic(value: str, pins: dict[str, str], footprint: str, mpn: str | None, torob: str | None, nc=(),
-        spec: str | None = None) -> Part:
+        spec: str | None = None, ident_kind: str = IDENT_MPN) -> Part:
     """An IC used for the netlist and BOM only (board-level blocks are not simulated in SPICE).
     `spec` identifies a part no manufacturer number fits (an LED, a crystal) by its full specification."""
-    p = _tagged(_template(value, "U", pins, footprint)(value=value))
+    p = _tagged(_template(value, "U", pins, footprint)(value=value), ident_kind)
     p.mpn, p.torob, p.tol = mpn, torob, 0.0
     if spec:
         p.spec = spec
@@ -385,10 +403,10 @@ def crystal_25mhz() -> Part:
     tens of ppm)."""
     # pin names must not be digits: SKiDL resolves x["2"] as pad number 2 (a case-ground pad)
     p = _ic("25MHz", {"X1": "1", "GND1": "2", "X2": "3", "GND2": "4"}, "Crystal:Crystal_SMD_3225-4Pin_3.2x2.5mm",
-            None, "کریستال 25MHZ 3225",
-            spec="25 MHz fundamental crystal, 3.2 × 2.5 mm 4-pad, CL 8 pF, ±20 ppm, ESR ≤ 60 Ω")
+            "NX3225GA-25.000M-STD-CRG-2", "کریستال 25MHZ 3225")
     p.torob_match = crystal_25mhz_hit
-    p.bom_note = "CL ≤ 10 pF (Si5351 internal load 6/8/10 pF); confirm CL with the seller"
+    p.bom_note = ("NDK NX3225GA, 25 MHz, CL 8 pF, ±20 ppm, ESR 50 Ω max, or equivalent "
+                  "(CL ≤ 10 pF: Si5351 internal load 6/8/10 pF)")
     return p
 
 
@@ -415,8 +433,8 @@ def lvc157(nc=()) -> Part:
 def barrel_jack() -> Part:
     """5.5/2.1 mm DC jack (DC-005 style): 1 tip (+), 2 sleeve (−), 3 switch (unused)."""
     p = _ic("DC jack 5.5/2.1", {"TIP": "1", "SLEEVE": "2", "SW": "3"}, "Connector_BarrelJack:BarrelJack_Horizontal",
-            "DC-005", "جک آداپتور 5.5 2.1", nc=("SW",))
-    p.bom_note = "5.5 × 2.1 mm horizontal DC jack, or equivalent"
+            "PJ-002A", "جک آداپتور 5.5 2.1", nc=("SW",))
+    p.bom_note = "CUI/Same Sky 5.5 × 2.1 mm horizontal DC jack (2.0 mm centre pin), or equivalent"
     p.spice_lines = lambda n, k=1.0: []          # the source is the stimulus
     return p
 
@@ -606,7 +624,7 @@ LED_TOROB = {"green": "LED SMD 0805 سبز", "yellow": "LED SMD 0805 زرد", "r
 
 def led_0805(colour: str = "green") -> Part:
     p = _ic(f"LED {colour}", {"K": "1", "A": "2"}, "LED_SMD:LED_0805_2012Metric", None, LED_TOROB.get(colour),
-            spec=f"LED {colour} 0805, 20 mA, Vf ≤ 2.4 V")
+            spec=f"LED {colour} 0805, 20 mA, Vf ≤ 2.4 V", ident_kind=IDENT_SPEC)
     return p
 
 
@@ -614,5 +632,6 @@ def button() -> Part:
     """6 × 3.5 mm two-pin SMD tactile switch (CK PTS636-class; on Torob as a 3 × 6 mm SMD switch)."""
     p = _ic("button", {"1": "1", "2": "2"}, "Button_Switch_SMD:SW_Tactile_SPST_NO_Straight_CK_PTS636Sx25SMTRLFS",
             "PTS636SL25SMTRLFS", "تک سوئیچ SMD")
+    p.ident_kind = IDENT_SPEC
     p.bom_note = "6 × 3.5 mm SMD tactile switch, or equivalent"
     return p
