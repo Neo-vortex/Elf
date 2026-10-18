@@ -195,9 +195,12 @@ Everything below survives reboots. Nothing project-related lives under `/tmp` (s
 1. **5.1 Parts and dual population:** start from branch `china-parts` (§2a), drop what §2a excludes; generic identification (§2b) in `parts.py` and the BOM (Torob stays as the fallback check); INA180, TPS7A20, real inductors and capacitors; alternate and parallel pads; both populations in `make hw`; README sourcing statement updated.
 2. **5.2 STM32F411 controller:** controller block, BOOT switch, RESET, pin map, board-check rules, firmware target and DFU jump; README and phase 4 spec updated.
 3. **5.3 Layout:** openEMS install, placement, RF routing, pours, Freerouting, DRC, netlist comparison, EM checks.
+3a. **Proving ground (plans 6.1–6.5, spec `2026-10-18-proving-ground-design.md`):** real-world environment, receiver realism, antennas, post-layout extraction and mission sign-off; gates 5.4.
 4. **5.4 Fab package:** `make fab`, Gerber re-check, both BOMs, CPL, fab notes, renders.
 
 ## 9a. Next sub-project after the Rev A plans (user, 2026-10-18): physical antenna end-to-end test
+
+> **Moved (user, 2026-10-18):** this test is now part of the pre-production sign-off, `2026-10-18-proving-ground-design.md` (PG-1 path model, PG-4 antennas, PG-3 missions). It runs **before** plan 5.4, and `make fab` requires its sign-off. The text below is kept as background.
 
 To be brainstormed as its own spec once plans 5.0–5.4 are written. Agreed shape so far:
 transmitter (power, frequency, CW keying) → path model (distance to field strength at the antenna, µV/m: ITU-R P.368 ground wave or a simple skywave model, optional fading) → **receiving antenna simulated in openEMS** (plane wave from azimuth/elevation onto a dipole or whip; the voltage into the board's 50 Ω input per frequency and angle, computed once and stored like a characterisation file; FDTD cannot model km-scale or ionospheric paths, or real-time Morse, so only the antenna is EM-simulated) → the existing twin board chain (later with the plan 5.3 coupling parasitics) → the virtual board over USB/IP → Python tunes, records, decodes the CW and prints it. Relates to the parked recorded-antenna input (`2026-10-13-recorded-antenna-design.md`, branch `wip-recorded-antenna-am`).
