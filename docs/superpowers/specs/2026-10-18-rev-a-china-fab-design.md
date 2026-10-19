@@ -51,6 +51,8 @@ Rev A succeeds (before ordering) when:
 
 Any filter that misses its targets with the real chip values is re-synthesised on obtainable values (phase 2 synthesis), then both populations are re-run.
 
+> **Superseded (2026-10-19):** the filter-bank design and inductor model are replaced by `2026-10-19-robust-filter-bank-design.md` (physical worst-case Q bound with a 25 % margin, elliptic filters synthesised by optimisation, through-hole chokes in both populations where SMD cannot pass). The note below records the intermediate step.
+
 **Result (2026-10-19).** Every filter meets its targets in both populations (nominal values, and Monte Carlo ≥ 95 % of 200 runs on the borderline filters 7, 9, 10 and 11). Two filters were re-synthesised: filter 10 has its LPF cutoff 5 % above the band, and filter 11 has 0.005 dB ripple with the same 5 % cutoff. **Filter 1 (0.1–0.5 MHz) has a system-based limit (user, 2026-10-19):** no chip inductor with guaranteed Q reaches 3 dB there; at 0.1–0.5 MHz ferrite chips have Q ≈ 3–10 (TDK typical curve). Its limits are IL ≤ 8 dB plus a noise-floor rise of ≤ 1 dB over an ideal receiver in ITU-R P.372 residential noise (`checks/bpf.py` `SYSTEM_LIMITED`). China gives 5.6 dB (worst case 6.3 dB) and Iran 2.9 dB, and the rise is ≈ 0 dB because residential noise is ≈ 81 dB above kT0 at 0.5 MHz. The proving ground re-checks it end to end.
 
 ## 2a. What is taken from the `china-parts` branch
