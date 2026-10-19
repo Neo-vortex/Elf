@@ -1,5 +1,5 @@
 """Generates firmware/core/tables_gen.{h,c} from the committed characterisation files, so the
-firmware's filter edges, relay bit order, GPIO pads, bias-sense table and monitor dividers are the hardware
+firmware's filter edges, relay bit order, GPIO pads, the two bias-sense tables (INA180A1, BC857B mirror) and monitor dividers are the hardware
 design's own numbers (phase 4 spec §2). Files are rewritten only when their text changes."""
 from __future__ import annotations
 
@@ -20,7 +20,7 @@ def render(char_dir: Path) -> tuple[str, str]:
     pw = json.loads((char_dir / "power.json").read_text())
     filters = sorted(bank["filters"], key=lambda f: f["index"])
     order = ctl["relay_chain_order"]
-    table = ctl["bias_sense_table_27c"]
+    tables = {"INA180": ctl["bias_sense_tables_27c"]["ina180"], "MIRROR": ctl["bias_sense_tables_27c"]["mirror"]}
     h = [HEADER, "#ifndef ELF_TABLES_GEN_H", "#define ELF_TABLES_GEN_H", "", "#include <stdint.h>", "",
          f"#define TABLES_FILTER_COUNT {len(filters)}",
          "/* filter n (1-based) covers lo_hz <= f < hi_hz; the top edge selects the last filter */",
@@ -30,9 +30,14 @@ def render(char_dir: Path) -> tuple[str, str]:
     h += [f"#define RELAY_BIT_{name.upper()} {k}" for k, name in enumerate(order)]
     h += ["", "/* ESP32-S3 pads (target build) */"]
     h += [f"#define GPIO_PAD_{name.upper()} {int(pad.removeprefix('IO'))}" for name, pad in ctl["gpio"].items()]
-    h += ["", "/* bias-T current mirror at 27 °C: sense mV -> current µA (monotonic) */",
-          f"#define TABLES_BIAS_SENSE_POINTS {len(table)}",
-          "extern const uint32_t TABLES_BIAS_SENSE_MV[];", "extern const uint32_t TABLES_BIAS_SENSE_UA[];",
+    h += ["", "/* bias-T current sense at 27 °C, one table per population: sense mV -> current µA (monotonic).",
+          " * INA180A1 (China) reads ≈ 0 mV with the feed off, the BC857B mirror (Iran) ≈ 630 mV; a zero reading at or",
+          " * above TABLES_BIAS_ZERO_SPLIT_MV selects the mirror table. */",
+          f"#define TABLES_BIAS_ZERO_SPLIT_MV {round(ctl['bias_sense_zero_split_v'] * 1000)}u"]
+    for name, table in tables.items():
+        h += [f"#define TABLES_BIAS_SENSE_{name}_POINTS {len(table)}",
+              f"extern const uint32_t TABLES_BIAS_SENSE_{name}_MV[];", f"extern const uint32_t TABLES_BIAS_SENSE_{name}_UA[];"]
+    h += [
           f"#define TABLES_BIAS_CUTOFF_UA {round(ctl['bias_cutoff_a'] * 1e6)}u",
           f"#define TABLES_I2C_SI5351 0x{ctl['i2c']['Si5351C']:02x}",
           f"#define TABLES_I2C_LM75A 0x{ctl['i2c']['LM75A']:02x}", "",
@@ -42,8 +47,11 @@ def render(char_dir: Path) -> tuple[str, str]:
     c = [HEADER, '#include "tables_gen.h"', "",
          _array("TABLES_FILTER_LO_HZ", (int(f["lo_hz"]) for f in filters)),
          _array("TABLES_FILTER_HI_HZ", (int(f["hi_hz"]) for f in filters)),
-         _array("TABLES_BIAS_SENSE_MV", (round(p["sense_v"] * 1000) for p in table)),
-         _array("TABLES_BIAS_SENSE_UA", (max(0, round(p["i_a"] * 1e6)) for p in table)), ""]
+         ]
+    for name, table in tables.items():
+        c += [_array(f"TABLES_BIAS_SENSE_{name}_MV", (round(p["sense_v"] * 1000) for p in table)),
+              _array(f"TABLES_BIAS_SENSE_{name}_UA", (max(0, round(p["i_a"] * 1e6)) for p in table))]
+    c.append("")
     return "\n".join(h), "\n".join(c)
 
 

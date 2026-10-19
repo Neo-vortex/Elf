@@ -1,11 +1,12 @@
 /* elf-virtual: the Elf firmware running as a Linux process, its USB device served over USB/IP.
  *
- *   elf-virtual [--port N] [--twin SOCKET | --tone HZ] [--seconds S]
+ *   elf-virtual [--port N] [--twin SOCKET | --tone HZ] [--seconds S] [--population china|iran]
  *
  * --twin takes the ADC's I/Q from the digital twin (python -m neosim vboard STATIONS --socket
  * SOCKET), rendered for whatever the firmware set the hardware to; --tone feeds a complex tone at
  * HZ instead (I = cos, Q = sin, −6 dBFS; the default, 1 kHz); --seconds exits after S seconds
- * (tests). Attach with
+ * (tests); --population builds the virtual board as China (INA180A1 bias sense, the default) or
+ * Iran (BC857B mirror). Attach with
  *   sudo modprobe vhci-hcd && sudo usbip attach -r 127.0.0.1 -b 1-1 */
 #include <math.h>
 #include <signal.h>
@@ -32,13 +33,13 @@ static void on_signal(int sig)
 }
 
 /* board state the supervisor reads: a 12 V adapter on the jack, 5V_MAIN in regulation, a USB
- * host connected (the monitors see the node voltages through the dividers in power.json) */
+ * host connected (the monitors see the node voltages through the dividers in power.json); the bias sense
+ * reads the zero of the circuit the population fits (vhw_set_population) */
 static void set_supplies(void)
 {
     vboard.adc_mv[HAL_ADC_SENSE_EXT] = (uint32_t)(11600ull * 1000 / TABLES_SENSE_DIV_EXT_X1000);
     vboard.adc_mv[HAL_ADC_SENSE_MAIN] = (uint32_t)(5480ull * 1000 / TABLES_SENSE_DIV_MAIN_X1000);
     vboard.adc_mv[HAL_ADC_SENSE_VBUS] = (uint32_t)(5000ull * 1000 / TABLES_SENSE_DIV_VBUS_X1000);
-    vboard.adc_mv[HAL_ADC_BIAS_ISENSE] = 628;
 }
 
 static void tone_frame(double hz, uint64_t frame)
@@ -57,14 +58,16 @@ int main(int argc, char **argv)
 {
     unsigned port = USBIP_PORT;
     double tone_hz = 1000.0, seconds = 0;
-    const char *twin = NULL;
+    const char *twin = NULL, *population = "china";
     for (int k = 1; k < argc; k++) {
         if (!strcmp(argv[k], "--port") && k + 1 < argc) port = (unsigned)atoi(argv[++k]);
         else if (!strcmp(argv[k], "--tone") && k + 1 < argc) tone_hz = atof(argv[++k]);
         else if (!strcmp(argv[k], "--seconds") && k + 1 < argc) seconds = atof(argv[++k]);
         else if (!strcmp(argv[k], "--twin") && k + 1 < argc) twin = argv[++k];
+        else if (!strcmp(argv[k], "--population") && k + 1 < argc) population = argv[++k];
         else {
-            fprintf(stderr, "usage: elf-virtual [--port N] [--twin SOCKET | --tone HZ] [--seconds S]\n");
+            fprintf(stderr, "usage: elf-virtual [--port N] [--twin SOCKET | --tone HZ] [--seconds S] "
+                            "[--population china|iran]\n");
             return 2;
         }
     }
@@ -73,6 +76,10 @@ int main(int argc, char **argv)
     signal(SIGPIPE, SIG_IGN);
 
     hal_virtual_init();
+    if (vhw_set_population(&vboard, population)) {
+        fprintf(stderr, "elf-virtual: unknown population %s (china or iran)\n", population);
+        return 2;
+    }
     set_supplies();
     radio_init();
     supervisor_init();

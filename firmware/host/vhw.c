@@ -16,6 +16,20 @@ void vhw_reset(vhw_t *v)
     v->gpio[HAL_GPIO_SR_OE] = true;
     v->gpio[HAL_GPIO_ADC_OVFL] = true;
     vhw_set_temp_mc(v, 25000);
+    vhw_set_population(v, "china");
+}
+
+vhw_pop_t vhw_population(const vhw_t *v) { return v->population; }
+
+int vhw_set_population(vhw_t *v, const char *name)
+{
+    if (!strcmp(name, "china")) v->population = VHW_POP_CHINA;
+    else if (!strcmp(name, "iran")) v->population = VHW_POP_IRAN;
+    else return -1;
+    /* the bias-T sense with the feed off: the fitted circuit's zero reading */
+    v->adc_mv[HAL_ADC_BIAS_ISENSE] = v->population == VHW_POP_IRAN ? TABLES_BIAS_SENSE_MIRROR_MV[0]
+                                                                    : TABLES_BIAS_SENSE_INA180_MV[0];
+    return 0;
 }
 
 int vhw_i2c_write(vhw_t *v, uint8_t addr, uint8_t reg, const uint8_t *data, size_t len)

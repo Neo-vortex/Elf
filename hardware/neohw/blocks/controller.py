@@ -12,8 +12,8 @@
 - Relay drive: 3 × 74HC595 (chained, /OE held high by 10 kΩ until the firmware enables the
   outputs: every relay released, the bank muted) → 3 × ULN2803 → 24 coils on 5V_MAIN
   (COM to 5V_MAIN for the flyback diodes).
-- Bias-T: the bias_switch block (1 Ω shunt, SY6280 limited to ≈ 0.39 A, BC857B current mirror into
-  an ADC pin; the firmware cuts the feed at ≈ 150 mA). EN pulled low.
+- Bias-T: the bias_switch block (1 Ω shunt, SY6280 limited to ≈ 0.39 A, current sense into
+  an ADC pin (INA180A1 in the China population, BC857B mirror in the Iran one); the firmware cuts the feed at ≈ 150 mA). EN pulled low.
 """
 from __future__ import annotations
 
@@ -166,6 +166,7 @@ def build(ckt: Circuit | None = None) -> Block:
         # bias-T switch and current sense (its own block, also simulated on its own)
         bsw = bias_switch.build(ckt)
         bsw.ports["bias5"] += bias5
+        bsw.ports["v3d"] += v3d
         bsw.ports["en"] += g["bias_en"]
         bsw.ports["sense"] += g["bias_isense"]
         feed = bsw.ports["feed"]

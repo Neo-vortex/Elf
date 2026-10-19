@@ -21,11 +21,12 @@ static void supplies(uint32_t jack_mv, uint32_t main_mv, uint32_t vbus_mv)
 
 static void sense_table_reads_back_its_own_points(void)
 {
-    for (int k = 0; k < TABLES_BIAS_SENSE_POINTS; k++)
-        CHECK(supervisor_bias_ua(TABLES_BIAS_SENSE_MV[k]) == TABLES_BIAS_SENSE_UA[k]);
-    CHECK(supervisor_bias_ua(0) == 0 && supervisor_bias_ua(500) == 0);
+    supervisor_init();                                              /* China's INA180 table until a zero says otherwise */
+    for (int k = 0; k < TABLES_BIAS_SENSE_INA180_POINTS; k++)
+        CHECK(supervisor_bias_ua(TABLES_BIAS_SENSE_INA180_MV[k]) == TABLES_BIAS_SENSE_INA180_UA[k]);
+    CHECK(supervisor_bias_ua(0) == 0);
     uint32_t prev = 0;
-    for (uint32_t mv = 600; mv <= 2000; mv += 10) {
+    for (uint32_t mv = 10; mv <= 3200; mv += 10) {
         uint32_t ua = supervisor_bias_ua(mv);
         CHECK(ua >= prev);
         prev = ua;
@@ -100,9 +101,61 @@ static void sense_zero_is_measured_with_the_feed_off(void)
     test_vhw.adc_mv[HAL_ADC_BIAS_ISENSE] = 700;       /* feed off: the zero reading */
     CHECK(supervisor_bias_enable(true));
     CHECK(supervisor_poll()->bias_ua < 1000);           /* still no current: reads ≈ 0, not ≈ 14 mA */
-    test_vhw.adc_mv[HAL_ADC_BIAS_ISENSE] = sense_mv_for(100000) + (700 - TABLES_BIAS_SENSE_MV[0]);
+    test_vhw.adc_mv[HAL_ADC_BIAS_ISENSE] = sense_mv_for(100000) + (700 - TABLES_BIAS_SENSE_MIRROR_MV[0]);
     uint32_t ua = supervisor_poll()->bias_ua;
     CHECK(ua > 98000 && ua < 102000);
+}
+
+static void bias_sense_table_follows_the_zero_reading(void)
+{
+    /* mirror zero ≈ 630 mV picks the mirror table; INA180 zero ≈ 0 mV picks the INA180 table */
+    supplies(12000, 5480, 5000);
+    supervisor_init();
+    test_vhw.adc_mv[HAL_ADC_BIAS_ISENSE] = 630;
+    CHECK(supervisor_bias_enable(true));
+    CHECK(supervisor_bias_ua(TABLES_BIAS_SENSE_MIRROR_MV[3]) == TABLES_BIAS_SENSE_MIRROR_UA[3]);
+    CHECK(supervisor_bias_enable(false));
+    test_vhw.adc_mv[HAL_ADC_BIAS_ISENSE] = 2;
+    CHECK(supervisor_bias_enable(true));
+    CHECK(supervisor_bias_ua(TABLES_BIAS_SENSE_INA180_MV[3]) == TABLES_BIAS_SENSE_INA180_UA[3]);
+    CHECK(!(supervisor_poll()->flags & SUP_FLAG_BIAS_SENSE_FAULT));
+}
+
+static void ina180_reading_is_referred_to_its_own_zero(void)
+{
+    supplies(12000, 5480, 5000);
+    supervisor_init();
+    test_vhw.adc_mv[HAL_ADC_BIAS_ISENSE] = 20;                       /* this board's zero is 20 mV: still an INA180A1 */
+    CHECK(supervisor_bias_enable(true));
+    test_vhw.adc_mv[HAL_ADC_BIAS_ISENSE] = 20 + TABLES_BIAS_SENSE_INA180_MV[3] - TABLES_BIAS_SENSE_INA180_MV[0];
+    uint32_t ua = supervisor_poll()->bias_ua;
+    CHECK(ua > TABLES_BIAS_SENSE_INA180_UA[3] - 1500 && ua < TABLES_BIAS_SENSE_INA180_UA[3] + 1500);
+}
+
+static void a_zero_between_the_two_circuits_is_a_sense_fault(void)
+{
+    supplies(12000, 5480, 5000);
+    supervisor_init();
+    test_vhw.adc_mv[HAL_ADC_BIAS_ISENSE] = 300;
+    CHECK(!supervisor_bias_enable(true));                            /* neither circuit reads 300 mV at zero */
+    CHECK(test_vhw.gpio[HAL_GPIO_BIAS_EN] == false);
+    CHECK(supervisor_poll()->flags & SUP_FLAG_BIAS_SENSE_FAULT);
+    CHECK(!(supervisor_poll()->flags & SUP_FLAG_BIAS_ON));
+    test_vhw.adc_mv[HAL_ADC_BIAS_ISENSE] = 630;                      /* the fault clears with a sane zero */
+    CHECK(supervisor_bias_enable(true));
+    CHECK(!(supervisor_poll()->flags & SUP_FLAG_BIAS_SENSE_FAULT));
+}
+
+static void the_virtual_board_reads_the_fitted_circuits_zero(void)
+{
+    vhw_t v;
+    vhw_reset(&v);
+    CHECK(vhw_population(&v) == VHW_POP_CHINA);                     /* China is the default */
+    CHECK(v.adc_mv[HAL_ADC_BIAS_ISENSE] == TABLES_BIAS_SENSE_INA180_MV[0]);
+    CHECK(vhw_set_population(&v, "iran") == 0 && vhw_population(&v) == VHW_POP_IRAN);
+    CHECK(v.adc_mv[HAL_ADC_BIAS_ISENSE] == TABLES_BIAS_SENSE_MIRROR_MV[0]);
+    CHECK(vhw_set_population(&v, "china") == 0 && v.adc_mv[HAL_ADC_BIAS_ISENSE] == TABLES_BIAS_SENSE_INA180_MV[0]);
+    CHECK(vhw_set_population(&v, "mars") != 0 && vhw_population(&v) == VHW_POP_CHINA);
 }
 
 static void temperature_is_read_and_a_missing_sensor_flagged(void)
@@ -124,6 +177,10 @@ int main(void)
     RUN(bias_drops_when_main_falls);
     RUN(over_current_cuts_the_feed);
     RUN(sense_zero_is_measured_with_the_feed_off);
+    RUN(bias_sense_table_follows_the_zero_reading);
+    RUN(ina180_reading_is_referred_to_its_own_zero);
+    RUN(a_zero_between_the_two_circuits_is_a_sense_fault);
+    RUN(the_virtual_board_reads_the_fitted_circuits_zero);
     RUN(temperature_is_read_and_a_missing_sensor_flagged);
     return CHECK_DONE();
 }

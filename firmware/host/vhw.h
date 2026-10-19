@@ -12,7 +12,12 @@
 
 #define VHW_CHAIN_BITS 24
 
+/* The population of the virtual board (spec §0): which parts are fitted where the two builds differ.
+ * China is the default. The bias-T sense reads the INA180A1 (China) or the BC857B mirror (Iran). */
+typedef enum { VHW_POP_CHINA = 0, VHW_POP_IRAN } vhw_pop_t;
+
 typedef struct {
+    vhw_pop_t population;
     uint8_t si5351[256];
     bool si5351_present, lm75_present;
     int16_t lm75_reg0;                 /* LM75A temperature register (11-bit value << 5) */
@@ -24,6 +29,11 @@ typedef struct {
 } vhw_t;
 
 void vhw_reset(vhw_t *v);
+/* The population the virtual board is built as. */
+vhw_pop_t vhw_population(const vhw_t *v);
+/* Selects the population by name ("china" or "iran") and resets the bias ADC reading to that circuit's
+ * zero (feed off). Returns nonzero, changing nothing, for any other name. */
+int vhw_set_population(vhw_t *v, const char *name);
 int vhw_i2c_write(vhw_t *v, uint8_t addr, uint8_t reg, const uint8_t *data, size_t len);
 int vhw_i2c_read(vhw_t *v, uint8_t addr, uint8_t reg, uint8_t *data, size_t len);
 void vhw_gpio_set(vhw_t *v, hal_gpio_t pin, bool level);

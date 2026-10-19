@@ -2,7 +2,7 @@
  "schema_version": 1,
  "block": "controller",
  "status": "pass",
- "generated_by": "859cd57",
+ "generated_by": "a3def77-dirty",
  "gpio": {
   "sense_vbus": "IO1",
   "sense_ext": "IO2",
@@ -55,32 +55,81 @@
   "Si5351C": 96,
   "LM75A": 72
  },
- "bias_sense_table_27c": [
-  {
-   "i_a": 4.999090921757775e-07,
-   "sense_v": 0.6281113131913605
-  },
-  {
-   "i_a": 0.01991036615153054,
-   "sense_v": 0.7295306607544079
-  },
-  {
-   "i_a": 0.04945669334393292,
-   "sense_v": 0.8849740992896815
-  },
-  {
-   "i_a": 0.09786502301302971,
-   "sense_v": 1.149542136570918
-  },
-  {
-   "i_a": 0.14667038031275859,
-   "sense_v": 1.424690020008733
-  },
-  {
-   "i_a": 0.19162965910587296,
-   "sense_v": 1.683477254023894
-  }
- ],
+ "bias_sense_tables_27c": {
+  "ina180": [
+   {
+    "i_a": 4.999993520008414e-07,
+    "sense_v": 0.003116879847430931
+   },
+   {
+    "i_a": 0.019913942656998675,
+    "sense_v": 0.400986991845418
+   },
+   {
+    "i_a": 0.04946550869717422,
+    "sense_v": 0.9914265800558029
+   },
+   {
+    "i_a": 0.09788224447683071,
+    "sense_v": 1.958791809404058
+   },
+   {
+    "i_a": 0.12170572043340833,
+    "sense_v": 2.434784290627165
+   },
+   {
+    "i_a": 0.14669584736070115,
+    "sense_v": 2.934086427885035
+   },
+   {
+    "i_a": 0.15583746962664485,
+    "sense_v": 3.1167358211301
+   },
+   {
+    "i_a": 0.16619340877089772,
+    "sense_v": 3.27672000327672
+   }
+  ],
+  "mirror": [
+   {
+    "i_a": 4.999090921757775e-07,
+    "sense_v": 0.6281113131913605
+   },
+   {
+    "i_a": 0.01991036615153054,
+    "sense_v": 0.7295306607544079
+   },
+   {
+    "i_a": 0.04945669334393292,
+    "sense_v": 0.8849740992896815
+   },
+   {
+    "i_a": 0.09786502301302971,
+    "sense_v": 1.149542136570918
+   },
+   {
+    "i_a": 0.12168444623253989,
+    "sense_v": 1.282826257193252
+   },
+   {
+    "i_a": 0.14667038031275859,
+    "sense_v": 1.424690020008733
+   },
+   {
+    "i_a": 0.15581048460321317,
+    "sense_v": 1.476942078532481
+   },
+   {
+    "i_a": 0.16616471436776906,
+    "sense_v": 1.536366009697167
+   },
+   {
+    "i_a": 0.19162965910587296,
+    "sense_v": 1.683477254023894
+   }
+  ]
+ },
+ "bias_sense_zero_split_v": 0.3,
  "bias_cutoff_a": 0.15,
  "gpio_findings": [],
  "checks": [
@@ -93,14 +142,14 @@
   },
   {
    "name": "bias_sense_zero_v",
-   "value": 0.6281113131913605,
+   "value": 0.003116879847430931,
    "limit": "report (subtracted by the firmware, feed off)",
    "passed": true,
    "unit": "V"
   },
   {
    "name": "bias_sense_drift_0_50c",
-   "value": 1.3003602064473263,
+   "value": 0.0,
    "limit": "\u2264 3",
    "passed": true,
    "unit": "%"
@@ -114,8 +163,50 @@
   },
   {
    "name": "bias_sense_max_v",
+   "value": 3.27672000327672,
+   "limit": "\u2264 3.3",
+   "passed": true,
+   "unit": "V"
+  },
+  {
+   "name": "bias_sense_iran_monotonic",
+   "value": 1.0,
+   "limit": "= 1",
+   "passed": true,
+   "unit": ""
+  },
+  {
+   "name": "bias_sense_iran_zero_v",
+   "value": 0.6281113131913605,
+   "limit": "report (subtracted by the firmware, feed off)",
+   "passed": true,
+   "unit": "V"
+  },
+  {
+   "name": "bias_sense_iran_drift_0_50c",
+   "value": 1.3003602064473263,
+   "limit": "\u2264 3",
+   "passed": true,
+   "unit": "%"
+  },
+  {
+   "name": "bias_short_current_iran_a",
+   "value": 0.3907995701204722,
+   "limit": "0.3\u20130.5",
+   "passed": true,
+   "unit": "A"
+  },
+  {
+   "name": "bias_sense_iran_max_v",
    "value": 2.877330619852643,
-   "limit": "\u2264 3.1",
+   "limit": "\u2264 3.3",
+   "passed": true,
+   "unit": "V"
+  },
+  {
+   "name": "bias_sense_zero_split",
+   "value": 0.003116879847430931,
+   "limit": "INA180 zero < 0.3 V < mirror zero",
    "passed": true,
    "unit": "V"
   },
