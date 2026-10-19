@@ -48,6 +48,7 @@ This is `inductors.r_series` with `ROBUST_DERATE = 0.75`. The interpolated model
   - Capacitors: China ±1 % E24, Iran ±2 % E12.
 - **Bank mute:** ≥ 40 dB.
 - **Margins inside the optimiser:** RL ≥ 15.5 dB and rejection ≥ 53 dB nominal, so Monte Carlo has room.
+- **Stopband (user, 2026-10-19):** at every stopband frequency, attenuation ≥ min(max(20, today − 3), 60) dB, where "today" is the current Chebyshev design under the same robust model. It is checked from 2·hi to 200 MHz and from max(10 kHz, lo/20) to lo/2. This replaces a two-point check, which elliptic designs passed while losing up to 52 dB between the points. The notch frequencies of the elliptic tanks stay at or above 1.3·hi. Elements that end at a bound (C < 3 pF, a series C at its upper limit) are pruned and the design is re-solved.
 - **Unchanged constraints:** the band edges (parent spec band table) and the 11-filter relay chain and bit map stay as they are. Splitting a band would change the relay chain and firmware, so it needs the user's approval and is proposed only if a filter cannot pass otherwise.
 
 ## 4. Synthesis by optimisation
