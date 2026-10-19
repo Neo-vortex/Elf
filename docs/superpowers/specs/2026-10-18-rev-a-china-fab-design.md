@@ -57,7 +57,7 @@ Any filter that misses its targets with the real chip values is re-synthesised o
 
 ## 2a. What is taken from the `china-parts` branch
 
-- **Taken:** the part choices: the SMD inductor model and values (NLV32 class and substitutes), G6K-2F-Y, 26 MHz TCXO, TPS7A20 RF LDOs, TLV75733; the survey JSON stays in the branch history as background only.
+- **Taken:** the part choices: G6K-2F-Y, 26 MHz TCXO, TPS7A20 RF LDOs (pinout confirmed from TI SBVS338: SOT-23 pin 4 has no internal connection). Later superseded (2026-10-19): the SMD inductor model and values (the robust filter bank uses through-hole chokes) and TLV75733 (AMS1117 in both populations); the survey JSON stays in the branch history as background only.
 - **Not taken from it either:** the LCSC numbers (`lcsc` fields, `lcsc_of`, `test_parts_lcsc.py`'s LCSC assertions) and `tools/jlc_survey.py`: the BOM identifies parts generically (§2b, user 2026-10-18).
 - **Not taken:** TPS54360 (LM2576HV stays), TPIC6C595 + SN74AHCT125 (74HC595 + ULN2803 stay), "no Iranian fallback" (dual population instead), ESP32-S3 (STM32F411 instead).
 - The branch spec gets a note pointing here when plan 5.1 merges it.
