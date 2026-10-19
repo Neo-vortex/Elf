@@ -15,6 +15,10 @@ on top of the reference bias (≈ 0.63 V; the firmware reads it as zero with the
 The transfer is monotonic and slightly non-linear (r_e falls as the current rises). The 680 Ω keeps
 the reading below 3.1 V even at the SY6280's current limit.
 
+A 1 MΩ pull-up from the sense node to +3V3_D is fitted in both: with neither circuit fitted the node
+reads ≈ 3.3 V at zero (a sense fault in the firmware); the INA180's low output impedance overrides it
+(3.3 µA) and the mirror's reading moves slightly (the tables are simulated with it).
+
 The firmware tells the circuits apart by the zero reading with the feed off (≈ 0 V against ≈ 0.63 V)
 and uses that circuit's table. The check exports both tables. The firmware cuts the feed at about
 150 mA; the SY6280 limit is the hardware backstop."""
@@ -77,6 +81,7 @@ def build(ckt: Circuit | None = None) -> Block:
         cv = population.only(parts.capacitor("100n", dielectric="X7R", voltage="16 V", note="X7R INA180 supply"), "china")
         cv[1] += v3d
         cv[2] += gnd
+        _r("1M", raw, v3d)      # both populations: with no sense circuit fitted the node reads ≈ 3.3 V, not a believable zero
         _r("10k", raw, sense)
         cf = parts.capacitor("100n", note="X7R ADC filter")
         cf[1] += sense

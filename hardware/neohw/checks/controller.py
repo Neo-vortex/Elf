@@ -40,9 +40,10 @@ def bias_sense(pop: str = population.DEFAULT) -> dict:
     for t in TEMPS_C:
         for r in (*LOAD_OHMS, 1.0):
             decks.append(to_deck(blk.circuit, "bias sense", [Load(blk.ports["sense"], "adc", 1e7),
-                                                              Load(blk.ports["feed"], "ant", 1e7)], [Op()],
+                                                              Load(blk.ports["feed"], "ant", 1e7),
+                                                              Load(blk.ports["v3d"], "v3d", 1e9)], [Op()],
                                  extra_lines=[f"VB {P['bias5']} 0 dc 5.0", f"VEN {P['en']} 0 dc 3.3",
-                                              *([f"VV3 {P['v3d']} 0 dc {V3D_V:g}"] if pop == "china" else []),
+                                              f"VV3 {P['v3d']} 0 dc {V3D_V:g}",
                                               f"RLD {P['feed']} 0 {r:g}", f".options temp={t:g}"],
                                  population=pop)[0])
             cases.append((t, r))

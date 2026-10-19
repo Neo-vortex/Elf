@@ -12,6 +12,7 @@
 #define SUP_MAIN_OK_MV 5000u           /* 5V_MAIN in regulation: 5.5 V nominal, 5.27–5.75 V over Vref and divider tolerance */
 #define SUP_SENSE_FAULT_LO_MV 150u     /* zero readings between these are neither the INA180A1 (≈ 0 V) */
 #define SUP_SENSE_FAULT_HI_MV 450u     /* nor the BC857B mirror (≈ 0.63 V): a broken sense circuit */
+#define SUP_SENSE_OPEN_MV 900u         /* above: neither circuit fitted (the 1 MΩ pull-up reads ≈ 3.3 V) or a shorted pin */
 #define SUP_HOST_MV 4000u              /* VBUS from a USB host */
 
 enum {

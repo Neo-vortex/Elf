@@ -16,7 +16,8 @@ static void choose_table(uint32_t zero)
     tab_mv = mirror ? TABLES_BIAS_SENSE_MIRROR_MV : TABLES_BIAS_SENSE_INA180_MV;
     tab_ua = mirror ? TABLES_BIAS_SENSE_MIRROR_UA : TABLES_BIAS_SENSE_INA180_UA;
     tab_n = mirror ? TABLES_BIAS_SENSE_MIRROR_POINTS : TABLES_BIAS_SENSE_INA180_POINTS;
-    if (zero >= SUP_SENSE_FAULT_LO_MV && zero <= SUP_SENSE_FAULT_HI_MV) st.flags |= SUP_FLAG_BIAS_SENSE_FAULT;
+    if ((zero >= SUP_SENSE_FAULT_LO_MV && zero <= SUP_SENSE_FAULT_HI_MV) || zero > SUP_SENSE_OPEN_MV)
+        st.flags |= SUP_FLAG_BIAS_SENSE_FAULT;
     else st.flags &= ~SUP_FLAG_BIAS_SENSE_FAULT;
 }
 
@@ -35,7 +36,8 @@ uint32_t supervisor_bias_ua(uint32_t mv)
     if (mv <= x[0]) return 0;
     int k = 1;
     while (k < n - 1 && mv > x[k]) k++;
-    /* linear between points k-1 and k (extrapolated beyond the last segment) */
+    /* linear between points k-1 and k (extrapolated beyond the last segment: the INA180 table stops at its
+     * first clamped point, so a saturated reading extrapolates above the 150 mA cut-off) */
     int64_t num = (int64_t)(mv - x[k - 1]) * (int64_t)(y[k] - y[k - 1]);
     int64_t v = (int64_t)y[k - 1] + num / (int64_t)(x[k] - x[k - 1]);
     return v < 0 ? 0 : (uint32_t)v;
@@ -98,6 +100,7 @@ bool supervisor_bias_enable(bool on)
     }
     supervisor_poll();
     if (st.flags & SUP_FLAG_MAIN_LOW) return false;
+    if (st.flags & SUP_FLAG_BIAS_ON) return true;   /* already on: current flows, so no new zero reading */
     zero_mv = hal_adc_mv(HAL_ADC_BIAS_ISENSE);   /* the feed is still off: this board's zero */
     choose_table(zero_mv);
     if (st.flags & SUP_FLAG_BIAS_SENSE_FAULT) return false;

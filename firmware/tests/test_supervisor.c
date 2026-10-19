@@ -87,8 +87,9 @@ static void over_current_cuts_the_feed(void)
     const sup_status_t *s = supervisor_poll();
     CHECK(!(s->flags & SUP_FLAG_BIAS_ON) && (s->flags & SUP_FLAG_BIAS_TRIPPED));
     CHECK(test_vhw.gpio[HAL_GPIO_BIAS_EN] == false);
-    test_vhw.adc_mv[HAL_ADC_BIAS_ISENSE] = sense_mv_for(50000);   /* fault cleared */
+    test_vhw.adc_mv[HAL_ADC_BIAS_ISENSE] = 3;                       /* feed off: the zero again */
     CHECK(supervisor_bias_enable(true));                 /* re-enabling clears the trip */
+    test_vhw.adc_mv[HAL_ADC_BIAS_ISENSE] = sense_mv_for(50000);   /* fault cleared */
     s = supervisor_poll();
     CHECK((s->flags & SUP_FLAG_BIAS_ON) && !(s->flags & SUP_FLAG_BIAS_TRIPPED));
 }
@@ -146,6 +147,46 @@ static void a_zero_between_the_two_circuits_is_a_sense_fault(void)
     CHECK(!(supervisor_poll()->flags & SUP_FLAG_BIAS_SENSE_FAULT));
 }
 
+static void a_zero_with_nothing_fitted_or_a_shorted_pin_is_a_sense_fault(void)
+{
+    supplies(12000, 5480, 5000);
+    supervisor_init();
+    test_vhw.adc_mv[HAL_ADC_BIAS_ISENSE] = 3300;                     /* the 1 MOhm pull-up alone: no sense circuit fitted */
+    CHECK(!supervisor_bias_enable(true));
+    CHECK(test_vhw.gpio[HAL_GPIO_BIAS_EN] == false);
+    CHECK(supervisor_poll()->flags & SUP_FLAG_BIAS_SENSE_FAULT);
+    test_vhw.adc_mv[HAL_ADC_BIAS_ISENSE] = 901;
+    CHECK(!supervisor_bias_enable(true));
+    test_vhw.adc_mv[HAL_ADC_BIAS_ISENSE] = 900;                      /* mirror zero tolerance still passes */
+    CHECK(supervisor_bias_enable(true));
+}
+
+static void enabling_again_with_the_feed_on_keeps_the_zero_and_table(void)
+{
+    supplies(12000, 5480, 5000);
+    supervisor_init();
+    test_vhw.adc_mv[HAL_ADC_BIAS_ISENSE] = 2;
+    CHECK(supervisor_bias_enable(true));
+    test_vhw.adc_mv[HAL_ADC_BIAS_ISENSE] = sense_mv_for(100000);     /* 100 mA flowing: reads ≈ 2 V */
+    CHECK(supervisor_bias_enable(true));                             /* already on: nothing is re-measured */
+    uint32_t ua = supervisor_poll()->bias_ua;
+    CHECK(ua > 98000 && ua < 102000);
+    CHECK(supervisor_poll()->flags & SUP_FLAG_BIAS_ON);
+    CHECK(supervisor_bias_ua(TABLES_BIAS_SENSE_INA180_MV[3]) == TABLES_BIAS_SENSE_INA180_UA[3]);
+}
+
+static void a_saturated_ina180_reading_trips_the_cutoff(void)
+{
+    supplies(12000, 5480, 5000);
+    supervisor_init();
+    test_vhw.adc_mv[HAL_ADC_BIAS_ISENSE] = 3;
+    CHECK(supervisor_bias_enable(true));
+    test_vhw.adc_mv[HAL_ADC_BIAS_ISENSE] = TABLES_BIAS_SENSE_INA180_MV[TABLES_BIAS_SENSE_INA180_POINTS - 1];
+    const sup_status_t *s = supervisor_poll();                      /* the clamp, 3277 mV */
+    CHECK((s->flags & SUP_FLAG_BIAS_TRIPPED) && !(s->flags & SUP_FLAG_BIAS_ON));
+    CHECK(s->bias_ua > TABLES_BIAS_CUTOFF_UA);
+}
+
 static void the_virtual_board_reads_the_fitted_circuits_zero(void)
 {
     vhw_t v;
@@ -180,6 +221,9 @@ int main(void)
     RUN(bias_sense_table_follows_the_zero_reading);
     RUN(ina180_reading_is_referred_to_its_own_zero);
     RUN(a_zero_between_the_two_circuits_is_a_sense_fault);
+    RUN(a_zero_with_nothing_fitted_or_a_shorted_pin_is_a_sense_fault);
+    RUN(enabling_again_with_the_feed_on_keeps_the_zero_and_table);
+    RUN(a_saturated_ina180_reading_trips_the_cutoff);
     RUN(the_virtual_board_reads_the_fitted_circuits_zero);
     RUN(temperature_is_read_and_a_missing_sensor_flagged);
     return CHECK_DONE();

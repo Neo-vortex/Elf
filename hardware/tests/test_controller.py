@@ -83,3 +83,14 @@ def test_relay_coil_voltage_is_reported_for_each_supply_corner():
 
 def test_relays_pull_in_at_every_supply_corner_with_the_5v5_rail():
     assert min(m["margin_v"] for m in ctl_check.relay_coil_margin(ctl_check._supply_corners()).values()) > 0
+
+
+def test_a_pull_up_marks_a_board_with_no_sense_circuit_fitted():
+    from neohw import population as pop
+    from neohw.blocks import bias_switch
+    blk = bias_switch.build()
+    pull = [p for p in blk.circuit.parts if getattr(p, "spec", "").startswith("1 MΩ")]
+    assert len(pull) == 1
+    assert all(pop.fitted(pull[0], x) for x in pop.POPULATIONS)
+    nets = {pin.net.name for pin in pull[0].pins}
+    assert nets == {"bias_isense_raw", "+3V3_D"}
