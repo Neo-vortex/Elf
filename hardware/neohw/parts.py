@@ -3,7 +3,11 @@ from __future__ import annotations
 
 import math
 import re
+from dataclasses import dataclass
 from pathlib import Path
+from typing import Callable
+
+import numpy as np
 
 from skidl import SKIDL, TEMPLATE, Part, Pin
 
@@ -509,7 +513,7 @@ PTC_HOLD_A, PTC_TRIP_A, PTC_V_MAX, PTC_OHM = 0.75, 1.5, 33.0, 0.3
 
 
 def ptc_resettable() -> Part:
-    """Resettable PTC fuse (polyfuse), 1812: hold 0.75 A, trip 1.5 A, 33 V maximum (≥ the 30 V input),
+    """Resettable PTC fuse (polyfuse), 1812: hold 0.75 A, trip 1.5 A, 33 V maximum (above the 20 V input),
     ≈ 0.3 Ω. It ignores millisecond plug-in pulses (it trips on heat, in seconds, at a sustained
     fault) and drops only ≈ 0.1 V at the board's 0.45 A maximum input, so the board starts at 9 V
     whatever the temperature. A passive: the manufacturer sources it (e.g. a 1812L075/33-class part)."""
@@ -532,12 +536,20 @@ def ss36() -> Part:
     return p
 
 
-def smbj30a() -> Part:
-    """SMBJ30A 600 W TVS, SMB (K 1, A 2): stand-off 30 V, breakdown 33.3 V min, clamp 48.4 V at
-    12.4 A (8/20-class surge): the buck's 60 V rating sits above the clamp."""
-    p = _ic("SMBJ30A", {"K": "1", "A": "2"}, "Diode_SMD:D_SMB", "SMBJ30A", "SMBJ30A")
-    p.spice_models = (".model SMBJ30_D d(is=1e-12 n=1.5 bv=35 ibv=1m rs=1.1 cjo=600p)",)
-    p.spice_lines = lambda n, k=1.0: [f"D{p.ref} {n['A']} {n['K']} SMBJ30_D"]
+SMBJ20A_CLAMP_V, SMBJ20A_IPP_A, SMBJ20A_RS = 32.4, 18.6, 0.465
+
+
+def smbj20a() -> Part:
+    """SMBJ20A 600 W TVS, SMB / DO-214AA (K 1, A 2), unidirectional. SMBJ series datasheet, SMBJ20A row
+    (Littelfuse-family table; Born Semiconductor "SMBJ Series" rev. 2018, same figures as the
+    Littelfuse DigiKey listing for the A-suffix parts): stand-off VR 20 V, breakdown VBR 22.2–24.5 V
+    at 1 mA, clamp VC 32.4 V at IPP 18.6 A (10/1000 µs), leakage ≤ 1 µA at VR. The 20 V maximum
+    input sits at the stand-off; the clamp is under the buck's 60 V rating and the PTC's 33 V.
+    SPICE: breakdown at the typical 23.35 V (middle of the VBR range), series resistance chosen so the
+    clamp at IPP is 32.4 V."""
+    p = _ic("SMBJ20A", {"K": "1", "A": "2"}, "Diode_SMD:D_SMB", "SMBJ20A", "SMBJ20A")
+    p.spice_models = (f".model SMBJ20_D d(is=1e-12 n=1.5 bv=23.35 ibv=1m rs={SMBJ20A_RS:g} cjo=700p)",)
+    p.spice_lines = lambda n, k=1.0: [f"D{p.ref} {n['A']} {n['K']} SMBJ20_D"]
     return p
 
 
@@ -565,35 +577,144 @@ def lm2576hv() -> Part:
     return p
 
 
+@dataclass(frozen=True)
+class LdoData:
+    """What the power check reads from a linear regulator: the dropout (V, maximum at the datasheet
+    load), the junction-to-ambient thermal resistance (°C/W) and the ripple rejection at f (dB)."""
+    dropout_v: float
+    theta_ja: float
+    psrr_db: Callable
+
+
+def _psrr_curve(points, floor_db: float = 15.0, slope_db_dec: float = 20.0):
+    """Ripple rejection through datasheet `points` ((Hz, dB), ...), interpolated on log f. Held at
+    the first point below it; above the last point it falls 20 dB/decade to `floor_db` (the
+    datasheets stop at 1 MHz; the board's spurs reach 50 MHz)."""
+    lf = np.log10([f for f, _ in points])
+    db = np.array([d for _, d in points], dtype=float)
+
+    def psrr_db(f):
+        x = np.log10(np.maximum(f, 1.0))
+        inside = np.interp(x, lf, db)
+        beyond = db[-1] - slope_db_dec * (x - lf[-1])
+        return np.clip(np.where(x > lf[-1], beyond, inside), floor_db, None)
+    return psrr_db
+
+
+def _ldo_part(p: Part, v_out: float, data: LdoData) -> Part:
+    p.v_out, p.ldo = v_out, data
+    p.dropout_v, p.theta_ja, p.psrr_db = data.dropout_v, data.theta_ja, data.psrr_db
+    return p
+
+
+# MIC5205: 75 dB at 100 Hz (datasheet DS20005785 Table 1-1), assumed -20 dB/decade above 1 kHz to a
+# 15 dB floor (the datasheet's curves are not tabulated); θJA 220 °C/W on the recommended minimum
+# footprint (Table 4-1; 170 °C/W on square copper); dropout 165 mV at 150 mA.
+MIC5205_PSRR_DB = lambda f: np.clip(75 - 20 * np.log10(np.maximum(f, 1e3) / 1e3), 15, 75)
+MIC5205_DATA = LdoData(0.165, 220.0, MIC5205_PSRR_DB)
+# TPS7A20 (SBVS338H): dropout 145 mV max at 300 mA, 2.5–5.5 V out, DBV (Section 5.5); θJA 187.1 °C/W
+# DBV (Section 5.4); PSRR at 300 mA, VIN = VOUT + 1 V (Section 5.5): 92 dB at 1 kHz, 60 dB at 100 kHz,
+# 40 dB at 1 MHz (typical; Figures 5-61 to 5-64 show the same curve)
+TPS7A20_DATA = LdoData(0.145, 187.1, _psrr_curve([(1e3, 92.0), (1e5, 60.0), (1e6, 40.0)]))
+# TLV757P (SBVS322C): dropout 475 mV max at 1 A, 3.3–5.0 V out (Section 5.5, the load-independent bound);
+# θJA DBV 231.1 °C/W on the JEDEC board (Section 5.4; 100.8 °C/W on TI's EVM); PSRR at 50 mA,
+# VIN = VOUT + 1 V (Section 5.5): 52 dB at 1 kHz, 46 dB at 100 kHz, 52 dB at 1 MHz (Figures 5-1 to 5-3)
+TLV757P_DATA = LdoData(0.475, 231.1, _psrr_curve([(1e3, 52.0), (1e5, 46.0), (1e6, 52.0)]))
+# AMS1117 (Advanced Monolithic Systems DS1117): dropout 1.3 V max at 0.8 A; θJA SOT-223 90 °C/W
+# (ϕJA, Absolute Maximum Ratings, "46 °C/W to > 90 °C/W depending on mounting"); ripple rejection 60 dB
+# min at 120 Hz (75 typ, 22 µF tantalum, 1 A); assumed -20 dB/decade above that to a 15 dB floor
+AMS1117_DATA = LdoData(1.3, 90.0, lambda f: np.clip(60 - 20 * np.log10(np.maximum(f, 120.0) / 120.0), 15, 60))
+
+
 def ams1117_33() -> Part:
-    """AMS1117-3.3, SOT-223 (GND 1, OUT 2 and tab, IN 3). From 5.5 V its dropout (1.3 V max) is
-    not a limit; the SOT-223 tab carries its 0.33 W (≈ 90 °C/W)."""
+    """AMS1117-3.3, SOT-223 (GND 1, OUT 2 and tab, IN 3; Advanced Monolithic DS1117, "Pin Connections").
+    From 5.5 V its dropout (1.3 V max) is not a limit; the SOT-223 tab carries its 0.33 W (≈ 90 °C/W)."""
     p = _ic("AMS1117-3.3", {"GND": "1", "OUT": "2", "IN": "3"}, "Package_TO_SOT_SMD:SOT-223-3_TabPin2",
             "AMS1117-3.3", "AMS1117-3.3")
-    p.v_out, p.dropout_v = 3.3, 1.3
-    p.spice_lines = lambda n, k=1.0: _ldo_lines(p.ref, n, 3.3, 1.3)
+    _ldo_part(p, 3.3, AMS1117_DATA)
+    p.spice_lines = lambda n, k=1.0: _ldo_lines(p.ref, n, 3.3, AMS1117_DATA.dropout_v)
     return p
+
+
+def _mic5205_torob(v_out: float) -> str:
+    return "MIC5205-3.3" if v_out < 4 else "MIC5205YM5"
 
 
 def mic5205(v_out: float) -> Part:
     """Microchip MIC5205 150 mA LDO, SOT-23-5 (IN 1, GND 2, EN 3, BYP 4, OUT 5). Dropout 165 mV
     at 150 mA (110 mV at 50 mA); ripple rejection 75 dB at 100 Hz (datasheet DS20005785; no
-    curve in the text, so the ripple analysis assumes a roll-off). DC model: OUT = min(v_out,
-    V_in − dropout) behind 50 mΩ; input current = output current."""
+    curve in the text, so the ripple analysis assumes a roll-off); θJA 220 °C/W. DC model: OUT =
+    min(v_out, V_in − dropout) behind 50 mΩ; input current = output current."""
     p = _ic(f"MIC5205-{v_out:.1f}", {"IN": "1", "GND": "2", "EN": "3", "BYP": "4", "OUT": "5"},
-            "Package_TO_SOT_SMD:SOT-23-5", f"MIC5205-{v_out:.1f}YM5", "MIC5205-3.3" if v_out < 4 else "MIC5205YM5")
-    p.v_out, p.dropout_v = v_out, 0.165
-    p.spice_lines = lambda n, k=1.0: _ldo_lines(p.ref, n, v_out, 0.165, "BYP")
+            "Package_TO_SOT_SMD:SOT-23-5", f"MIC5205-{v_out:.1f}YM5", _mic5205_torob(v_out))
+    _ldo_part(p, v_out, MIC5205_DATA)
+    p.spice_lines = lambda n, k=1.0: _ldo_lines(p.ref, n, v_out, MIC5205_DATA.dropout_v, "BYP")
     return p
 
 
-def _ldo_lines(ref: str, n: dict, v_out: float, dropout: float, byp: str | None = None) -> list[str]:
+def tps7a20(v_out: float) -> Part:
+    """TI TPS7A20 300 mA ultra-low-noise LDO, SOT-23-5 DBV (IN 1, GND 2, EN 3, NC 4, OUT 5): the China
+    fitting of the RF supplies. Pins from the datasheet SBVS338H (July 2024), Figure 4-4 "DBV Package,
+    5-Pin SOT-23 (Top View)" and the Pin Functions table ("N/C, SOT-23 pin 4: No internal electrical
+    connection"), fetched from ti.com. KiCad's Regulator_Linear library has only the DQN symbol, so it
+    is not a source here. Pin 4 is the MIC5205's BYP: the board leaves it open in China.
+    Input 1.6–6.0 V (6.5 V absolute), output capacitor 1–200 µF effective, ESR ≤ 100 mΩ.
+    Ripple rejection, dropout and θJA: `TPS7A20_DATA`. Only 5.0 V (TPS7A2050PDBVR) and 3.3 V
+    (TPS7A2033PDBVR) are built."""
+    mpn = {5.0: "TPS7A2050PDBVR", 3.3: "TPS7A2033PDBVR"}[round(v_out, 1)]
+    p = _ic(f"TPS7A20-{v_out:.1f}", {"IN": "1", "GND": "2", "EN": "3", "NC": "4", "OUT": "5"},
+            "Package_TO_SOT_SMD:SOT-23-5", mpn, None, nc=("NC",))
+    _ldo_part(p, v_out, TPS7A20_DATA)
+    p.spice_lines = lambda n, k=1.0: _tps7a20_lines(p.ref, n, v_out)
+    return p
+
+
+def _tps7a20_lines(ref: str, n: dict, v_out: float) -> list[str]:
+    """DC model: OUT = min(v_out, V_in − dropout) behind 50 mΩ; EN has a 500 kΩ pulldown."""
+    return _ldo_lines(ref, n, v_out, TPS7A20_DATA.dropout_v, "NC", en_r=500e3)
+
+
+def tlv75733() -> Part:
+    """TI TLV75733P 1 A LDO, 3.3 V, SOT-23-5 DBV (IN 1, GND 2, EN 3, NC 4, OUT 5): the China 3V3_D
+    regulator. Pins from the datasheet SBVS322C (March 2024), Figure 4-1 "DBV Package, 5-Pin SOT-23
+    (Top View)" and Table 4-1 ("NC, DBV pin 4: No internal connection"), fetched from ti.com;
+    KiCad's Regulator_Linear TLV75733PDBV symbol has the same footprint. Input 1.45–5.5 V
+    recommended (6.0 V absolute), 1 µF minimum on IN and OUT. Dropout, θJA, PSRR: `TLV757P_DATA`."""
+    p = _ic("TLV75733", {"IN": "1", "GND": "2", "EN": "3", "NC": "4", "OUT": "5"},
+            "Package_TO_SOT_SMD:SOT-23-5", "TLV75733PDBVR", None, nc=("NC",))
+    _ldo_part(p, 3.3, TLV757P_DATA)
+    p.spice_lines = lambda n, k=1.0: _ldo_lines(p.ref, n, 3.3, TLV757P_DATA.dropout_v, "NC", en_r=1e7)
+    return p
+
+
+def rf_ldo(v_out: float) -> Part:
+    """An RF-rail regulator on shared SOT-23-5 pads (IN 1, GND 2, EN 3, 4, OUT 5): TPS7A20 in China,
+    MIC5205 in Iran. Pin 4 is NC on the TPS7A20 and BYP (470 pF to GND) on the MIC5205; the pin is
+    named NC and the MIC5205 model reads its bypass node there. `p.ldo_by_population` holds each
+    fitting's `LdoData`."""
+    p = tps7a20(v_out)
+    china = Variant(p.value, p.mpn, "TPS7A20 300 mA ultra-low-noise LDO; pin 4 not connected")
+    iran = Variant(f"MIC5205-{v_out:.1f}", f"MIC5205-{v_out:.1f}YM5",
+                   "MIC5205 150 mA low-noise LDO; pin 4 is the 470 pF noise bypass",
+                   spice_lines=lambda n, k=1.0: _ldo_lines(p.ref, n, v_out, MIC5205_DATA.dropout_v, "NC"),
+                   torob=_mic5205_torob(v_out))
+    p.ldo_by_population = {"china": TPS7A20_DATA, "iran": MIC5205_DATA}
+    return set_variants(p, china, iran)
+
+
+def ldo_data(part: Part, population: str) -> LdoData | None:
+    """The `LdoData` of the regulator fitted in `population` (None for a part that is not one)."""
+    by_pop = getattr(part, "ldo_by_population", None)
+    return by_pop[population] if by_pop else getattr(part, "ldo", None)
+
+
+def _ldo_lines(ref: str, n: dict, v_out: float, dropout: float, byp: str | None = None, en_r: float = 1e7) -> list[str]:
     out = [f"B{ref}_reg {ref}_r {n['GND']} V = min({v_out:g}, v({n['IN']}) - {dropout:g})",
            f"V{ref}_sense {ref}_r {ref}_s dc 0",
            f"R{ref}_o {ref}_s {n['OUT']} 0.05",
            f"F{ref}_in {n['IN']} {n['GND']} V{ref}_sense 1"]
     if byp:
-        out += [f"R{ref}_byp {n[byp]} {n['GND']} 1e9", f"R{ref}_en {n['EN']} {n['GND']} 1e7"]
+        out += [f"R{ref}_byp {n[byp]} {n['GND']} 1e9", f"R{ref}_en {n['EN']} {n['GND']} {en_r:g}"]
     return out
 
 

@@ -191,6 +191,7 @@ def _check_nets(circuit, ports: list[Port], exempt: frozenset[str] = frozenset()
                  if not isinstance(n, str)}
     pins_on: dict[int, int] = {}
     nets: dict[int, object] = {}
+    nc_on: dict[int, int] = {}
     for part in circuit.parts:
         if not pops.fitted(part, population):
             continue
@@ -199,6 +200,10 @@ def _check_nets(circuit, ports: list[Port], exempt: frozenset[str] = frozenset()
                 net = _canonical(pin.net)
                 pins_on[id(net)] = pins_on.get(id(net), 0) + 1
                 nets[id(net)] = net
+            elif pin.net is not None and pin.is_connected():
+                nc_on[id(_canonical(pin.net))] = nc_on.get(id(_canonical(pin.net)), 0) + 1
+    for key in nets:       # a pin that is NC in one population and wired in another (the shared LDO pads) still ends a net
+        pins_on[key] += nc_on.get(key, 0)
     by_node: dict[str, str] = {}
     for key, net in nets.items():
         node = node_name(net)
