@@ -737,6 +737,269 @@
      "mpn": "78F101J-RC"
     }
    ]
+  },
+  "tdk_bc": {
+   "population": "both",
+   "maker": "TDK",
+   "name": "BC B78108S (axial)",
+   "package": "axial 4 x 9.2 mm max, 12.7 mm pitch",
+   "construction": "ferrite drum core, lacquered",
+   "source": "TDK 'RF chokes B78108S, B78148S, BC series, 4 x 9.2 (mm)', 06/12 (tables pages 4–5, typical Q curve IND0124-C page 7)",
+   "equivalents": [
+    "Fastron or Bourns axial RF chokes of the same body (≤ 4 × 9.2 mm, 12.7 mm pitch), Q min at the same test frequency, DCR max and SRF min"
+   ],
+   "rows": [
+    {
+     "uh": 1.0,
+     "tol_pct": 10.0,
+     "q_min": 55.0,
+     "f_test_mhz": 7.96,
+     "srf_min_mhz": 205.0,
+     "dcr_max_ohm": 0.16,
+     "i_rated_ma": 1200.0,
+     "mpn": "B78108S1102K000"
+    },
+    {
+     "uh": 1.2,
+     "tol_pct": 10.0,
+     "q_min": 55.0,
+     "f_test_mhz": 7.96,
+     "srf_min_mhz": 185.0,
+     "dcr_max_ohm": 0.18,
+     "i_rated_ma": 1150.0,
+     "mpn": "B78108S1122K000"
+    },
+    {
+     "uh": 1.5,
+     "tol_pct": 10.0,
+     "q_min": 55.0,
+     "f_test_mhz": 7.96,
+     "srf_min_mhz": 165.0,
+     "dcr_max_ohm": 0.2,
+     "i_rated_ma": 1100.0,
+     "mpn": "B78108S1152K000"
+    },
+    {
+     "uh": 1.8,
+     "tol_pct": 10.0,
+     "q_min": 55.0,
+     "f_test_mhz": 7.96,
+     "srf_min_mhz": 155.0,
+     "dcr_max_ohm": 0.22,
+     "i_rated_ma": 1030.0,
+     "mpn": "B78108S1182K000"
+    },
+    {
+     "uh": 2.2,
+     "tol_pct": 10.0,
+     "q_min": 55.0,
+     "f_test_mhz": 7.96,
+     "srf_min_mhz": 140.0,
+     "dcr_max_ohm": 0.25,
+     "i_rated_ma": 1000.0,
+     "mpn": "B78108S1222K000"
+    },
+    {
+     "uh": 2.7,
+     "tol_pct": 10.0,
+     "q_min": 60.0,
+     "f_test_mhz": 7.96,
+     "srf_min_mhz": 125.0,
+     "dcr_max_ohm": 0.26,
+     "i_rated_ma": 940.0,
+     "mpn": "B78108S1272K000"
+    },
+    {
+     "uh": 3.3,
+     "tol_pct": 10.0,
+     "q_min": 60.0,
+     "f_test_mhz": 7.96,
+     "srf_min_mhz": 115.0,
+     "dcr_max_ohm": 0.29,
+     "i_rated_ma": 900.0,
+     "mpn": "B78108S1332K000"
+    },
+    {
+     "uh": 3.9,
+     "tol_pct": 10.0,
+     "q_min": 60.0,
+     "f_test_mhz": 7.96,
+     "srf_min_mhz": 105.0,
+     "dcr_max_ohm": 0.31,
+     "i_rated_ma": 850.0,
+     "mpn": "B78108S1392K000"
+    },
+    {
+     "uh": 4.7,
+     "tol_pct": 10.0,
+     "q_min": 60.0,
+     "f_test_mhz": 7.96,
+     "srf_min_mhz": 95.0,
+     "dcr_max_ohm": 0.34,
+     "i_rated_ma": 820.0,
+     "mpn": "B78108S1472K000"
+    },
+    {
+     "uh": 5.6,
+     "tol_pct": 10.0,
+     "q_min": 60.0,
+     "f_test_mhz": 7.96,
+     "srf_min_mhz": 85.0,
+     "dcr_max_ohm": 0.38,
+     "i_rated_ma": 780.0,
+     "mpn": "B78108S1562K000"
+    },
+    {
+     "uh": 6.8,
+     "tol_pct": 10.0,
+     "q_min": 65.0,
+     "f_test_mhz": 7.96,
+     "srf_min_mhz": 75.0,
+     "dcr_max_ohm": 0.51,
+     "i_rated_ma": 670.0,
+     "mpn": "B78108S1682K000"
+    },
+    {
+     "uh": 8.2,
+     "tol_pct": 10.0,
+     "q_min": 65.0,
+     "f_test_mhz": 7.96,
+     "srf_min_mhz": 50.0,
+     "dcr_max_ohm": 0.48,
+     "i_rated_ma": 690.0,
+     "mpn": "B78108S1822K000"
+    },
+    {
+     "uh": 10.0,
+     "tol_pct": 10.0,
+     "q_min": 70.0,
+     "f_test_mhz": 2.52,
+     "srf_min_mhz": 35.0,
+     "dcr_max_ohm": 0.49,
+     "i_rated_ma": 680.0,
+     "mpn": "B78108S1103K000"
+    },
+    {
+     "uh": 12.0,
+     "tol_pct": 10.0,
+     "q_min": 70.0,
+     "f_test_mhz": 2.52,
+     "srf_min_mhz": 30.0,
+     "dcr_max_ohm": 0.55,
+     "i_rated_ma": 650.0,
+     "mpn": "B78108S1123K000"
+    },
+    {
+     "uh": 15.0,
+     "tol_pct": 10.0,
+     "q_min": 60.0,
+     "f_test_mhz": 2.52,
+     "srf_min_mhz": 20.0,
+     "dcr_max_ohm": 0.6,
+     "i_rated_ma": 610.0,
+     "mpn": "B78108S1153K000"
+    },
+    {
+     "uh": 18.0,
+     "tol_pct": 10.0,
+     "q_min": 60.0,
+     "f_test_mhz": 2.52,
+     "srf_min_mhz": 17.0,
+     "dcr_max_ohm": 0.67,
+     "i_rated_ma": 580.0,
+     "mpn": "B78108S1183K000"
+    },
+    {
+     "uh": 22.0,
+     "tol_pct": 10.0,
+     "q_min": 55.0,
+     "f_test_mhz": 2.52,
+     "srf_min_mhz": 13.0,
+     "dcr_max_ohm": 0.74,
+     "i_rated_ma": 560.0,
+     "mpn": "B78108S1223K000"
+    },
+    {
+     "uh": 27.0,
+     "tol_pct": 10.0,
+     "q_min": 55.0,
+     "f_test_mhz": 2.52,
+     "srf_min_mhz": 10.0,
+     "dcr_max_ohm": 0.83,
+     "i_rated_ma": 530.0,
+     "mpn": "B78108S1273K000"
+    },
+    {
+     "uh": 33.0,
+     "tol_pct": 10.0,
+     "q_min": 55.0,
+     "f_test_mhz": 2.52,
+     "srf_min_mhz": 9.0,
+     "dcr_max_ohm": 0.92,
+     "i_rated_ma": 500.0,
+     "mpn": "B78108S1333K000"
+    },
+    {
+     "uh": 39.0,
+     "tol_pct": 10.0,
+     "q_min": 50.0,
+     "f_test_mhz": 2.52,
+     "srf_min_mhz": 8.0,
+     "dcr_max_ohm": 1.02,
+     "i_rated_ma": 470.0,
+     "mpn": "B78108S1393K000"
+    },
+    {
+     "uh": 47.0,
+     "tol_pct": 5.0,
+     "q_min": 45.0,
+     "f_test_mhz": 2.52,
+     "srf_min_mhz": 7.5,
+     "dcr_max_ohm": 1.1,
+     "i_rated_ma": 450.0,
+     "mpn": "B78108S1473J000"
+    },
+    {
+     "uh": 56.0,
+     "tol_pct": 5.0,
+     "q_min": 40.0,
+     "f_test_mhz": 2.52,
+     "srf_min_mhz": 7.0,
+     "dcr_max_ohm": 1.23,
+     "i_rated_ma": 430.0,
+     "mpn": "B78108S1563J000"
+    },
+    {
+     "uh": 68.0,
+     "tol_pct": 5.0,
+     "q_min": 40.0,
+     "f_test_mhz": 2.52,
+     "srf_min_mhz": 6.5,
+     "dcr_max_ohm": 1.35,
+     "i_rated_ma": 410.0,
+     "mpn": "B78108S1683J000"
+    },
+    {
+     "uh": 82.0,
+     "tol_pct": 5.0,
+     "q_min": 35.0,
+     "f_test_mhz": 2.52,
+     "srf_min_mhz": 6.0,
+     "dcr_max_ohm": 1.54,
+     "i_rated_ma": 390.0,
+     "mpn": "B78108S1823J000"
+    },
+    {
+     "uh": 100.0,
+     "tol_pct": 5.0,
+     "q_min": 70.0,
+     "f_test_mhz": 0.796,
+     "srf_min_mhz": 5.0,
+     "dcr_max_ohm": 1.7,
+     "i_rated_ma": 370.0,
+     "mpn": "B78108S1104J000"
+    }
+   ]
   }
  }
 }
