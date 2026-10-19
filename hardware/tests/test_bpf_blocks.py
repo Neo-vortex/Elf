@@ -75,3 +75,45 @@ def test_band_10_split_keeps_2f_of_its_lower_edge_out_of_the_passband():
     assert bpf.BANDS[9] == (30e6, 40e6) and bpf.BANDS[10] == (40e6, 54e6)
     for lo, hi in bpf.BANDS[9:]:
         assert 2 * lo > 1.4 * hi
+
+
+from neohw import population as pop
+
+
+def test_every_bank_inductor_has_an_smd_china_variant_and_an_axial_iran_variant():
+    bank = bpf_bank.build(7)
+    inductors = [p for p in bank.circuit.parts if p.ref.startswith("L")]
+    assert inductors
+    from neohw.units import parse_si
+    for p in inductors:
+        chip = "1812" if parse_si(p.value[:-1]) >= 1e-6 else "1210"
+        assert p.footprint == f"NeoRadio:L_{chip}_Axial_P10.16mm"
+        china, iran = pop.variant(p, "china"), pop.variant(p, "iran")
+        assert f"{chip} wirewound" in china.ident and "TDK" in china.ident and china.tol == 0.05
+        assert "axial" in iran.ident and "Bourns 78F" in iran.ident and iran.tol == 0.03
+        assert "Q≥" in china.ident and "Q≥" in iran.ident and "I≥20 mA" in iran.ident
+
+
+def test_iran_capacitors_use_e12_values_only_and_china_e24():
+    from neohw import eseries
+    e12 = {round(v, 15) for v in eseries.values(eseries.E12, 1e-13, 1e-6)}
+    for index in range(1, 12):
+        for pos in bpf.design(index).positions:
+            if pos.kind.startswith("C"):
+                assert all(round(v, 15) in e12 for v in pos.iran_parts), (index, pos)
+
+
+def test_capacitor_slots_fit_each_populations_realisation():
+    from neohw.units import parse_si
+    blk = bpf.build(1)
+    caps = [p for p in blk.circuit.parts if p.ref.startswith("C")]
+    for name in pop.POPULATIONS:
+        fitted = sorted(parse_si(pop.variant(c, name).value[:-1]) for c in caps if pop.fitted(c, name))
+        want = sorted(v for pos in bpf.design(1).positions if pos.kind.startswith("C")
+                      for v in (pos.parts if name == "china" else pos.iran_parts))
+        assert fitted == pytest.approx(want, rel=1e-9), name
+    for c in caps:
+        for name in pop.POPULATIONS:
+            v = pop.variant(c, name)
+            if v is not None:
+                assert v.tol == bpf.CAP_TOL[name] and f"±{bpf.CAP_TOL[name] * 100:g} %" in v.ident

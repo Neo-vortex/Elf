@@ -1,0 +1,742 @@
+{
+ "_doc": "Filter inductor series with published, guaranteed Q (Rev A spec §2; user decision 2026-10-19). Rows copied from the datasheets named in each series; never edit a number without its source. Q min holds at f_test; srf_min and dcr_max are datasheet limits.",
+ "series": {
+  "tdk_nl453232": {
+   "population": "china",
+   "maker": "TDK",
+   "name": "NL453232T",
+   "package": "1812",
+   "construction": "wirewound ferrite",
+   "tol_pct": 5,
+   "source": "TDK catalogue 'NL453232 type', 20170418, inductor_commercial_standard_nl453232 (table page 5, typical Q curve page 8)",
+   "equivalents": [
+    "Bourns CM453232-xxxK (same Q min, SRF min, DCR max and current row for row; ±10 % standard, ±5 % on request): bourns.com/PDFs/CM453232.pdf"
+   ],
+   "rows": [
+    {
+     "uh": 1.0,
+     "q_min": 50.0,
+     "f_test_mhz": 7.96,
+     "srf_min_mhz": 100.0,
+     "dcr_max_ohm": 0.5,
+     "i_rated_ma": 450.0,
+     "mpn": "NL453232T-1R0J-PF"
+    },
+    {
+     "uh": 1.2,
+     "q_min": 50.0,
+     "f_test_mhz": 7.96,
+     "srf_min_mhz": 80.0,
+     "dcr_max_ohm": 0.55,
+     "i_rated_ma": 430.0,
+     "mpn": "NL453232T-1R2J-PF"
+    },
+    {
+     "uh": 1.5,
+     "q_min": 50.0,
+     "f_test_mhz": 7.96,
+     "srf_min_mhz": 70.0,
+     "dcr_max_ohm": 0.6,
+     "i_rated_ma": 410.0,
+     "mpn": "NL453232T-1R5J-PF"
+    },
+    {
+     "uh": 1.8,
+     "q_min": 50.0,
+     "f_test_mhz": 7.96,
+     "srf_min_mhz": 60.0,
+     "dcr_max_ohm": 0.65,
+     "i_rated_ma": 390.0,
+     "mpn": "NL453232T-1R8J-PF"
+    },
+    {
+     "uh": 2.2,
+     "q_min": 50.0,
+     "f_test_mhz": 7.96,
+     "srf_min_mhz": 55.0,
+     "dcr_max_ohm": 0.7,
+     "i_rated_ma": 380.0,
+     "mpn": "NL453232T-2R2J-PF"
+    },
+    {
+     "uh": 2.7,
+     "q_min": 50.0,
+     "f_test_mhz": 7.96,
+     "srf_min_mhz": 50.0,
+     "dcr_max_ohm": 0.75,
+     "i_rated_ma": 370.0,
+     "mpn": "NL453232T-2R7J-PF"
+    },
+    {
+     "uh": 3.3,
+     "q_min": 50.0,
+     "f_test_mhz": 7.96,
+     "srf_min_mhz": 45.0,
+     "dcr_max_ohm": 0.8,
+     "i_rated_ma": 355.0,
+     "mpn": "NL453232T-3R3J-PF"
+    },
+    {
+     "uh": 3.9,
+     "q_min": 50.0,
+     "f_test_mhz": 7.96,
+     "srf_min_mhz": 40.0,
+     "dcr_max_ohm": 0.9,
+     "i_rated_ma": 330.0,
+     "mpn": "NL453232T-3R9J-PF"
+    },
+    {
+     "uh": 4.7,
+     "q_min": 50.0,
+     "f_test_mhz": 7.96,
+     "srf_min_mhz": 35.0,
+     "dcr_max_ohm": 1.0,
+     "i_rated_ma": 315.0,
+     "mpn": "NL453232T-4R7J-PF"
+    },
+    {
+     "uh": 5.6,
+     "q_min": 50.0,
+     "f_test_mhz": 7.96,
+     "srf_min_mhz": 33.0,
+     "dcr_max_ohm": 1.1,
+     "i_rated_ma": 300.0,
+     "mpn": "NL453232T-5R6J-PF"
+    },
+    {
+     "uh": 6.8,
+     "q_min": 50.0,
+     "f_test_mhz": 7.96,
+     "srf_min_mhz": 27.0,
+     "dcr_max_ohm": 1.2,
+     "i_rated_ma": 285.0,
+     "mpn": "NL453232T-6R8J-PF"
+    },
+    {
+     "uh": 8.2,
+     "q_min": 50.0,
+     "f_test_mhz": 7.96,
+     "srf_min_mhz": 25.0,
+     "dcr_max_ohm": 1.4,
+     "i_rated_ma": 270.0,
+     "mpn": "NL453232T-8R2J-PF"
+    },
+    {
+     "uh": 10.0,
+     "q_min": 50.0,
+     "f_test_mhz": 2.52,
+     "srf_min_mhz": 20.0,
+     "dcr_max_ohm": 1.6,
+     "i_rated_ma": 250.0,
+     "mpn": "NL453232T-100J-PF"
+    },
+    {
+     "uh": 12.0,
+     "q_min": 50.0,
+     "f_test_mhz": 2.52,
+     "srf_min_mhz": 18.0,
+     "dcr_max_ohm": 2.0,
+     "i_rated_ma": 225.0,
+     "mpn": "NL453232T-120J-PF"
+    },
+    {
+     "uh": 15.0,
+     "q_min": 50.0,
+     "f_test_mhz": 2.52,
+     "srf_min_mhz": 17.0,
+     "dcr_max_ohm": 2.5,
+     "i_rated_ma": 200.0,
+     "mpn": "NL453232T-150J-PF"
+    },
+    {
+     "uh": 18.0,
+     "q_min": 50.0,
+     "f_test_mhz": 2.52,
+     "srf_min_mhz": 15.0,
+     "dcr_max_ohm": 2.8,
+     "i_rated_ma": 190.0,
+     "mpn": "NL453232T-180J-PF"
+    },
+    {
+     "uh": 22.0,
+     "q_min": 50.0,
+     "f_test_mhz": 2.52,
+     "srf_min_mhz": 13.0,
+     "dcr_max_ohm": 3.2,
+     "i_rated_ma": 180.0,
+     "mpn": "NL453232T-220J-PF"
+    },
+    {
+     "uh": 27.0,
+     "q_min": 50.0,
+     "f_test_mhz": 2.52,
+     "srf_min_mhz": 12.0,
+     "dcr_max_ohm": 3.6,
+     "i_rated_ma": 170.0,
+     "mpn": "NL453232T-270J-PF"
+    },
+    {
+     "uh": 33.0,
+     "q_min": 50.0,
+     "f_test_mhz": 2.52,
+     "srf_min_mhz": 11.0,
+     "dcr_max_ohm": 4.0,
+     "i_rated_ma": 160.0,
+     "mpn": "NL453232T-330J-PF"
+    },
+    {
+     "uh": 39.0,
+     "q_min": 50.0,
+     "f_test_mhz": 2.52,
+     "srf_min_mhz": 10.0,
+     "dcr_max_ohm": 4.5,
+     "i_rated_ma": 150.0,
+     "mpn": "NL453232T-390J-PF"
+    },
+    {
+     "uh": 47.0,
+     "q_min": 50.0,
+     "f_test_mhz": 2.52,
+     "srf_min_mhz": 10.0,
+     "dcr_max_ohm": 5.0,
+     "i_rated_ma": 140.0,
+     "mpn": "NL453232T-470J-PF"
+    },
+    {
+     "uh": 56.0,
+     "q_min": 50.0,
+     "f_test_mhz": 2.52,
+     "srf_min_mhz": 9.0,
+     "dcr_max_ohm": 5.5,
+     "i_rated_ma": 135.0,
+     "mpn": "NL453232T-560J-PF"
+    },
+    {
+     "uh": 68.0,
+     "q_min": 50.0,
+     "f_test_mhz": 2.52,
+     "srf_min_mhz": 9.0,
+     "dcr_max_ohm": 6.0,
+     "i_rated_ma": 130.0,
+     "mpn": "NL453232T-680J-PF"
+    },
+    {
+     "uh": 82.0,
+     "q_min": 50.0,
+     "f_test_mhz": 2.52,
+     "srf_min_mhz": 8.0,
+     "dcr_max_ohm": 7.0,
+     "i_rated_ma": 120.0,
+     "mpn": "NL453232T-820J-PF"
+    }
+   ]
+  },
+  "tdk_nlv32": {
+   "population": "china",
+   "maker": "TDK",
+   "name": "NLV32T",
+   "package": "1210",
+   "construction": "wirewound ferrite",
+   "tol_pct": 5,
+   "source": "TDK NLV32-EF datasheet rows (as in commit ed5be14, NLV32_TABLE)",
+   "equivalents": [
+    "any 1210 wirewound ±5 % with the same Q min at the same test frequency, SRF min and DCR max"
+   ],
+   "rows": [
+    {
+     "uh": 0.1,
+     "q_min": 28.0,
+     "f_test_mhz": 100.0,
+     "srf_min_mhz": 700.0,
+     "dcr_max_ohm": 0.44,
+     "i_rated_ma": null,
+     "mpn": "NLV32T-R10J-EF"
+    },
+    {
+     "uh": 0.12,
+     "q_min": 30.0,
+     "f_test_mhz": 25.2,
+     "srf_min_mhz": 500.0,
+     "dcr_max_ohm": 0.22,
+     "i_rated_ma": null,
+     "mpn": "NLV32T-R12J-EF"
+    },
+    {
+     "uh": 0.15,
+     "q_min": 30.0,
+     "f_test_mhz": 25.2,
+     "srf_min_mhz": 450.0,
+     "dcr_max_ohm": 0.25,
+     "i_rated_ma": null,
+     "mpn": "NLV32T-R15J-EF"
+    },
+    {
+     "uh": 0.18,
+     "q_min": 30.0,
+     "f_test_mhz": 25.2,
+     "srf_min_mhz": 400.0,
+     "dcr_max_ohm": 0.28,
+     "i_rated_ma": null,
+     "mpn": "NLV32T-R18J-EF"
+    },
+    {
+     "uh": 0.22,
+     "q_min": 30.0,
+     "f_test_mhz": 25.2,
+     "srf_min_mhz": 350.0,
+     "dcr_max_ohm": 0.32,
+     "i_rated_ma": null,
+     "mpn": "NLV32T-R22J-EF"
+    },
+    {
+     "uh": 0.27,
+     "q_min": 30.0,
+     "f_test_mhz": 25.2,
+     "srf_min_mhz": 320.0,
+     "dcr_max_ohm": 0.36,
+     "i_rated_ma": null,
+     "mpn": "NLV32T-R27J-EF"
+    },
+    {
+     "uh": 0.33,
+     "q_min": 30.0,
+     "f_test_mhz": 25.2,
+     "srf_min_mhz": 300.0,
+     "dcr_max_ohm": 0.4,
+     "i_rated_ma": null,
+     "mpn": "NLV32T-R33J-EF"
+    },
+    {
+     "uh": 0.39,
+     "q_min": 30.0,
+     "f_test_mhz": 25.2,
+     "srf_min_mhz": 250.0,
+     "dcr_max_ohm": 0.45,
+     "i_rated_ma": null,
+     "mpn": "NLV32T-R39J-EF"
+    },
+    {
+     "uh": 0.47,
+     "q_min": 30.0,
+     "f_test_mhz": 25.2,
+     "srf_min_mhz": 220.0,
+     "dcr_max_ohm": 0.5,
+     "i_rated_ma": null,
+     "mpn": "NLV32T-R47J-EF"
+    },
+    {
+     "uh": 0.56,
+     "q_min": 30.0,
+     "f_test_mhz": 25.2,
+     "srf_min_mhz": 180.0,
+     "dcr_max_ohm": 0.55,
+     "i_rated_ma": null,
+     "mpn": "NLV32T-R56J-EF"
+    },
+    {
+     "uh": 0.68,
+     "q_min": 30.0,
+     "f_test_mhz": 25.2,
+     "srf_min_mhz": 160.0,
+     "dcr_max_ohm": 0.6,
+     "i_rated_ma": null,
+     "mpn": "NLV32T-R68J-EF"
+    },
+    {
+     "uh": 0.82,
+     "q_min": 30.0,
+     "f_test_mhz": 25.2,
+     "srf_min_mhz": 140.0,
+     "dcr_max_ohm": 0.65,
+     "i_rated_ma": null,
+     "mpn": "NLV32T-R82J-EF"
+    }
+   ]
+  },
+  "bourns_78f": {
+   "population": "iran",
+   "maker": "Bourns",
+   "name": "78F",
+   "package": "axial 7.11 x 2.79 mm max",
+   "construction": "axial ferrite drum, conformal coated, colour coded",
+   "source": "Bourns '78F Series Conformal Coated RF Choke' datasheet, bourns.com/PDFs/78f_series.pdf",
+   "equivalents": [
+    "Taiyo Yuden LAL03",
+    "TDK B78108S (BC series, needs a 12.7 mm pitch)",
+    "generic colour-code axial chokes (AL0307 class) with the same Q min at the same test frequency, after LCR selection"
+   ],
+   "rows": [
+    {
+     "uh": 0.1,
+     "tol_pct": 10.0,
+     "q_min": 20.0,
+     "f_test_mhz": 25.0,
+     "srf_min_mhz": 400.0,
+     "dcr_max_ohm": 0.06,
+     "i_rated_ma": 1200.0,
+     "mpn": "78FR10K-RC"
+    },
+    {
+     "uh": 0.12,
+     "tol_pct": 10.0,
+     "q_min": 20.0,
+     "f_test_mhz": 25.0,
+     "srf_min_mhz": 400.0,
+     "dcr_max_ohm": 0.07,
+     "i_rated_ma": 1200.0,
+     "mpn": "78FR12K-RC"
+    },
+    {
+     "uh": 0.15,
+     "tol_pct": 10.0,
+     "q_min": 20.0,
+     "f_test_mhz": 25.0,
+     "srf_min_mhz": 380.0,
+     "dcr_max_ohm": 0.07,
+     "i_rated_ma": 1200.0,
+     "mpn": "78FR15K-RC"
+    },
+    {
+     "uh": 0.18,
+     "tol_pct": 10.0,
+     "q_min": 20.0,
+     "f_test_mhz": 25.0,
+     "srf_min_mhz": 380.0,
+     "dcr_max_ohm": 0.073,
+     "i_rated_ma": 1150.0,
+     "mpn": "78FR18K-RC"
+    },
+    {
+     "uh": 0.22,
+     "tol_pct": 10.0,
+     "q_min": 40.0,
+     "f_test_mhz": 25.0,
+     "srf_min_mhz": 380.0,
+     "dcr_max_ohm": 0.075,
+     "i_rated_ma": 1150.0,
+     "mpn": "78FR22K-RC"
+    },
+    {
+     "uh": 0.27,
+     "tol_pct": 10.0,
+     "q_min": 40.0,
+     "f_test_mhz": 25.0,
+     "srf_min_mhz": 360.0,
+     "dcr_max_ohm": 0.085,
+     "i_rated_ma": 1110.0,
+     "mpn": "78FR27K-RC"
+    },
+    {
+     "uh": 0.33,
+     "tol_pct": 10.0,
+     "q_min": 40.0,
+     "f_test_mhz": 25.0,
+     "srf_min_mhz": 335.0,
+     "dcr_max_ohm": 0.095,
+     "i_rated_ma": 1110.0,
+     "mpn": "78FR33K-RC"
+    },
+    {
+     "uh": 0.39,
+     "tol_pct": 10.0,
+     "q_min": 40.0,
+     "f_test_mhz": 25.0,
+     "srf_min_mhz": 310.0,
+     "dcr_max_ohm": 0.1,
+     "i_rated_ma": 1000.0,
+     "mpn": "78FR39K-RC"
+    },
+    {
+     "uh": 0.47,
+     "tol_pct": 10.0,
+     "q_min": 40.0,
+     "f_test_mhz": 25.0,
+     "srf_min_mhz": 270.0,
+     "dcr_max_ohm": 0.11,
+     "i_rated_ma": 1000.0,
+     "mpn": "78FR47K-RC"
+    },
+    {
+     "uh": 0.56,
+     "tol_pct": 10.0,
+     "q_min": 40.0,
+     "f_test_mhz": 25.0,
+     "srf_min_mhz": 245.0,
+     "dcr_max_ohm": 0.12,
+     "i_rated_ma": 950.0,
+     "mpn": "78FR56K-RC"
+    },
+    {
+     "uh": 0.68,
+     "tol_pct": 10.0,
+     "q_min": 40.0,
+     "f_test_mhz": 25.0,
+     "srf_min_mhz": 230.0,
+     "dcr_max_ohm": 0.13,
+     "i_rated_ma": 900.0,
+     "mpn": "78FR68K-RC"
+    },
+    {
+     "uh": 0.82,
+     "tol_pct": 10.0,
+     "q_min": 40.0,
+     "f_test_mhz": 25.0,
+     "srf_min_mhz": 200.0,
+     "dcr_max_ohm": 0.14,
+     "i_rated_ma": 875.0,
+     "mpn": "78FR82K-RC"
+    },
+    {
+     "uh": 1.0,
+     "tol_pct": 10.0,
+     "q_min": 40.0,
+     "f_test_mhz": 25.0,
+     "srf_min_mhz": 180.0,
+     "dcr_max_ohm": 0.15,
+     "i_rated_ma": 815.0,
+     "mpn": "78F1R0K-RC"
+    },
+    {
+     "uh": 1.2,
+     "tol_pct": 10.0,
+     "q_min": 40.0,
+     "f_test_mhz": 7.9,
+     "srf_min_mhz": 165.0,
+     "dcr_max_ohm": 0.18,
+     "i_rated_ma": 740.0,
+     "mpn": "78F1R2K-RC"
+    },
+    {
+     "uh": 1.5,
+     "tol_pct": 10.0,
+     "q_min": 50.0,
+     "f_test_mhz": 7.9,
+     "srf_min_mhz": 150.0,
+     "dcr_max_ohm": 0.2,
+     "i_rated_ma": 700.0,
+     "mpn": "78F1R5K-RC"
+    },
+    {
+     "uh": 1.8,
+     "tol_pct": 10.0,
+     "q_min": 50.0,
+     "f_test_mhz": 7.9,
+     "srf_min_mhz": 125.0,
+     "dcr_max_ohm": 0.23,
+     "i_rated_ma": 655.0,
+     "mpn": "78F1R8K-RC"
+    },
+    {
+     "uh": 2.2,
+     "tol_pct": 10.0,
+     "q_min": 50.0,
+     "f_test_mhz": 7.9,
+     "srf_min_mhz": 110.0,
+     "dcr_max_ohm": 0.25,
+     "i_rated_ma": 630.0,
+     "mpn": "78F2R2K-RC"
+    },
+    {
+     "uh": 2.7,
+     "tol_pct": 10.0,
+     "q_min": 50.0,
+     "f_test_mhz": 7.9,
+     "srf_min_mhz": 95.0,
+     "dcr_max_ohm": 0.28,
+     "i_rated_ma": 595.0,
+     "mpn": "78F2R7K-RC"
+    },
+    {
+     "uh": 3.3,
+     "tol_pct": 5.0,
+     "q_min": 50.0,
+     "f_test_mhz": 7.9,
+     "srf_min_mhz": 60.0,
+     "dcr_max_ohm": 0.3,
+     "i_rated_ma": 575.0,
+     "mpn": "78F3R3J-RC"
+    },
+    {
+     "uh": 3.9,
+     "tol_pct": 5.0,
+     "q_min": 45.0,
+     "f_test_mhz": 7.9,
+     "srf_min_mhz": 50.0,
+     "dcr_max_ohm": 0.32,
+     "i_rated_ma": 555.0,
+     "mpn": "78F3R9J-RC"
+    },
+    {
+     "uh": 4.7,
+     "tol_pct": 5.0,
+     "q_min": 45.0,
+     "f_test_mhz": 7.9,
+     "srf_min_mhz": 38.0,
+     "dcr_max_ohm": 0.35,
+     "i_rated_ma": 530.0,
+     "mpn": "78F4R7J-RC"
+    },
+    {
+     "uh": 5.6,
+     "tol_pct": 5.0,
+     "q_min": 45.0,
+     "f_test_mhz": 7.9,
+     "srf_min_mhz": 32.0,
+     "dcr_max_ohm": 0.4,
+     "i_rated_ma": 500.0,
+     "mpn": "78F5R6J-RC"
+    },
+    {
+     "uh": 6.8,
+     "tol_pct": 5.0,
+     "q_min": 40.0,
+     "f_test_mhz": 7.9,
+     "srf_min_mhz": 28.0,
+     "dcr_max_ohm": 0.45,
+     "i_rated_ma": 470.0,
+     "mpn": "78F6R8J-RC"
+    },
+    {
+     "uh": 8.2,
+     "tol_pct": 5.0,
+     "q_min": 40.0,
+     "f_test_mhz": 7.9,
+     "srf_min_mhz": 20.0,
+     "dcr_max_ohm": 0.55,
+     "i_rated_ma": 425.0,
+     "mpn": "78F8R2J-RC"
+    },
+    {
+     "uh": 10.0,
+     "tol_pct": 5.0,
+     "q_min": 40.0,
+     "f_test_mhz": 7.9,
+     "srf_min_mhz": 18.0,
+     "dcr_max_ohm": 0.75,
+     "i_rated_ma": 370.0,
+     "mpn": "78F100J-RC"
+    },
+    {
+     "uh": 12.0,
+     "tol_pct": 5.0,
+     "q_min": 45.0,
+     "f_test_mhz": 2.5,
+     "srf_min_mhz": 16.0,
+     "dcr_max_ohm": 0.8,
+     "i_rated_ma": 350.0,
+     "mpn": "78F120J-RC"
+    },
+    {
+     "uh": 15.0,
+     "tol_pct": 5.0,
+     "q_min": 50.0,
+     "f_test_mhz": 2.5,
+     "srf_min_mhz": 16.0,
+     "dcr_max_ohm": 0.93,
+     "i_rated_ma": 335.0,
+     "mpn": "78F150J-RC"
+    },
+    {
+     "uh": 18.0,
+     "tol_pct": 5.0,
+     "q_min": 50.0,
+     "f_test_mhz": 2.5,
+     "srf_min_mhz": 15.0,
+     "dcr_max_ohm": 1.0,
+     "i_rated_ma": 315.0,
+     "mpn": "78F180J-RC"
+    },
+    {
+     "uh": 22.0,
+     "tol_pct": 5.0,
+     "q_min": 50.0,
+     "f_test_mhz": 2.5,
+     "srf_min_mhz": 13.0,
+     "dcr_max_ohm": 1.2,
+     "i_rated_ma": 285.0,
+     "mpn": "78F220J-RC"
+    },
+    {
+     "uh": 27.0,
+     "tol_pct": 5.0,
+     "q_min": 50.0,
+     "f_test_mhz": 2.5,
+     "srf_min_mhz": 11.0,
+     "dcr_max_ohm": 1.35,
+     "i_rated_ma": 270.0,
+     "mpn": "78F270J-RC"
+    },
+    {
+     "uh": 33.0,
+     "tol_pct": 5.0,
+     "q_min": 50.0,
+     "f_test_mhz": 2.5,
+     "srf_min_mhz": 10.0,
+     "dcr_max_ohm": 1.5,
+     "i_rated_ma": 255.0,
+     "mpn": "78F330J-RC"
+    },
+    {
+     "uh": 39.0,
+     "tol_pct": 5.0,
+     "q_min": 50.0,
+     "f_test_mhz": 2.5,
+     "srf_min_mhz": 9.5,
+     "dcr_max_ohm": 1.7,
+     "i_rated_ma": 240.0,
+     "mpn": "78F390J-RC"
+    },
+    {
+     "uh": 47.0,
+     "tol_pct": 5.0,
+     "q_min": 60.0,
+     "f_test_mhz": 2.5,
+     "srf_min_mhz": 8.5,
+     "dcr_max_ohm": 2.7,
+     "i_rated_ma": 205.0,
+     "mpn": "78F470J-RC"
+    },
+    {
+     "uh": 56.0,
+     "tol_pct": 5.0,
+     "q_min": 60.0,
+     "f_test_mhz": 2.5,
+     "srf_min_mhz": 7.5,
+     "dcr_max_ohm": 2.95,
+     "i_rated_ma": 195.0,
+     "mpn": "78F560J-RC"
+    },
+    {
+     "uh": 68.0,
+     "tol_pct": 5.0,
+     "q_min": 60.0,
+     "f_test_mhz": 2.5,
+     "srf_min_mhz": 6.5,
+     "dcr_max_ohm": 3.3,
+     "i_rated_ma": 185.0,
+     "mpn": "78F680J-RC"
+    },
+    {
+     "uh": 82.0,
+     "tol_pct": 5.0,
+     "q_min": 60.0,
+     "f_test_mhz": 2.5,
+     "srf_min_mhz": 6.0,
+     "dcr_max_ohm": 3.6,
+     "i_rated_ma": 175.0,
+     "mpn": "78F820J-RC"
+    },
+    {
+     "uh": 100.0,
+     "tol_pct": 5.0,
+     "q_min": 60.0,
+     "f_test_mhz": 2.5,
+     "srf_min_mhz": 5.5,
+     "dcr_max_ohm": 4.1,
+     "i_rated_ma": 165.0,
+     "mpn": "78F101J-RC"
+    }
+   ]
+  }
+ }
+}

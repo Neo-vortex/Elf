@@ -7,7 +7,9 @@ from pathlib import Path
 
 from skidl import SKIDL, TEMPLATE, Part, Pin
 
+from neohw import footprints, inductors
 from neohw.availability import inductor_hit
+from neohw.population import Variant, set_variants
 from neohw.units import format_si, parse_si
 
 
@@ -114,23 +116,34 @@ def capacitor(value, footprint: str = "Capacitor_SMD:C_0805_2012Metric", mpn: st
         m = re.search(r"(\d+(?:\.\d+)?) V\b", note)
         voltage = f"{m.group(1)} V" if m else default_voltage(farads, dielectric)
     p.package = package_of(footprint)
-    spec_tol = max(tol, CAP_CLASS_TOL.get(dielectric, 0.0))   # X7R/X5R are not sold tighter than ±10 %
-    p.spec = f"{_spaced(farads, 'F')} ±{spec_tol * 100:g} % {dielectric} {p.package} {voltage}"
+    p.spec = capacitor_spec(farads, tol, p.package, dielectric, voltage)
+    p.spice_lines = _capacitor_lines(farads, esr, esl, p)
+    return p
 
+
+def capacitor_spec(farads: float, tol: float, package: str, dielectric: str = "C0G", voltage: str | None = None) -> str:
+    """The BOM specification of a capacitor (spec §2b)."""
+    voltage = voltage or default_voltage(farads, dielectric)
+    spec_tol = max(tol, CAP_CLASS_TOL.get(dielectric, 0.0))   # X7R/X5R are not sold tighter than ±10 %
+    return f"{_spaced(farads, 'F')} ±{spec_tol * 100:g} % {dielectric} {package} {voltage}"
+
+
+def _capacitor_lines(farads: float, esr: float, esl: float, part):
+    """SPICE lines of a capacitor of `farads` on `part` (read for its ref when the deck is
+    written): also the model of a population variant of another value on the same footprint."""
     def lines(n, k=1.0):
+        ref = part.ref
         if esr <= 0 and esl <= 0:
-            return [f"C{p.ref} {n['1']} {n['2']} {_num(farads * k)}"]
+            return [f"C{ref} {n['1']} {n['2']} {_num(farads * k)}"]
         out, node = [], n["1"]
         if esr > 0:      # internal node names as before ESL was added: existing netlists are unchanged
-            out.append(f"R{p.ref}_esr {node} {p.ref}_esr {_num(esr)}")
-            node = f"{p.ref}_esr"
+            out.append(f"R{ref}_esr {node} {ref}_esr {_num(esr)}")
+            node = f"{ref}_esr"
         if esl > 0:
-            out.append(f"L{p.ref}_esl {node} {p.ref}_esl {_num(esl)}")
-            node = f"{p.ref}_esl"
-        return out + [f"C{p.ref} {node} {n['2']} {_num(farads * k)}"]
-
-    p.spice_lines = lines
-    return p
+            out.append(f"L{ref}_esl {node} {ref}_esl {_num(esl)}")
+            node = f"{ref}_esl"
+        return out + [f"C{ref} {node} {n['2']} {_num(farads * k)}"]
+    return lines
 
 
 # G6K terminal arrangement (pin name -> footprint pad), as drawn in Omron's
@@ -232,6 +245,59 @@ def inductor(value, q: float, q_freq_hz: float, tol: float = 0.03, trim: float =
 
     p.spice_lines = lines
     return p
+
+
+SMD_INDUCTOR_TOL = 0.05           # China: TDK NL453232 / NLV32 J grade, fitted as bought
+FILTER_INDUCTOR_TOL_IRAN = 0.03   # Iran: Bourns 78F class, selected with an LCR meter
+
+
+def _datasheet_lines(r, henries_built: float, f_eval_hz: float, part):
+    """L + series R at `f_eval_hz` + parallel C for the minimum self-resonance, from a datasheet
+    row (neohw.inductors). `part` is read for its ref when the deck is written."""
+    r_s, c_p = inductors.r_series(r, f_eval_hz), inductors.c_par(r)
+
+    def lines(n, k=1.0):
+        mid = f"{part.ref}_m"
+        return [f"L{part.ref} {n['1']} {mid} {_num(henries_built * k)}",
+                f"R{part.ref} {mid} {n['2']} {_num(r_s * k)}",
+                f"C{part.ref}_p {n['1']} {n['2']} {_num(c_p)}"]
+    return lines
+
+
+def _datasheet_ident(r, tol: float, how: str) -> str:
+    info = inductors.series_info(r.series)
+    return (f"{_spaced(r.henries, 'H')} ±{tol * 100:g} % {how}, Q≥{r.q_min:g} at {_spaced(r.f_test_hz, 'Hz')}, "
+            f"SRF≥{_spaced(r.srf_min_hz, 'Hz')}, DCR≤{r.dcr_max:g} Ω, {inductors.CURRENT_SPEC} "
+            f"({info['maker']} {r.mpn} or equivalent)")
+
+
+def filter_inductor(value, f_eval_hz: float, trim_iran: float, note: str | None = None) -> Part:
+    """A band-pass filter inductor on a combined SMD/axial footprint (neohw.footprints).
+
+    China: a TDK NL453232 (1812, from 1 µH) or NLV32 (1210, below) wirewound chip, fitted as
+    bought (±5 %). Iran: a Bourns 78F axial choke selected with an LCR meter (±3 %, scaled by
+    `trim_iran` so a pair hits the design target). Both are modelled from their guaranteed
+    datasheet numbers at `f_eval_hz` (neohw.inductors)."""
+    henries = _positive(value)
+    if not 0.9 <= trim_iran <= 1.1:
+        raise ValueError(f"trim {trim_iran:.3f} is outside the ±10 % a selected part can reach")
+    china_row = inductors.row(inductors.china_series(henries), henries)
+    iran_row = inductors.row(inductors.IRAN, henries)
+    china_pkg = inductors.series_info(china_row.series)["package"]
+    footprint = f"NeoRadio:{footprints.combined_inductor_name(china_pkg)}"
+    p = _tagged(_template("L", "L", ["1", "2"], footprint)(value=format_si(henries, "H")), IDENT_SPEC)
+    p.mpn, p.torob, p.tol = None, None, FILTER_INDUCTOR_TOL_IRAN
+    p.torob_match = lambda name: inductor_hit(name, henries)
+    p.bom_note = note or f"select to ±{FILTER_INDUCTOR_TOL_IRAN * 100:g} % with LCR meter"
+    p.package = package_of(footprint)
+    p.spec = _datasheet_ident(iran_row, FILTER_INDUCTOR_TOL_IRAN, f"axial on {p.package}, selected with an LCR meter")
+    p.spice_lines = _datasheet_lines(iran_row, henries * trim_iran, f_eval_hz, p)
+    china = Variant(p.value, _datasheet_ident(china_row, SMD_INDUCTOR_TOL, f"{china_pkg} wirewound"),
+                    f"{china_pkg} wirewound, fitted as bought",
+                    spice_lines=_datasheet_lines(china_row, henries, f_eval_hz, p), tol=SMD_INDUCTOR_TOL)
+    iran = Variant(p.value, p.spec, p.bom_note, spice_lines=p.spice_lines, tol=FILTER_INDUCTOR_TOL_IRAN,
+                   torob=p.torob, torob_match=p.torob_match)
+    return set_variants(p, china, iran)
 
 
 MODELS_DIR = Path(__file__).resolve().parents[1] / "models"

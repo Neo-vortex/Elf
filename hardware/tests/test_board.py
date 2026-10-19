@@ -128,3 +128,12 @@ def test_bias_t_chokes_are_rated_for_the_hardware_current_limit():
     from neohw.blocks import bias_tee, power
     assert all("0.4 A" in note for *_, note in bias_tee.CHOKES)
     assert power.BIAS_FILTER_NOTE.endswith("rated ≥ 0.4 A")
+
+
+def test_a_project_footprint_missing_from_the_project_library_is_reported():
+    ckt = Circuit()
+    with ckt:
+        r = parts.resistor(50, footprint="NeoRadio:Not_Drawn")
+        r[1] += Net("a")
+        r[2] += Net("b")
+    assert check.findings(ckt)["missing_footprints"] == ["NeoRadio:Not_Drawn"]

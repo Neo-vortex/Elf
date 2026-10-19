@@ -1,6 +1,7 @@
 """Board check (phase 3 spec §1 item 2): the whole receiver as one netlist. No net with a single
 pin, no required pin left open, every IC supply pin on its rail and every ground pin on GND, every
-footprint in the KiCad 9 libraries. Writes the board KiCad netlist and BOM, and board.json."""
+footprint in the KiCad 9 libraries or the project library. Writes the board KiCad netlist and BOM,
+and board.json."""
 from __future__ import annotations
 
 from pathlib import Path
@@ -8,9 +9,13 @@ from pathlib import Path
 from neohw import availability, charfile, export, ident
 from neohw.blocks import board
 from neohw.checks import BlockResult, CheckResult
+from neohw.footprints import FOOTPRINT_LIB
 from neohw.spice import _canonical
 
 KICAD_FOOTPRINTS = Path("/usr/share/kicad/footprints")
+# NeoRadio: footprints not drawn yet (layout phase); every other NeoRadio: footprint must be in the
+# project library
+LAYOUT_PENDING = ("NeoRadio:GDT_SMD_2pin",)
 # (part value, pin) -> rail the pin must be on
 SUPPLY_RAILS = {
     ("Si5351C", "VDD"): "+3V3_RF", ("Si5351C", "VDDOA"): "+3V3_RF", ("Si5351C", "VDDOB"): "+3V3_RF",
@@ -26,6 +31,13 @@ GROUND_PINS = ("GND", "GND2", "EPAD", "PAD", "V-", "REFGND")
 
 def _net(pin):
     return _canonical(pin.net).name if pin.net is not None else None
+
+
+def _footprint_exists(footprint: str) -> bool:
+    lib, name = footprint.split(":")
+    if lib == "NeoRadio":
+        return footprint in LAYOUT_PENDING or (FOOTPRINT_LIB / f"{name}.kicad_mod").exists()
+    return (KICAD_FOOTPRINTS / f"{lib}.pretty" / f"{name}.kicad_mod").exists()
 
 
 def findings(ckt) -> dict:
@@ -49,8 +61,7 @@ def findings(ckt) -> dict:
                 rails.append(f"{p.ref} {p.value}.{pin.name} on {_net(pin)}, expected GND")
             if p.value == "LM4562" and pin.name == "V-" and _net(pin) != "GND":
                 rails.append(f"{p.ref} LM4562.V- on {_net(pin)}, expected GND (single supply)")
-    missing = sorted({p.footprint for p in ckt.parts if not p.footprint.startswith("NeoRadio:")
-                      and not (KICAD_FOOTPRINTS / f"{p.footprint.split(':')[0]}.pretty" / f"{p.footprint.split(':')[1]}.kicad_mod").exists()})
+    missing = sorted({p.footprint for p in ckt.parts if not _footprint_exists(p.footprint)})
     return {"single_pin_nets": single, "open_pins": open_pins, "rail_errors": rails, "missing_footprints": missing}
 
 

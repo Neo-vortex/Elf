@@ -1,4 +1,10 @@
-"""One band-pass filter of the bank: Chebyshev HPF(5) + LPF(7/9), switched by two G6K-2F (spec §4)."""
+"""One band-pass filter of the bank: Chebyshev HPF(5) + LPF(7/9), switched by two G6K-2F (spec §4).
+
+Two populations (Rev A spec §2): China fits TDK NL453232 / NLV32 wirewound chips as bought and
+±1 % C0G capacitors from E24; Iran fits Bourns 78F axial chokes and E12 C0G capacitors, both
+selected with an LCR meter. Every inductor is modelled from its guaranteed datasheet Q, DCR and
+SRF (neohw.inductors). Inductors share one footprint with SMD and THT pads; capacitor positions
+have as many slots as the longer of the two realisations."""
 from __future__ import annotations
 
 import math
@@ -7,6 +13,8 @@ from dataclasses import dataclass
 from skidl import Circuit, Net
 
 from neohw import eseries, parts
+from neohw.units import format_si
+from neohw.population import Variant, set_variants
 from neohw.blocks import Block
 from neohw.synth.filters import Element, highpass, lowpass
 
@@ -19,20 +27,23 @@ LPF_ORDER = (9, 9, 9, 9, 9, 9, 7, 7, 7, 7, 7)  # 7 where rejection at 3x has > 5
 HPF_ORDER = 5
 # Chebyshev ripple per filter: 0.02 dB; lower on 9–11, where ten open relay contacts on each bus
 # (~6 pF) eat into the return loss and the filters have rejection to spare
-RIPPLE_DB = (0.02,) * 8 + (0.01, 0.005, 0.01)
+RIPPLE_DB = (0.02,) * 8 + (0.01, 0.005, 0.005)   # filter 11: 0.005 dB with the datasheet inductors (2026-10-19)
 EDGE_MARGIN = 1.03   # HPF cutoff 3 % below the band's lower edge
-LPF_MARGIN = (1.03,) * 11            # LPF cutoff 3 % above the upper edge
-Q_ASSUMED = 30.0
-L_MIN = 0.1e-6       # smallest axial colour-ring inductor commonly sold
+LPF_MARGIN = (1.03,) * 9 + (1.05, 1.05)  # LPF cutoff 3 % above the upper edge; 5 % on filters 10–11 (datasheet inductors, 2026-10-19)
+L_MIN = 0.1e-6       # smallest axial colour-ring inductor commonly sold (and the smallest NLV32)
 C_MIN = 1e-12        # smallest E24 C0G 0805
+CAP_TOL = {"china": 0.01, "iran": 0.02}   # China ±1 % as bought; Iran selected to ±2 %
+CAP_FOOTPRINT = "Capacitor_SMD:C_0805_2012Metric"
 
 
 @dataclass(frozen=True)
 class Position:
-    """One ladder position realised with 1–2 preferred-value parts."""
+    """One ladder position realised with 1–2 preferred-value parts: `parts` for China (E24
+    capacitors), `iran_parts` for Iran (E12 capacitors); inductors are E12 in both."""
     kind: str
     ideal: float
     parts: tuple[float, ...]
+    iran_parts: tuple[float, ...]
 
 
 @dataclass(frozen=True)
@@ -49,8 +60,10 @@ class FilterDesign:
 
 def _realise(e: Element) -> Position:
     if e.kind.startswith("L"):
-        return Position(e.kind, e.value, eseries.combo(e.value, eseries.E12, minimum=L_MIN))
-    return Position(e.kind, e.value, eseries.combo(e.value, eseries.E24, minimum=C_MIN))
+        parts_ = eseries.combo(e.value, eseries.E12, minimum=L_MIN)
+        return Position(e.kind, e.value, parts_, parts_)
+    return Position(e.kind, e.value, eseries.combo(e.value, eseries.E24, minimum=C_MIN),
+                    eseries.combo(e.value, eseries.E12, minimum=C_MIN))
 
 
 def design(index: int) -> FilterDesign:
@@ -64,27 +77,41 @@ def design(index: int) -> FilterDesign:
 
 
 Q_REFS = ("centre", "upper")
-INDUCTOR_NOTE = ("select each group so its sum is within ±3 % of target (bpf_bank.json build sheet); "
-                 f"Q={Q_ASSUMED:g} at band centre assumed")
+INDUCTOR_NOTE = "select each group so its sum is within ±3 % of target (bpf_bank.json build sheet)"
 CAPACITOR_NOTE = "C0G/NP0; select to ±2 % with LCR meter"
+CAPACITOR_NOTE_CHINA = "C0G/NP0 ±1 %, fitted as bought"
 
 
 def _inductors(pos: Position, a: Net, b: Net, prefix: str, d: FilterDesign, q_freq: float) -> None:
-    """Series chain of 1–2 inductors from a to b, selected so their sum is pos.ideal."""
+    """Series chain of 1–2 inductors from a to b. Iran selects them so their sum is pos.ideal
+    (the trim); China fits the bought values."""
     values = pos.parts
     nodes = [a] + [Net(f"{prefix}_s{k}") for k in range(1, len(values))] + [b]
     trim = pos.ideal / sum(values)
     for k, v in enumerate(values):
-        ind = parts.inductor(v, Q_ASSUMED, q_freq, trim=trim, note=INDUCTOR_NOTE)
+        ind = parts.filter_inductor(v, q_freq, trim, note=INDUCTOR_NOTE)
         ind.select_group, ind.select_target = prefix, pos.ideal
         ind[1] += nodes[k]
         ind[2] += nodes[k + 1]
 
 
-def _capacitors(values, a: Net, b: Net) -> None:
-    """1–2 C0G capacitors in parallel between a and b."""
-    for v in values:
-        c = parts.capacitor(v, note=CAPACITOR_NOTE)
+def _cap_variant(farads: float, pop: str, part) -> Variant:
+    note = CAPACITOR_NOTE_CHINA if pop == "china" else CAPACITOR_NOTE
+    return Variant(format_si(farads, "F"),
+                   parts.capacitor_spec(farads, CAP_TOL[pop], parts.package_of(CAP_FOOTPRINT)), note,
+                   spice_lines=parts._capacitor_lines(farads, 0.0, 0.0, part), tol=CAP_TOL[pop])
+
+
+def _capacitors(pos: Position, a: Net, b: Net) -> None:
+    """1–2 C0G capacitor slots in parallel between a and b: slot k carries the China part k of
+    pos.parts and the Iran part k of pos.iran_parts (unfitted where a population has fewer)."""
+    for k in range(max(len(pos.parts), len(pos.iran_parts))):
+        china = pos.parts[k] if k < len(pos.parts) else None
+        iran = pos.iran_parts[k] if k < len(pos.iran_parts) else None
+        c = parts.capacitor(china if china is not None else iran, footprint=CAP_FOOTPRINT,
+                            tol=CAP_TOL["iran"], note=CAPACITOR_NOTE)
+        set_variants(c, china=None if china is None else _cap_variant(china, "china", c),
+                     iran=None if iran is None else _cap_variant(iran, "iran", c))
         c[1] += a
         c[2] += b
 
@@ -92,8 +119,9 @@ def _capacitors(values, a: Net, b: Net) -> None:
 def add_filter(d: FilterDesign, f_in: Net, f_out: Net, gnd: Net, q_ref: str = "centre") -> None:
     """Add the filter's parts to the current circuit between f_in and f_out.
 
-    `q_ref` is where the assumed Q holds: the band centre (nominal) or the upper edge
-    (worst case: lower Q across the band). The last series position ends on f_out itself.
+    `q_ref` is where each inductor's datasheet loss is evaluated: the band centre (nominal) or
+    the upper edge (worst case: the largest series R in the band). The last series position
+    ends on f_out itself.
     """
     if q_ref not in Q_REFS:
         raise ValueError(f"q_ref must be one of {Q_REFS}, got {q_ref!r}")
@@ -105,12 +133,12 @@ def add_filter(d: FilterDesign, f_in: Net, f_out: Net, gnd: Net, q_ref: str = "c
         if k in series_at:
             nxt = f_out if k == series_at[-1] else Net(f"f{d.index}_n{k + 1}")
             if pos.kind == "C_series":
-                _capacitors(pos.parts, node, nxt)
+                _capacitors(pos, node, nxt)
             else:
                 _inductors(pos, node, nxt, prefix, d, q_freq)
             node = nxt
         elif pos.kind == "C_shunt":
-            _capacitors(pos.parts, node, gnd)
+            _capacitors(pos, node, gnd)
         else:
             _inductors(pos, node, gnd, prefix, d, q_freq)
 
