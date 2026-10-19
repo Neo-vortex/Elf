@@ -788,9 +788,10 @@ INA180_GAIN, INA180_OFFSET_V, INA180_ROUT, INA180_HEADROOM_V = 20.0, 0.15e-3, 10
 def ina180a1() -> Part:
     """Texas Instruments INA180A1IDBVR current-sense amplifier, SOT-23-5 (DBV): 1 OUT, 2 GND,
     3 IN+, 4 IN-, 5 VS. Gain 20 V/V, input offset at most ±150 µV (A1 grade), common mode up to
-    26 V independent of VS. Pinout as in the Pin Functions table of the INA180 datasheet, as listed
-    by KiCad's Amplifier_Current:INA180A1 symbol (ti.com was not reachable when this was written; see
-    the Task 4 report). Behavioural model: V(OUT) = clamp(20 · (V(IN+) − V(IN−)) + 20 · 150 µV, 0,
+    26 V independent of VS. Checked against TI SBOS741H (Table 6-1): the INA180 comes in two
+    SOT-23 pinouts; the "A" devices (INA180A1) use pinout A as above, the "B" devices (INA180B1)
+    swap IN+, IN- and OUT, so the MPN must stay INA180A1. Output swing to VS is VS - 0.03 V at
+    most (VS - 0.02 V typical, used here). Behavioural model: V(OUT) = clamp(20 · (V(IN+) − V(IN−)) + 20 · 150 µV, 0,
     V(VS) − 20 mV) through 10 Ω; the offset has the sign that reads high, so the zero is never
     below the true zero."""
     p = _ic("INA180A1", {"OUT": "1", "GND": "2", "IN+": "3", "IN-": "4", "VS": "5"},
