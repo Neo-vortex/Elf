@@ -50,7 +50,10 @@ def test_bank_bus_is_read_from_the_relay_model():
     sig = inspect.signature(parts.relay_dpdt).parameters
     bus = ladder.bank_bus()
     assert bus.series_r == sig["contact_r"].default
-    assert bus.shunt_c > 10 * sig["open_c"].default          # ten released relays on the bus
+    open_c, ipc = sig["open_c"].default, sig["inter_pole_c"].default
+    # 10 released relays: open NO1-COM1 + NO1-NO2 each; selected relay: NO1-NO2 (bus side),
+    # open COM1-NC1 + COM1-COM2 (filter side)  ->  11 open contacts, 12 inter-pole C
+    assert bus.shunt_c == pytest.approx(11 * open_c + 12 * ipc)
 
 
 def test_metrics_keys_and_none_rules():
@@ -63,7 +66,37 @@ def test_metrics_keys_and_none_rules():
     d1 = bpf.design(1)
     m1 = ladder.metrics(ladder.from_positions(d1.positions), d1.lo_hz, d1.hi_hz,
                         ladder.robust_losses(d1.centre_hz))
-    assert m1["att_half_lo_db"] is not None and m1["rej3f_db"] is None   # 0.3 MHz < 0.5 MHz upper edge
+    assert m1["att_half_lo_db"] is not None and m1["rej3f_db"] is None   # lo/2 = 50 kHz (inclusive); 3·lo = 0.3 MHz ≤ hi = 0.5 MHz
+    m80 = ladder.metrics(ladder.from_positions(d1.positions), 80e3, d1.hi_hz, ladder.robust_losses(d1.centre_hz))
+    assert m80["att_half_lo_db"] is None                                  # lo/2 = 40 kHz < 50 kHz
+
+
+def _lossy(r, q, f0):
+    return ladder.Losses(lambda h, f: r + 1j * 2 * math.pi * f * h, cap_q=q, f_cap_q_hz=f0)
+
+
+def test_resonant_branches_lossless():
+    l, c = 1e-6, 100e-12
+    f0 = 1 / (2 * math.pi * math.sqrt(l * c))
+    w0l = 2 * math.pi * f0 * l
+    zs = ladder.branch_z(ladder.Branch("series", "LC_ser", l=l, c=c), np.array([f0]), _lossless())
+    zp = ladder.branch_z(ladder.Branch("series", "LC_par", l=l, c=c), np.array([f0]), _lossless())
+    assert abs(zs[0]) < 1e-6 * w0l
+    assert abs(zp[0]) > 1e6 * w0l
+
+
+def test_resonant_branches_lossy_match_exact_expressions():
+    l, c, r, q = 1e-6, 100e-12, 0.7, 300.0
+    f0 = 1 / (2 * math.pi * math.sqrt(l * c))
+    losses = _lossy(r, q, f0)
+    esr = 1 / (2 * math.pi * f0 * c * q)
+    for f in (f0, 0.7 * f0):
+        w = 2 * math.pi * f
+        zl, zc = r + 1j * w * l, esr + 1 / (1j * w * c)
+        zs = ladder.branch_z(ladder.Branch("shunt", "LC_ser", l=l, c=c), np.array([f]), losses)[0]
+        zp = ladder.branch_z(ladder.Branch("shunt", "LC_par", l=l, c=c), np.array([f]), losses)[0]
+        assert zs == pytest.approx(zl + zc, rel=1e-12)
+        assert zp == pytest.approx(zl * zc / (zl + zc), rel=1e-12)
 
 
 def test_segment_wrapper_equals_robust_z_at_the_segment_frequency():
@@ -90,5 +123,8 @@ def test_matches_ngspice_on_todays_filter_8_in_the_bank():
         ladder.db(ladder.s21_s11(br, f, segment_losses(d.centre_hz, d.centre_hz), ladder.bank_bus())[0]),
         ladder.db(ladder.s21_s11(br, f3, segment_losses(3 * d.centre_hz, d.centre_hz), ladder.bank_bus())[0])])
     ref = spice_s21_db(8, np.concatenate([f, f3]))
-    assert np.max(np.abs(fast[:41] - ref[:41])) <= 0.05
+    assert np.max(np.abs(fast[:41] - ref[:41])) <= 0.01          # without the bus: 0.039 dB
     assert np.max(np.abs(fast[41:] - ref[41:])[ref[41:] > -60]) <= 1.0
+    deep = ref[41:] > -80
+    assert deep.sum() >= 30
+    assert np.max(np.abs(fast[41:] - ref[41:])[deep]) <= 0.05    # without the bus: 0.53 dB
