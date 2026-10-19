@@ -29,7 +29,7 @@ parts are selected for availability in the Iranian electronics market.
 - Built-in calibration tone (Si5351 output through a -70 dB pad) for software self-calibration
 - Low-noise instrumentation baseband (LM4562) into a CS5361 audio ADC
 - Muted safe state with all relays released
-- Powered from a 9–30 V barrel jack (12 V shack supplies, 24 V systems, common adapters): fuse,
+- Powered from a 9–20 V barrel jack (12 V shack supplies, common adapters): fuse,
   NTC inrush limiter, reverse-polarity diode and surge clamp ahead of a 60 V buck converter; LC
   filters and low-noise LDOs give separate analogue, RF and digital rails. USB carries data only,
   so the host never powers the board

@@ -1,4 +1,4 @@
-/* Power and protection supervision (phase 3 spec §3.2, plan 3.4: the 9–30 V jack is the only
+/* Power and protection supervision (phase 3 spec §3.2, plan 3.4: the 9–20 V jack is the only
  * supply, USB is data only): input and 5V_MAIN monitoring, host presence on VBUS, the bias-T
  * over-current cut-off (hardware limit 0.39 A, firmware 150 mA) and board temperature. */
 #ifndef ELF_SUPERVISOR_H

@@ -38,7 +38,7 @@ static void monitors_read_through_the_dividers(void)
     supervisor_init();
     supplies(12000, 5480, 5000);
     const sup_status_t *s = supervisor_poll();
-    CHECK(s->ext_mv >= 11980 && s->ext_mv <= 12020);              /* 100 k / 10 k: 30 V fits the ADC */
+    CHECK(s->ext_mv >= 11980 && s->ext_mv <= 12020);              /* 100 k / 10 k: 20 V fits the ADC */
     CHECK(s->main_mv >= 5470 && s->main_mv <= 5490);
     CHECK((s->flags & SUP_FLAG_EXT) && (s->flags & SUP_FLAG_HOST) && !(s->flags & SUP_FLAG_INPUT_LOW));
     supplies(7500, 5480, 0);                                       /* input sagging, no host */

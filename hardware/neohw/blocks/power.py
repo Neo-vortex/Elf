@@ -7,6 +7,8 @@ Input:
   a surge at 32.4 V at 18.6 A, under the buck's 60 V rating and the PTC's 33 V; the clamp is the
   lowest of the SMBJ parts whose stand-off reaches the 20 V input) → input LC (10 µH + 100 µF / 50 V
   electrolytic ‖ 1 µF / 50 V), which also keeps the buck's input pulses off the adapter cable.
+  The PTC's rated 33 V is above the 20 V maximum input it must interrupt; during a surge it is in
+  series ahead of the TVS.
 - LM2576HVS-ADJ buck (52 kHz) → 100 µH (12 × 12 mm, Isat ≥ 2 A) → 5V_MAIN = 5.5 V (FB 3.48 k /
   1 k), 1000 µF / 16 V low-ESR electrolytic ‖ 22 µF ‖ 100 nF; SS36 catch diode.
 
@@ -17,10 +19,9 @@ Rails from 5V_MAIN:
   (China) or MIC5205-5.0 (Iran) on the same SOT-23-5 pads;
 - 3V3_RF (Si5351C, 74LVC74/157, LM75A): LC → TPS7A2033 (China) or MIC5205-3.3 (Iran), same pads;
   pin 4 is NC on the TPS7A20 and the MIC5205's BYP, whose 470 pF is fitted in Iran only;
-- 3V3_D (STM32F411, CS5361 VL/VD, logic): TLV75733 (China, SOT-23-5, 1 µF X7R in and out) or
-  AMS1117-3.3 (Iran, SOT-223 with a 22 µF tantalum). Each has its own footprint, as the TLV757P is
-  1 A and the AMS1117 needs its tantalum's ESR. From 5.5 V either dissipates ≈ 0.33 W at 0.15 A;
-  the power check holds both to 125 °C junction at 50 °C ambient (the SOT-23-5's θJA is the limit);
+- 3V3_D (STM32F411, CS5361 VL/VD, logic): AMS1117-3.3 (SOT-223, both populations; from 5.5 V it
+  dissipates 0.33 W at 0.15 A, which the SOT-223 tab carries at ≈ 90 °C/W) with a 22 µF tantalum
+  whose ESR it needs for stability;
 - 5V_BIAS (the bias-T switch): LC from 5V_MAIN.
 
 USB carries data only: VBUS reaches the USBLC6 and a sense divider (host present) and powers
@@ -158,21 +159,13 @@ def build(ckt: Circuit | None = None) -> Block:
         only(_c("470p", byp_rf, gnd, "C0G noise bypass (MIC5205 only; pin 4 is NC on the TPS7A20)", voltage="50 V"), "iran")
         _c("10u", v3rf, gnd, "X5R output", "Capacitor_SMD:C_1206_3216Metric", "16 V")
         _c("100n", v3rf, gnd, voltage="50 V")
-        # 3V3_D: TLV75733 (China) or AMS1117 + tantalum (Iran)
-        ld = only(parts.tlv75733(), "china")
+        # 3V3_D: AMS1117 + tantalum, both populations
+        ld = parts.ams1117_33()
         ld["IN"] += main
-        ld["EN"] += main
         ld["GND"] += gnd
         ld["OUT"] += v3d
-        only(_c("1u", main, gnd, "X7R input (TLV75733 needs ≥ 1 µF)", "Capacitor_SMD:C_0805_2012Metric", "16 V"), "china")
-        only(_c("1u", v3d, gnd, "X7R output (TLV75733 needs ≥ 1 µF)", "Capacitor_SMD:C_0805_2012Metric", "16 V"), "china")
-        ldi = only(parts.ams1117_33(), "iran")
-        ldi["IN"] += main
-        ldi["GND"] += gnd
-        ldi["OUT"] += v3d
         c_ta = parts.capacitor("22u", footprint="Capacitor_Tantalum_SMD:CP_EIA-3528-21_Kemet-B", esr=0.5,
                                note="tantalum 10 V: AMS1117 stability needs its ESR")
-        only(c_ta, "iran")
         c_ta[1] += v3d
         c_ta[2] += gnd
         _c("100n", v3d, gnd, voltage="50 V")

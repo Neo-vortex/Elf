@@ -24,7 +24,7 @@ SUPPLY_RAILS = {
     ("LM4562", "V+"): "+5V_A", ("CS5361", "VA"): "+5V_A", ("CS5361", "VD"): "+3V3_D", ("CS5361", "VL"): "+3V3_D",
     ("ESP32-S3-WROOM-1", "3V3"): "+3V3_D", ("74HC595", "VCC"): "+3V3_D", ("ULN2803", "COM"): "+5V_MAIN",
     ("G6K-2F", "COIL+"): "+5V_MAIN", ("TPS7A20-5.0", "OUT"): "+5V_A", ("TPS7A20-3.3", "OUT"): "+3V3_RF",
-    ("TLV75733", "OUT"): "+3V3_D", ("AMS1117-3.3", "OUT"): "+3V3_D", ("USBLC6-2SC6", "VBUS"): "VBUS",
+    ("AMS1117-3.3", "OUT"): "+3V3_D", ("USBLC6-2SC6", "VBUS"): "VBUS",
 }
 GROUND_PINS = ("GND", "GND2", "EPAD", "PAD", "V-", "REFGND")
 

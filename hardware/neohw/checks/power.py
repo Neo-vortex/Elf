@@ -2,7 +2,7 @@
 Rails at 9 and 20 V input and maximum load, a reversed plug, the TVS surge clamp against the
 buck's and the PTC's rating, regulator junction temperatures, the buck's conducted ripple per amateur band,
 the hot-plug transient (buck input overshoot, peak current, rails up and staying up) and the input current.
-The regulators differ by population (TPS7A20 / TLV75733 in China, MIC5205 / AMS1117 in Iran), so every
+The regulators differ by population (TPS7A20 in China, MIC5205 in Iran, on shared pads; the 3V3_D AMS1117 is in both), so every
 rail, junction and spur result is computed for each; the China results head power.json and
 `populations` holds both. Writes power.json."""
 from __future__ import annotations
@@ -36,8 +36,8 @@ INPUT_V = (9.0, 20.0)          # the jack's range (user decision, 2026-10-18)
 SURGE_A = parts.SMBJ20A_IPP_A  # SMBJ20A rated peak pulse current (its clamp voltage, 32.4 V, is specified there)
 PLUG_IN_V = (8.55, 9.0, 12.0, 20.0)   # 8.55 V: a 9 V adapter at −5 %
 LEAK_MAX_A = 1e-3
-# thermal: θJA per regulator from its datasheet (neohw.parts.LdoData: TPS7A20 DBV 187.1, TLV75733 DBV
-# 231.1 (JEDEC board), MIC5205 SOT-23-5 220, AMS1117 SOT-223 90 °C/W); LM2576 TO-263 on ≈ 1 in² copper
+# thermal: θJA per regulator from its datasheet (neohw.parts.LdoData: TPS7A20 DBV 187.1,
+# MIC5205 SOT-23-5 220, AMS1117 SOT-223 90 °C/W); LM2576 TO-263 on ≈ 1 in² copper
 # ≈ 50 °C/W, all of the converter's loss charged to it: conservative; 50 °C ambient
 AMBIENT_C, TJ_MAX_C = 50.0, 125.0
 THETA_JA_LM2576 = 50.0
@@ -60,8 +60,8 @@ SCENARIOS = {
 
 psrr_db = parts.MIC5205_PSRR_DB
 """MIC5205 ripple rejection: 75 dB at 100 Hz (datasheet); assumed −20 dB/decade above 1 kHz to a
-15 dB floor (no curve in the datasheet text). The TPS7A20 and TLV75733 read theirs from their datasheet
-tables (neohw.parts)."""
+15 dB floor (no curve in the datasheet text). The TPS7A20 reads its own from its datasheet
+table (neohw.parts)."""
 
 
 def regulators(blk, population: str = pops.DEFAULT) -> dict:
@@ -290,7 +290,7 @@ def run(out_dir: Path, char_dir: Path) -> BlockResult:
                                   "plug_in": {f"{v:g}": h for v, h in hot[pop].items()}, "spurs_dbm": spurs[pop]}
                             for pop in pops.POPULATIONS},
             "psrr_assumption": "MIC5205 75 dB at 100 Hz (datasheet), assumed -20 dB/dec above 1 kHz to 15 dB; "
-                               "TPS7A20 92/60/40 dB at 1 kHz/100 kHz/1 MHz (300 mA) and TLV75733 52/46/52 dB (50 mA) from their "
+                               "TPS7A20 92/60/40 dB at 1 kHz/100 kHz/1 MHz (300 mA) from its "
                                "datasheet tables, log-f interpolation, -20 dB/dec above 1 MHz to 15 dB",
             "spur_note": "conducted only (inductor ripple, triangle model); switch-node edges and radiated/layout coupling are checked in the layout phase",
             "checks": [c.__dict__ for c in checks]}),

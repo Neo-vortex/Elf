@@ -49,7 +49,7 @@ def test_buck_feedback_sets_5v5_and_every_net_is_connected():
     blk = power.build()
     top, bottom = (float(v.rstrip("k")) for v in (power.BUCK_FB_TOP, power.BUCK_FB_BOTTOM))
     assert parts.LM2576_VREF * (1 + top / bottom) == pytest.approx(5.5, abs=0.02)
-    assert {p.value for p in blk.circuit.parts} >= {"LM2576HV-ADJ", "TPS7A20-5.0", "TPS7A20-3.3", "TLV75733", "AMS1117-3.3",
+    assert {p.value for p in blk.circuit.parts} >= {"LM2576HV-ADJ", "TPS7A20-5.0", "TPS7A20-3.3", "AMS1117-3.3",
                                                     "SS36", "SMBJ20A"}
     assert not {p.value for p in blk.circuit.parts} & {"MT3608", "AO3401", "TLV74033", "SS34", "SMBJ30A"}
     net_check(blk)
@@ -66,11 +66,11 @@ def test_junction_temperature_uses_each_regulators_own_input_at_its_worst_maximu
           "jack 12 V, typical load": {**base, "main": 9.0, "ldo_rf_in": 9.0}}   # a typical case never sets the worst
     blk = power.build()
     p_out = 5.6 * sum(check.LOADS_MAX.values())
-    for population, rf, d_reg in (("china", "TPS7A20-3.3", "TLV75733"), ("iran", "MIC5205-3.3", "AMS1117-3.3")):
+    for population, rf, d_reg in (("china", "TPS7A20-3.3", "AMS1117-3.3"), ("iran", "MIC5205-3.3", "AMS1117-3.3")):
         tj = check.junction_temps(dc, blk, population)
         assert set(tj) == {"TPS7A20-5.0" if population == "china" else "MIC5205-5.0", rf, d_reg, "LM2576HV"}
         rf_theta = 187.1 if population == "china" else 220.0
-        d_theta = 231.1 if population == "china" else 90.0
+        d_theta = 90.0
         assert tj[rf] == pytest.approx(50 + rf_theta * (5.6 - 3.3) * check.LOADS_MAX["v3rf"])
         assert tj[d_reg] == pytest.approx(50 + d_theta * (5.6 - 3.3) * check.LOADS_MAX["v3d"])
         assert tj["LM2576HV"] == pytest.approx(50 + 50 * p_out * (1 / parts.LM2576_EFFICIENCY - 1))
@@ -156,11 +156,13 @@ def test_rf_ldos_share_pads_and_swap_by_population():
     assert len(byp) == 2 and all(pop.fitted(c, "iran") and not pop.fitted(c, "china") for c in byp)
 
 
-def test_3v3_d_is_tlv75733_in_china_and_ams1117_in_iran():
+def test_3v3_d_is_ams1117_in_both_populations_and_no_tlv75733_exists():
     blk = power.build()
-    china = {p.value for p in blk.circuit.parts if pop.fitted(p, "china") and p.value in ("TLV75733", "AMS1117-3.3")}
-    iran = {p.value for p in blk.circuit.parts if pop.fitted(p, "iran") and p.value in ("TLV75733", "AMS1117-3.3")}
-    assert china == {"TLV75733"} and iran == {"AMS1117-3.3"}
+    ams = by_value(blk, "AMS1117-3.3")
+    assert len(ams) == 1 and all(pop.fitted(ams[0], p) for p in pop.POPULATIONS)
+    assert "LM1117" in ams[0].bom_note and not by_value(blk, "TLV75733")
+    tant = [p for p in blk.circuit.parts if p.value == "22uF" and "tantalum" in p.spec]
+    assert len(tant) == 1 and all(pop.fitted(tant[0], p) for p in pop.POPULATIONS)
 
 
 @pytest.mark.parametrize("population", ["china", "iran"])
@@ -176,27 +178,24 @@ def test_every_rail_in_regulation_and_every_junction_cool_enough(ngspice, popula
 
 
 def test_ldo_pinouts_match_the_datasheets():
-    # TPS7A20 SBVS338H Figure 4-4 / Pin Functions, TLV757P SBVS322C Figure 4-1 / Table 4-1: DBV 1 IN 2 GND 3 EN 4 NC 5 OUT
+    # TPS7A20 SBVS338H Figure 4-4 / Pin Functions: DBV 1 IN 2 GND 3 EN 4 NC 5 OUT
     from skidl import Circuit
     with Circuit():
-        for p in (parts.tps7a20(5.0), parts.tps7a20(3.3), parts.tlv75733()):
+        for p in (parts.tps7a20(5.0), parts.tps7a20(3.3)):
             assert {pin.name: pin.num for pin in p.pins} == {"IN": "1", "GND": "2", "EN": "3", "NC": "4", "OUT": "5"}
             assert p.nc_pins == ("NC",) and p.footprint.endswith("SOT-23-5")
         assert parts.tps7a20(5.0).mpn == "TPS7A2050PDBVR" and parts.tps7a20(3.3).mpn == "TPS7A2033PDBVR"
-        assert parts.tlv75733().mpn == "TLV75733PDBVR"
 
 
 def test_ldo_thermal_and_psrr_numbers_come_from_the_datasheets():
     from skidl import Circuit
     with Circuit():
-        tps, tlv = parts.tps7a20(5.0), parts.tlv75733()
+        tps = parts.tps7a20(5.0)
         ams, mic = parts.ams1117_33(), parts.mic5205(5.0)
-    assert (tps.theta_ja, tlv.theta_ja, ams.theta_ja, mic.theta_ja) == (187.1, 231.1, 90.0, 220.0)
-    assert (tps.dropout_v, tlv.dropout_v, ams.dropout_v, mic.dropout_v) == (0.145, 0.475, 1.3, 0.165)
+    assert (tps.theta_ja, ams.theta_ja, mic.theta_ja) == (187.1, 90.0, 220.0)
+    assert (tps.dropout_v, ams.dropout_v, mic.dropout_v) == (0.145, 1.3, 0.165)
     for f, db in ((1e3, 92), (1e5, 60), (1e6, 40)):                    # TPS7A20 Table 5.5, 300 mA
         assert tps.psrr_db(f) == pytest.approx(db)
-    for f, db in ((1e3, 52), (1e5, 46), (1e6, 52)):                    # TLV757P Table 5.5, 50 mA
-        assert tlv.psrr_db(f) == pytest.approx(db)
     assert tps.psrr_db(10e3) == pytest.approx(76, abs=1)               # the table's 75 dB at 10 kHz
 
 

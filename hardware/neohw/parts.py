@@ -616,10 +616,6 @@ MIC5205_DATA = LdoData(0.165, 220.0, MIC5205_PSRR_DB)
 # DBV (Section 5.4); PSRR at 300 mA, VIN = VOUT + 1 V (Section 5.5): 92 dB at 1 kHz, 60 dB at 100 kHz,
 # 40 dB at 1 MHz (typical; Figures 5-61 to 5-64 show the same curve)
 TPS7A20_DATA = LdoData(0.145, 187.1, _psrr_curve([(1e3, 92.0), (1e5, 60.0), (1e6, 40.0)]))
-# TLV757P (SBVS322C): dropout 475 mV max at 1 A, 3.3–5.0 V out (Section 5.5, the load-independent bound);
-# θJA DBV 231.1 °C/W on the JEDEC board (Section 5.4; 100.8 °C/W on TI's EVM); PSRR at 50 mA,
-# VIN = VOUT + 1 V (Section 5.5): 52 dB at 1 kHz, 46 dB at 100 kHz, 52 dB at 1 MHz (Figures 5-1 to 5-3)
-TLV757P_DATA = LdoData(0.475, 231.1, _psrr_curve([(1e3, 52.0), (1e5, 46.0), (1e6, 52.0)]))
 # AMS1117 (Advanced Monolithic Systems DS1117): dropout 1.3 V max at 0.8 A; θJA SOT-223 90 °C/W
 # (ϕJA, Absolute Maximum Ratings, "46 °C/W to > 90 °C/W depending on mounting"); ripple rejection 60 dB
 # min at 120 Hz (75 typ, 22 µF tantalum, 1 A); assumed -20 dB/decade above that to a 15 dB floor
@@ -628,10 +624,13 @@ AMS1117_DATA = LdoData(1.3, 90.0, lambda f: np.clip(60 - 20 * np.log10(np.maximu
 
 def ams1117_33() -> Part:
     """AMS1117-3.3, SOT-223 (GND 1, OUT 2 and tab, IN 3; Advanced Monolithic DS1117, "Pin Connections").
-    From 5.5 V its dropout (1.3 V max) is not a limit; the SOT-223 tab carries its 0.33 W (≈ 90 °C/W)."""
+    From 5.5 V its dropout (1.3 V max) is not a limit; the SOT-223 tab carries its 0.33 W (≈ 90 °C/W).
+    Fitted in both populations. Equivalent: TI LM1117MP-3.3 in SOT-223 (KiCad's LM1117MP-3.3 and
+    AMS1117-3.3 symbols both extend AP1117 on SOT-223-3_TabPin2: same pinout)."""
     p = _ic("AMS1117-3.3", {"GND": "1", "OUT": "2", "IN": "3"}, "Package_TO_SOT_SMD:SOT-223-3_TabPin2",
             "AMS1117-3.3", "AMS1117-3.3")
     _ldo_part(p, 3.3, AMS1117_DATA)
+    p.bom_note = "Advanced Monolithic Systems AMS1117-3.3, or equivalent: e.g. TI LM1117-3.3 in SOT-223 with the same pinout"
     p.spice_lines = lambda n, k=1.0: _ldo_lines(p.ref, n, 3.3, AMS1117_DATA.dropout_v)
     return p
 
@@ -672,19 +671,6 @@ def tps7a20(v_out: float) -> Part:
 def _tps7a20_lines(ref: str, n: dict, v_out: float) -> list[str]:
     """DC model: OUT = min(v_out, V_in − dropout) behind 50 mΩ; EN has a 500 kΩ pulldown."""
     return _ldo_lines(ref, n, v_out, TPS7A20_DATA.dropout_v, "NC", en_r=500e3)
-
-
-def tlv75733() -> Part:
-    """TI TLV75733P 1 A LDO, 3.3 V, SOT-23-5 DBV (IN 1, GND 2, EN 3, NC 4, OUT 5): the China 3V3_D
-    regulator. Pins from the datasheet SBVS322C (March 2024), Figure 4-1 "DBV Package, 5-Pin SOT-23
-    (Top View)" and Table 4-1 ("NC, DBV pin 4: No internal connection"), fetched from ti.com;
-    KiCad's Regulator_Linear TLV75733PDBV symbol has the same footprint. Input 1.45–5.5 V
-    recommended (6.0 V absolute), 1 µF minimum on IN and OUT. Dropout, θJA, PSRR: `TLV757P_DATA`."""
-    p = _ic("TLV75733", {"IN": "1", "GND": "2", "EN": "3", "NC": "4", "OUT": "5"},
-            "Package_TO_SOT_SMD:SOT-23-5", "TLV75733PDBVR", None, nc=("NC",))
-    _ldo_part(p, 3.3, TLV757P_DATA)
-    p.spice_lines = lambda n, k=1.0: _ldo_lines(p.ref, n, 3.3, TLV757P_DATA.dropout_v, "NC", en_r=1e7)
-    return p
 
 
 def rf_ldo(v_out: float) -> Part:
