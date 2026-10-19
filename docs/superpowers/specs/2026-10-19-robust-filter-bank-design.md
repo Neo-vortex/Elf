@@ -5,6 +5,9 @@
 - **Parent spec:** `2026-10-18-rev-a-china-fab-design.md` §2 (part changes), §6 (verification). This spec replaces the filter-inductor row of §2 and its "Result (2026-10-19)" note, which relied on a model this spec shows to be optimistic.
 - **Plan:** 5.1a (written after this spec is approved). It runs before plan 5.1 Tasks 9 (filter-bank GIF) and 10 (full verification). Plan 5.1 Tasks 4–8 do not touch the filters and proceed in parallel.
 
+
+> **Amended 2026-10-19 (user):** the Iranian population is dropped (Rev A spec §0a). Every "Iran", "both populations" and "LCR-selected" rule below is void; designs and yield are for China only (chokes as bought at the series grade, capacitors ±1 % E24).
+
 ## 0. Why
 
 Rev A is ordered once, and no samples can be bought beforehand to measure inductor Q (user, 2026-10-19). Plan 5.1 Task 3 put the filter bank on real inductors with guaranteed Q, but its model joined the guaranteed Q at the datasheet's test frequency f_t to the DC resistance below f_t. That join is an interpolation, not a guarantee. Two things showed it is not safe:

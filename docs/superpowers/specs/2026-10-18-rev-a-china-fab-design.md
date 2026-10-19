@@ -1,10 +1,20 @@
 # Elf Rev A for a Chinese board maker (Design Spec)
 
 - **Date:** 2026-10-18
-- **Status:** Approved by the user (2026-10-18)
+- **Status:** Approved by the user (2026-10-18); amended 2026-10-19 (§0a: Iranian population dropped)
 - **Parent specs:** `2026-10-12-neoradio-hf-receiver-design.md` (§2 requirements, §12 phases), `2026-10-12-phase3-board-circuits-design.md` (§5 layout deliverables), `2026-10-13-phase4-firmware-virtual-board-design.md` (firmware layout)
 - **Earlier China work:** branch `china-parts` (spec `2026-10-13-china-assembly-parts-design.md`, plan `2026-10-13-china-assembly-parts.md`, LCSC survey `2026-10-13-parts-survey-lcsc.json`, `tools/jlc_survey.py`, commit ed5be14). It was written by another agent before this spec and never merged. §2a says what is taken from it and what is not; plan 5.1 starts from that branch.
 - **Supersedes:** the sourcing rule "all parts from Iranian shops", the ESP32-S3 controller, the Aryamadar/Maher PCB fab target, and the Rev 0 coupon stage. Everything else in the parent specs stands.
+
+## 0a. Iranian population dropped (user, 2026-10-19)
+
+**The board has one population: China.** The user dropped the Iranian fallback parts altogether. This supersedes every "dual population", "Iranian fallback", "BOM-Iran", "both populations" and Torob rule in this spec and in `2026-10-19-robust-filter-bank-design.md`. Concretely:
+- One BOM (generic identification, §2b, still applies). No BOM-Iran, no Torob availability check, no Torob keys in the code.
+- No alternate or shared pads for fallback parts. The parts that existed only for Iran go: the BC857B bias-T current mirror (INA180A1 only), the MIC5205 regulators and their 470 pF bypass caps (TPS7A20 only), the 26 MHz crystal on XA/XB (TCXO on CLKIN only), LCR-selected chokes and the ±2 % E12 capacitor set.
+- Filters are designed and Monte-Carlo-checked against the China tolerances only (chokes as bought at the series grade, capacitors ±1 % E24).
+- The firmware's sense-circuit auto-detect and the virtual board's `--population` option go.
+- **Every part comes from Mouser (user, 2026-10-19).** Each BOM line names one manufacturer part number that Mouser sells (active, in stock or with a stated lead time, not end-of-life), passives included, and links to its Mouser product page. The BOM tool verifies every line against Mouser and fails on a missing, obsolete or out-of-stock part. No other distributor's catalogue numbers appear. The board maker is still not chosen; parts may be consigned.
+- §1 criterion 1 reads "passes its existing `make hw` targets"; criterion 6 drops its BOM-Iran sentence. The STM32F401 fallback question (§5) is closed.
 
 ## 0. Read this first (decisions of 2026-10-18)
 
