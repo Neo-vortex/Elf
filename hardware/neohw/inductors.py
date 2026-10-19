@@ -117,15 +117,27 @@ def nearest_row(series: str, henries: float) -> Row:
     return row(series, min(available(series), key=lambda h: abs(math.log(h / henries))))
 
 
-def robust_z(henries: float, f_hz):
-    """Impedance of one filter choke of `henries` (any value in its series' range): the nearest
-    row's Q_min, f_t and SRF; R scales with the actual inductance; lead L added in series."""
-    series = filter_series(henries)
-    r = nearest_row(series, henries)
+def _row_z(r: Row, henries, f_hz, cpar: bool = True):
+    """Robust impedance of the choke of row `r` at an actual inductance `henries` (a scalar, or
+    an array that broadcasts against f_hz): the row's Q_min, f_t and SRF; R scales with the
+    actual inductance; lead L added in series. cpar=False leaves out the parallel capacitance
+    (a part whose self-resonance is far above its guaranteed minimum)."""
     scaled = Row(r.series, r.mpn, henries, r.q_min, r.f_test_hz, r.srf_min_hz, r.dcr_max, r.tol)
     w = 2 * math.pi * np.asarray(f_hz, dtype=float)
-    z = robust_r(scaled, f_hz) + 1j * w * (henries + lead_l(series))
-    return z / (1 + 1j * w * c_par(r) * z)
+    z = robust_r(scaled, f_hz) + 1j * w * (henries + lead_l(r.series))
+    return z / (1 + 1j * w * c_par(r) * z) if cpar else z
+
+
+def robust_z(henries: float, f_hz, scale=1.0, cpar: bool = True):
+    """Impedance of one filter choke of `henries` (any value in its series' range), from the
+    nearest row (`_row_z`), at henries × scale (scale may be an array of draws)."""
+    return _row_z(nearest_row(filter_series(henries), henries), henries * np.asarray(scale), f_hz, cpar)
+
+
+def part_z(bought: float, henries: float, f_hz, scale=1.0, cpar: bool = True):
+    """Impedance of the bought choke `bought` (a value of `available(filter_series(bought))`)
+    at its actual inductance henries × scale (selected, or drawn within tolerance)."""
+    return _row_z(row(filter_series(bought), bought), henries * np.asarray(scale), f_hz, cpar)
 
 
 def tolerance(r: Row, population: str) -> float:

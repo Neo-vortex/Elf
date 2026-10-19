@@ -15,12 +15,14 @@ from __future__ import annotations
 import math
 import os
 from concurrent.futures import ProcessPoolExecutor
-from dataclasses import dataclass
+from dataclasses import dataclass, field, replace
 from functools import lru_cache
 
 import numpy as np
 from scipy.optimize import minimize
+from scipy.special import expit
 
+from neohw import eseries, inductors
 from neohw.synth import ladder
 from neohw.synth.filters import highpass, lowpass
 
@@ -46,6 +48,21 @@ NOTCH_MIN = 1.3                # every LPF tank's zero at or above 1.3·hi
 C_PRUNE = 3e-12                # shunt C or tank C below this is removed
 C_SHORT = C_RANGE[1] * 0.999   # series C at the upper bound is shorted
 
+# Realisation and yield
+FLOOR_MARGIN_DB = 0.5          # designs aim this far above the stopband floor so snapping lands on it
+SNAP_TOL = 0.02                # one or two chokes within 2 % of the design value
+SNAP_MAX = 0.05                # else the closest reachable value within 5 % (the C re-optimisation absorbs it)
+N_PENALTY = 50                 # fixed draws per population in the optimiser's yield penalty
+PENALTY_SEED = 5
+YIELD_WEIGHT_DB = 20.0         # objective = worst IL + this × the (smoothed) fraction of failing draws
+YIELD_SOFT_DB = 0.25           # a draw's failure is expit(−margin / this), margin in dB to the real targets
+CAP_SERIES = {"china": eseries.E24, "iran": eseries.E12}
+CAP_TOL = {"china": 0.01, "iran": 0.02}
+N_DENSE = 1001                 # realised designs hold the floor on 1001-point log grids per side
+YIELD_GATE_PCT = 97.0          # optimiser gate (the block target is 95 % of 200 builds)
+MAX_RETRIES = 3                # each raises rl_min 1 dB, rej_min 2 dB and the floor margin 0.5 dB
+RETRY_STEP = (1.0, 2.0, 0.5)
+
 
 @dataclass(frozen=True)
 class Targets:
@@ -59,6 +76,7 @@ class Targets:
     att_2hi_min: float
     stop_f: tuple = ()         # stopband grid (both sides), Hz
     stop_floor: tuple = ()     # floor at each stop_f, dB
+    floor_margin: float = 0.0  # the solver holds stop_floor + floor_margin
 
 
 @dataclass(frozen=True)
@@ -97,6 +115,14 @@ def _model(lo, hi):
     return ladder.robust_losses(math.sqrt(lo * hi)), ladder.bank_bus()
 
 
+def _models(lo, hi):
+    """The two SRF cases every metric is judged on (worst of both): each choke's parallel C at its
+    datasheet SRF minimum, and no parallel C (SRF far above), so no design can rely on a
+    self-resonance notch."""
+    f0 = math.sqrt(lo * hi)
+    return (ladder.robust_losses(f0, True), ladder.robust_losses(f0, False)), ladder.bank_bus()
+
+
 def today_attenuation(index: int, f) -> np.ndarray:
     """Attenuation (dB) of today's Chebyshev design (bpf.design) in the robust model with the
     bank bus at frequencies f."""
@@ -119,16 +145,17 @@ def today_selectivity(index: int) -> dict:
             "f_hi_hz": tuple(f_hi), "floor_hi_db": tuple(floor_db(today_attenuation(index, f_hi)))}
 
 
-def targets(index: int, rl_min: float = 15.5, rej_min: float = 53.0) -> Targets:
-    """Block targets with margin (rl_min, rej_min) and the stopband floor; att_half_lo_min and
-    att_2hi_min are the floor at lo/2 and 2·hi (the grid ends)."""
+def targets(index: int, rl_min: float = 15.5, rej_min: float = 53.0, floor_margin: float = 0.0) -> Targets:
+    """Block targets with margin (rl_min, rej_min, floor_margin above the stopband floor) and the
+    floor; att_half_lo_min and att_2hi_min are the floor at lo/2 and 2·hi (the grid ends)."""
     from neohw.blocks import bpf
     from neohw.checks import bpf as check
     lo, hi = bpf.BANDS[index - 1]
     s = today_selectivity(index)
     return Targets(index, lo, hi, check.il_limit_db(index), rl_min, rej_min if 3 * lo > hi else None,
                    float(s["floor_lo_db"][-1]), float(s["floor_hi_db"][0]),
-                   tuple(s["f_lo_hz"]) + tuple(s["f_hi_hz"]), tuple(s["floor_lo_db"]) + tuple(s["floor_hi_db"]))
+                   tuple(s["f_lo_hz"]) + tuple(s["f_hi_hz"]), tuple(s["floor_lo_db"]) + tuple(s["floor_hi_db"]),
+                   floor_margin)
 
 
 def _hpf(lo, order):
@@ -156,12 +183,13 @@ def seed(top: Topology, lo: float, hi: float) -> list:
     return _hpf(lo, top.hpf_order) + _lpf(lo, hi, top.lpf)
 
 
-def _pack(branches):
+def _pack(branches, free=("l", "c")):
+    """Log values of the free slots ("l" and/or "c") and their (branch, slot) keys."""
     x, slots = [], []
     for k, b in enumerate(branches):
-        if b.form != "C":
+        if b.form != "C" and "l" in free:
             x.append(math.log(b.l)); slots.append((k, "l"))
-        if b.form != "L":
+        if b.form != "L" and "c" in free:
             x.append(math.log(b.c)); slots.append((k, "c"))
     return np.array(x), slots
 
@@ -170,19 +198,24 @@ def _unpack(x, slots, template):
     vals = {k: {"l": b.l, "c": b.c} for k, b in enumerate(template)}
     for v, (k, which) in zip(x, slots):
         vals[k][which] = math.exp(v)
-    return [ladder.Branch(b.place, b.form, l=vals[k]["l"], c=vals[k]["c"]) for k, b in enumerate(template)]
+    return [replace(b, l=vals[k]["l"], c=vals[k]["c"]) for k, b in enumerate(template)]
+
+
+def _worst_att_db(branches, f, t: Targets) -> np.ndarray:
+    models, bus = _models(t.lo, t.hi)
+    return np.min([-ladder.db(ladder.s21_s11(list(branches), np.asarray(f), m, bus)[0]) for m in models], axis=0)
 
 
 def stop_margin_db(branches, t: Targets) -> float:
-    """Minimum over the stopband grids of attenuation − floor (dB)."""
-    losses, bus = _model(t.lo, t.hi)
-    att = -ladder.db(ladder.s21_s11(list(branches), np.array(t.stop_f), losses, bus)[0])
-    return float(np.min(att - np.array(t.stop_floor)))
+    """Minimum over the stopband grids of attenuation − floor (dB), worst of both SRF cases."""
+    return float(np.min(_worst_att_db(branches, t.stop_f, t) - np.array(t.stop_floor)))
 
 
 def _metrics(branches, t: Targets) -> dict:
-    losses, bus = _model(t.lo, t.hi)
-    m = ladder.metrics(list(branches), t.lo, t.hi, losses, bus)
+    """ladder.metrics, worst of both SRF cases (_models), plus stop_margin_db."""
+    models, bus = _models(t.lo, t.hi)
+    ms = [ladder.metrics(list(branches), t.lo, t.hi, losses, bus) for losses in models]
+    m = {k: (max if k == "il_db" else min)(x[k] for x in ms) if ms[0][k] is not None else None for k in ms[0]}
     m["stop_margin_db"] = stop_margin_db(branches, t) if t.stop_f else None
     return m
 
@@ -205,8 +238,8 @@ def _violations(m, t: Targets, branches=()) -> dict:
     if t.att_half_lo_min is not None and m["att_half_lo_db"] is not None \
             and m["att_half_lo_db"] < t.att_half_lo_min - SEL_TOL_DB:
         v["att_half_lo_db"] = t.att_half_lo_min - m["att_half_lo_db"]
-    if m.get("stop_margin_db") is not None and m["stop_margin_db"] < -SEL_TOL_DB:
-        v["stop_margin_db"] = -m["stop_margin_db"]
+    if m.get("stop_margin_db") is not None and m["stop_margin_db"] < t.floor_margin - SEL_TOL_DB:
+        v["stop_margin_db"] = t.floor_margin - m["stop_margin_db"]
     bad = [1.0 - 1 / (2 * math.pi * math.sqrt(b.l * b.c)) / (NOTCH_MIN * t.hi)
            for b in branches if b.form == "LC_par"]
     if bad and max(bad) > 1e-9:
@@ -219,40 +252,117 @@ def _rank(r: Result):
     return (0, r.metrics["il_db"]) if r.feasible else (1, sum(r.violations.values()))
 
 
-def _solve(t: Targets, template: list, max_iter: int) -> list:
-    """One SLSQP run from the template's values; returns the solved branches."""
-    x0, slots = _pack(template)
-    losses, bus = _model(t.lo, t.hi)
+def _tank_rows(template, slots, hi):
+    """Tank zeros as linear constraints a @ x + b ≥ 0 on the log values (the epigraph variable
+    last): log fz = −(log L + log C)/2 − log 2π ≥ log(1.3·hi). Fixed slots go into b."""
+    tanks = [k for k, br in enumerate(template) if br.form == "LC_par"]
+    a, b = np.zeros((len(tanks), len(slots) + 1)), np.full(len(tanks), -math.log(NOTCH_MIN * hi * 2 * math.pi))
+    for row, k in enumerate(tanks):
+        for which in ("l", "c"):
+            if (k, which) in slots:
+                a[row, slots.index((k, which))] = -0.5
+            else:
+                b[row] -= 0.5 * math.log(getattr(template[k], which))
+    return a, b
+
+
+def _cons(t: Targets, template: list, slots):
+    """Nominal constraints ≥ 0 in both SRF cases: in-band IL ≤ the epigraph variable, RL, 3f
+    rejection and the stopband floor plus its margin."""
+    models, bus = _models(t.lo, t.hi)
     band = np.linspace(t.lo, t.hi, N_BAND)
     rej = np.linspace(3 * t.lo, 3 * t.hi, N_REJ) if t.rej_min is not None else np.array([])
     stop = np.concatenate([rej, t.stop_f])
-    stop_min = np.concatenate([np.full(len(rej), t.rej_min if t.rej_min is not None else 0.0), t.stop_floor])
-    lb = [math.log(L_RANGE[0]) if w == "l" else math.log(C_RANGE[0]) for _, w in slots]
-    ub = [math.log(L_RANGE[1]) if w == "l" else math.log(C_RANGE[1]) for _, w in slots]
-    x0 = np.clip(x0, lb, ub)
-    bounds = list(zip(lb, ub)) + [(0.0, 60.0)]
-    # tank zeros: log fz = −(log L + log C)/2 − log 2π ≥ log(1.3·hi), linear in x
-    tank = [(slots.index((k, "l")), slots.index((k, "c"))) for k, b in enumerate(template) if b.form == "LC_par"]
-    log_fz_min = math.log(NOTCH_MIN * t.hi * 2 * math.pi)
+    stop_min = np.concatenate([np.full(len(rej), t.rej_min if t.rej_min is not None else 0.0),
+                               np.array(t.stop_floor) + t.floor_margin]) + SOLVE_MARGIN_DB
 
     def cons(x):
-        br = _unpack(x[:-1], slots, template)
-        s21, s11 = ladder.s21_s11(br, band, losses, bus)
-        att = -ladder.db(ladder.s21_s11(br, stop, losses, bus)[0])
-        return np.concatenate([x[-1] + ladder.db(s21), -ladder.db(s11) - t.rl_min - SOLVE_MARGIN_DB,
-                               att - stop_min - SOLVE_MARGIN_DB])
+        br, out = _unpack(x[:-1], slots, template), []
+        for losses in models:
+            s21, s11 = ladder.s21_s11(br, band, losses, bus)
+            att = -ladder.db(ladder.s21_s11(br, stop, losses, bus)[0])
+            out += [x[-1] + ladder.db(s21), -ladder.db(s11) - t.rl_min - SOLVE_MARGIN_DB, att - stop_min]
+        return np.concatenate(out)
+    return cons
 
-    constraints = [{"type": "ineq", "fun": cons}]
-    if tank:
-        a = np.zeros((len(tank), len(x0) + 1))
-        for row, (il, ic) in enumerate(tank):
-            a[row, il] = a[row, ic] = -0.5
-        constraints.append({"type": "ineq", "fun": lambda x: a @ x - log_fz_min, "jac": lambda x: a})
-    il0 = float((-ladder.db(ladder.s21_s11(_unpack(x0, slots, template), band, losses, bus)[0])).max())
-    res = minimize(lambda x: x[-1], np.append(x0, min(il0, 60.0)), method="SLSQP", bounds=bounds,
-                   jac=lambda x: np.eye(len(x))[-1], constraints=constraints,
+
+def _solve(t: Targets, template: list, max_iter: int, free=("l", "c"), c_min: float = C_RANGE[0],
+           pops=("china", "iran")) -> list:
+    """One SLSQP run from the template's values over the `free` slots ("l" and/or "c"; the
+    others keep their values), C bounded below by c_min. Minimises the worst in-band IL plus
+    the yield penalty over fixed draws in `pops` (spec §4); returns the solved branches."""
+    x0, slots = _pack(template, free)
+    lb = [math.log(L_RANGE[0]) if w == "l" else math.log(c_min) for _, w in slots]
+    ub = [math.log(L_RANGE[1]) if w == "l" else math.log(C_RANGE[1]) for _, w in slots]
+    x0 = np.clip(x0, lb, ub)
+    a, b0 = _tank_rows(template, slots, t.hi)
+    constraints = [{"type": "ineq", "fun": _cons(t, template, slots)}]
+    if len(b0):
+        constraints.append({"type": "ineq", "fun": lambda x: a @ x + b0, "jac": lambda x: a})
+    draws = _penalty_draws(template, pops)
+
+    def objective(x):
+        return x[-1] + YIELD_WEIGHT_DB * _fail_fraction(_unpack(x[:-1], slots, template), t, draws)
+
+    il0 = _metrics(_unpack(x0, slots, template), t)["il_db"]
+    res = minimize(objective, np.append(x0, min(il0, 60.0)), method="SLSQP",
+                   bounds=list(zip(lb, ub)) + [(0.0, 60.0)], constraints=constraints,
                    options={"maxiter": max_iter, "ftol": 1e-6})
     return _unpack(res.x[:-1], slots, template)
+
+
+def _scale(branches, population: str, rng, n: int, caps: dict | None = None) -> list:
+    """n drawn builds as per-branch (kl, kc) factors for ladder.s21_s11(scale=…): every choke and
+    every capacitor part uniform within ±its tolerance on its own (as checks.bpf._variation):
+    chokes inductors.tolerance of their row (the nearest row for a design value), capacitors
+    CAP_TOL; caps gives a branch's capacitor parts (default one part of b.c)."""
+    out = []
+    for k, b in enumerate(branches):
+        kl = kc = None
+        if b.form != "C":
+            rows = ([inductors.row(inductors.filter_series(nb), nb) for nb, _ in b.parts] if b.parts
+                    else [inductors.nearest_row(inductors.filter_series(b.l), b.l)])
+            tol = np.array([inductors.tolerance(r, population) for r in rows])
+            kl = 1 + rng.uniform(-1, 1, (n, len(rows))) * tol
+        if b.form != "L":
+            cs = np.array((caps or {}).get(k, (b.c,)))
+            kc = (1 + rng.uniform(-CAP_TOL[population], CAP_TOL[population], (n, len(cs)))) @ cs / cs.sum()
+        out.append((kl, kc))
+    return out
+
+
+def _mc(branches, t: Targets, scale) -> tuple:
+    """Per-draw worst in-band IL, RL and 3f rejection (None without a rejection target), each the
+    worst of both SRF cases."""
+    models, bus = _models(t.lo, t.hi)
+    band = np.linspace(t.lo, t.hi, N_BAND)
+    il, rl, rej = [], [], []
+    for losses in models:
+        s21, s11 = ladder.s21_s11(list(branches), band, losses, bus, scale=scale)
+        il.append((-ladder.db(s21)).max(axis=-1)); rl.append((-ladder.db(s11)).min(axis=-1))
+        if t.rej_min is not None:
+            f3 = np.linspace(3 * t.lo, 3 * t.hi, N_REJ)
+            rej.append((-ladder.db(ladder.s21_s11(list(branches), f3, losses, bus, scale=scale)[0])).min(axis=-1))
+    return np.max(il, axis=0), np.min(rl, axis=0), (np.min(rej, axis=0) if rej else None)
+
+
+def _penalty_draws(template, pops) -> list:
+    """Fixed draws (common random numbers across iterations) for the yield penalty."""
+    return [_scale(template, pop, np.random.default_rng([PENALTY_SEED, k]), N_PENALTY) for k, pop in enumerate(pops)]
+
+
+def _fail_fraction(branches, t: Targets, draws) -> float:
+    """Smoothed fraction of draws missing the real IL, RL or rejection target, summed over the
+    populations: a draw counts expit(−margin / YIELD_SOFT_DB), margin its worst dB to a target."""
+    from neohw.checks import bpf as check
+    total = 0.0
+    for scale in draws:
+        il, rl, rej = _mc(branches, t, scale)
+        margin = np.minimum(t.il_max - il, rl - check.RL_MIN_DB)
+        if rej is not None:
+            margin = np.minimum(margin, rej - check.REJ_MIN_DB)
+        total += float(np.mean(expit(-margin / YIELD_SOFT_DB)))
+    return total
 
 
 def _prune(branches) -> tuple[list, list]:
@@ -266,7 +376,7 @@ def _prune(branches) -> tuple[list, list]:
             done.append(f"series C at {k} ({b.c * 1e9:.3g} nF) shorted")
         elif b.form == "LC_par" and b.c < C_PRUNE:
             done.append(f"tank at {k} ({b.c * 1e12:.2g} pF) to plain L")
-            out.append(ladder.Branch(b.place, "L", l=b.l))
+            out.append(replace(b, form="L", c=0.0))
         else:
             out.append(b)
     return out, done
@@ -312,11 +422,144 @@ def _optimise_args(args):
 
 
 @lru_cache(maxsize=None)
-def best(index: int, rl_min: float = 15.5, rej_min: float = 53.0) -> Result:
+def best(index: int, rl_min: float = 15.5, rej_min: float = 53.0, floor_margin: float = 0.0) -> Result:
     """The lowest-IL feasible result over TOPOLOGIES (optimised in parallel), or the infeasible
     one with the smallest total violation. Cached per arguments: callers must not mutate the
     result's dicts."""
-    t = targets(index, rl_min, rej_min)
+    t = targets(index, rl_min, rej_min, floor_margin)
     with ProcessPoolExecutor(max_workers=min(len(TOPOLOGIES), os.cpu_count() or 1)) as pool:
         results = list(pool.map(_optimise_args, [(top, t) for top in TOPOLOGIES]))
     return min(results, key=_rank)
+
+
+# Realisation on buyable parts and the yield loop
+
+
+@lru_cache(maxsize=None)
+def _chokes() -> tuple[float, ...]:
+    """Every buyable filter choke value: each from its own series (filter_series)."""
+    return tuple(sorted(h for s in (inductors.FILTER_SMALL, inductors.FILTER_LARGE)
+                        for h in inductors.available(s) if inductors.filter_series(h) == s))
+
+
+@lru_cache(maxsize=None)
+def snap_l(target: float) -> tuple[float, ...]:
+    """One choke if one is within SNAP_TOL of `target`, else the closest pair in series (also
+    within SNAP_TOL), larger first; else the closer of the two if within SNAP_MAX. Raises
+    ValueError beyond that."""
+    parts = _chokes()
+    err = lambda v: abs(v / target - 1)
+    one = min(parts, key=err)
+    if err(one) <= SNAP_TOL:
+        return (one,)
+    pair = min(((a, b) for i, a in enumerate(parts) for b in parts[:i + 1]), key=lambda p: err(sum(p)))
+    if err(sum(pair)) <= SNAP_TOL:
+        return pair
+    closest = (one,) if err(one) <= err(sum(pair)) else pair
+    if err(sum(closest)) > SNAP_MAX:
+        raise ValueError(f"cannot realise {target * 1e6:.4g} µH with one or two chokes within "
+                         f"{SNAP_MAX:.0%} (closest {sum(closest) * 1e6:.4g} µH)")
+    return closest
+
+
+@dataclass(frozen=True)
+class Realised:
+    branches_china: tuple
+    branches_iran: tuple
+    l_parts: dict              # branch index → bought choke values (henries), same in both populations
+    c_china: dict              # branch index → E24 capacitor values (farads) in parallel
+    c_iran: dict               # branch index → E12 capacitor values
+    topology: Topology | None
+    metrics: dict              # population → nominal metrics; stop_margin_db on the dense grids
+    yield_pct: dict = field(default_factory=dict)
+    margins: dict = field(default_factory=dict)
+    l_deviation: dict = field(default_factory=dict)   # branch index → sum of bought chokes / design value − 1
+
+
+class DesignError(RuntimeError):
+    def __init__(self, message: str, metrics: dict, yield_pct: dict, margins: dict):
+        super().__init__(message)
+        self.metrics, self.yield_pct, self.margins = metrics, yield_pct, margins
+
+
+@lru_cache(maxsize=None)
+def _dense_grid(index: int, n: int) -> tuple[np.ndarray, np.ndarray]:
+    from neohw.blocks import bpf
+    lo, hi = bpf.BANDS[index - 1]
+    f = np.concatenate([np.geomspace(g[0], g[-1], n) for g in stop_grids(lo, hi)])
+    return f, floor_db(today_attenuation(index, f))
+
+
+def dense_stop_margin_db(branches, t: Targets, n: int = N_DENSE) -> float:
+    """Minimum of attenuation − floor on n-point log grids over each stopband side, the floor
+    computed from today's design at every point (stricter than the solver's grids); worst of
+    both SRF cases."""
+    f, fl = _dense_grid(t.index, n)
+    return float(np.min(_worst_att_db(branches, f, t) - fl))
+
+
+def _fit_chokes(branches, l_parts: dict, population: str) -> list:
+    """China fits the bought chokes (L = their sum); Iran selects them to the design value
+    (each scaled by the same factor, so L = the design value)."""
+    out = []
+    for k, b in enumerate(branches):
+        if k in l_parts:
+            parts = l_parts[k]
+            scale = 1.0 if population == "china" else b.l / sum(parts)
+            fitted = tuple((p, p * scale) for p in parts)
+            b = replace(b, l=sum(a for _, a in fitted), parts=fitted)
+        out.append(b)
+    return out
+
+
+def _realise_population(branches, l_parts: dict, t: Targets, population: str) -> tuple[list, dict]:
+    """Inductors fixed, the capacitors re-optimised (continuous, every constraint kept, C ≥ 3 pF
+    so the structure stays that of `branches`) and snapped to one or two preferred values."""
+    from neohw.blocks.bpf import C_MIN
+    br = _solve(t, _fit_chokes(branches, l_parts, population), MAX_ITER, free=("c",), c_min=C_PRUNE,
+                pops=(population,))
+    caps = {k: eseries.combo(b.c, CAP_SERIES[population], minimum=C_MIN) for k, b in enumerate(br) if b.form != "L"}
+    return [replace(b, c=sum(caps[k])) if k in caps else b for k, b in enumerate(br)], caps
+
+
+def realise(result: Result, t: Targets) -> Realised:
+    """`result` on buyable parts in both populations (same chokes), with each population's
+    nominal metrics; the stop margin is judged on the dense grids against the true floor."""
+    l_parts = {k: snap_l(b.l) for k, b in enumerate(result.branches) if b.form != "C"}
+    china, c_china = _realise_population(result.branches, l_parts, t, "china")
+    iran, c_iran = _realise_population(result.branches, l_parts, t, "iran")
+    metrics = {pop: {**_metrics(br, t), "stop_margin_db": dense_stop_margin_db(br, t)}
+               for pop, br in (("china", china), ("iran", iran))}
+    return Realised(tuple(china), tuple(iran), l_parts, c_china, c_iran, result.topology, metrics,
+                    margins={"rl_min": t.rl_min, "rej_min": t.rej_min, "floor_margin_db": t.floor_margin},
+                    l_deviation={k: sum(p) / result.branches[k].l - 1 for k, p in l_parts.items()})
+
+
+def fast_yield(realised: Realised, t: Targets, population: str, runs: int = 200, seed: int = 0) -> float:
+    """Percentage of `runs` drawn builds (_scale) meeting the real block targets (IL t.il_max, RL
+    and 3f rejection of checks.bpf) in both SRF cases, whatever margins `t` carries."""
+    from neohw.checks import bpf as check
+    br = getattr(realised, f"branches_{population}")
+    il, rl, rej = _mc(br, t, _scale(br, population, np.random.default_rng(seed), runs,
+                                    getattr(realised, f"c_{population}")))
+    ok = (il <= t.il_max) & (rl >= check.RL_MIN_DB)
+    if rej is not None:
+        ok &= rej >= check.REJ_MIN_DB
+    return 100.0 * float(np.mean(ok))
+
+
+def design(index: int) -> Realised:
+    """best, realise and fast_yield in both populations. While a yield is below YIELD_GATE_PCT or
+    a realised nominal misses the floor, retries (at most MAX_RETRIES) with rl_min +1 dB,
+    rej_min +2 dB and the floor margin +0.5 dB; then raises DesignError with the numbers."""
+    rl, rej, fm = 15.5, 53.0, FLOOR_MARGIN_DB
+    for attempt in range(MAX_RETRIES + 1):
+        real = realise(best(index, rl, rej, fm), targets(index, rl, rej, fm))
+        yields = {pop: fast_yield(real, targets(index), pop) for pop in ("china", "iran")}
+        margins = {"rl_min": rl, "rej_min": rej, "floor_margin_db": fm, "retries": attempt}
+        if all(y >= YIELD_GATE_PCT for y in yields.values()) and \
+                all(m["stop_margin_db"] >= 0 for m in real.metrics.values()):
+            return replace(real, yield_pct=yields, margins=margins)
+        rl, rej, fm = rl + RETRY_STEP[0], rej + RETRY_STEP[1], fm + RETRY_STEP[2]
+    raise DesignError(f"filter {index}: yield {yields} (gate {YIELD_GATE_PCT:g} %), nominal {real.metrics}, "
+                      f"margins {margins}", real.metrics, yields, margins)

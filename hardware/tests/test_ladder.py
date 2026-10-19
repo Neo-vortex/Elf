@@ -128,3 +128,46 @@ def test_matches_ngspice_on_todays_filter_8_in_the_bank():
     deep = ref[41:] > -80
     assert deep.sum() >= 30
     assert np.max(np.abs(fast[41:] - ref[41:])[deep]) <= 0.05    # without the bus: 0.53 dB
+
+
+def test_choke_pair_is_two_chokes_in_series_each_with_its_own_losses():
+    from neohw import inductors
+    f = np.array([5e6, 20e6, 60e6])
+    losses = ladder.robust_losses(10e6)
+    pair = ladder.Branch("series", "L", l=50.3e-6, parts=((47e-6, 47e-6), (3.3e-6, 3.3e-6)))
+    z = ladder.branch_z(pair, f, losses)
+    assert np.allclose(z, inductors.robust_z(47e-6, f) + inductors.robust_z(3.3e-6, f))
+    assert not np.allclose(z, inductors.robust_z(50.3e-6, f))
+    # a selected (scaled) part keeps its bought row's Q, SRF and leads
+    sel = ladder.branch_z(ladder.Branch("series", "L", l=48e-6, parts=((47e-6, 48e-6),)), f, losses)
+    assert np.allclose(sel, inductors.part_z(47e-6, 48e-6, f))
+    with pytest.raises(ValueError):
+        ladder.Branch("series", "L", l=40e-6, parts=((47e-6, 47e-6),))
+
+
+def test_robust_losses_without_choke_capacitance():
+    from neohw import inductors
+    f = np.array([5e6, 60e6, 150e6])
+    r = inductors.nearest_row("tdk_bc", 8.2e-6)
+    bare = inductors.robust_r(r, f) + 1j * 2 * math.pi * f * (8.2e-6 + inductors.lead_l("tdk_bc"))
+    br = ladder.Branch("series", "L", l=8.2e-6)
+    assert np.allclose(ladder.branch_z(br, f, ladder.robust_losses(10e6, cpar=False)), bare)
+    assert not np.allclose(ladder.branch_z(br, f, ladder.robust_losses(10e6)), bare)
+
+
+def test_scaled_draws_equal_explicitly_scaled_ladders():
+    br = [ladder.Branch("series", "L", l=50.3e-6, parts=((47e-6, 47e-6), (3.3e-6, 3.3e-6))),
+          ladder.Branch("shunt", "C", c=100e-12), ladder.Branch("series", "LC_par", l=1.5e-6, c=30e-12)]
+    kl0 = np.array([[1.05, 0.93], [0.97, 1.02]])
+    kc1, kl2, kc2 = np.array([1.01, 0.99]), np.array([[0.95], [1.08]]), np.array([1.02, 0.98])
+    scale = [(kl0, None), (None, kc1), (kl2, kc2)]
+    f = np.linspace(1e6, 60e6, 50)
+    losses, bus = ladder.robust_losses(10e6), ladder.bank_bus()
+    s21, s11 = ladder.s21_s11(br, f, losses, bus, scale=scale)
+    for d in range(2):
+        parts = tuple((n, a * k) for (n, a), k in zip(br[0].parts, kl0[d]))
+        one = [ladder.Branch("series", "L", l=sum(a for _, a in parts), parts=parts),
+               ladder.Branch("shunt", "C", c=100e-12 * kc1[d]),
+               ladder.Branch("series", "LC_par", l=1.5e-6 * kl2[d, 0], c=30e-12 * kc2[d])]
+        e21, e11 = ladder.s21_s11(one, f, ladder.robust_losses(10e6), bus)
+        assert np.allclose(s21[d], e21) and np.allclose(s11[d], e11)   # draws stay on the nominal's row

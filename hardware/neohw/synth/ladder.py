@@ -2,13 +2,15 @@
 
 Branches run from the source side; a series branch is an impedance in the through path, a shunt
 branch an admittance to ground. Inductor impedance comes from a loss model (by default the robust
-model of neohw.inductors); capacitors carry a series loss giving `cap_q` at `f_cap_q_hz`. The
+model of neohw.inductors); an inductor realised as chokes in series (`Branch.parts`) is the sum of
+each choke's own impedance; capacitors carry a series loss giving `cap_q` at `f_cap_q_hz`. The
 relay bank loads each filter port (`Bus`). ngspice remains the authority for reported numbers."""
 from __future__ import annotations
 
 import inspect
 import math
 from dataclasses import dataclass
+from functools import partial
 from typing import Callable
 
 import numpy as np
@@ -25,12 +27,15 @@ class Branch:
     form: str
     l: float = 0.0
     c: float = 0.0
+    parts: tuple = ()      # chokes in series as (bought, actual) henries pairs; () is one choke of l
 
     def __post_init__(self):
         if self.place not in PLACES or self.form not in FORMS:
             raise ValueError(f"branch place/form must be in {PLACES}/{FORMS}, got {self.place!r}/{self.form!r}")
         if (self.form != "C" and self.l <= 0) or (self.form != "L" and self.c <= 0):
             raise ValueError(f"{self.form} branch needs positive values, got l={self.l!r} c={self.c!r}")
+        if self.parts and not math.isclose(sum(a for _, a in self.parts), self.l, rel_tol=1e-9):
+            raise ValueError(f"choke parts {self.parts!r} do not add up to l={self.l!r}")
 
 
 @dataclass(frozen=True)
@@ -38,10 +43,12 @@ class Losses:
     inductor_z: Callable[[float, np.ndarray], np.ndarray]
     cap_q: float = 500.0
     f_cap_q_hz: float = 1e6
+    part_z: Callable[[float, float, np.ndarray], np.ndarray] | None = None   # (bought, actual, f), for Branch.parts
 
 
-def robust_losses(f_centre_hz: float) -> Losses:
-    return Losses(inductors.robust_z, 500.0, f_centre_hz)
+def robust_losses(f_centre_hz: float, cpar: bool = True) -> Losses:
+    """The robust model; cpar=False leaves out each choke's parallel capacitance."""
+    return Losses(partial(inductors.robust_z, cpar=cpar), 500.0, f_centre_hz, partial(inductors.part_z, cpar=cpar))
 
 
 @dataclass(frozen=True)
@@ -74,10 +81,17 @@ def _cap_z(c, w, losses: Losses):
     return esr + 1 / (1j * w * c)
 
 
-def branch_z(b: Branch, f: np.ndarray, losses: Losses) -> np.ndarray:
+def branch_z(b: Branch, f: np.ndarray, losses: Losses, kl=None, kc=None) -> np.ndarray:
+    """Impedance at f. kl (draws × chokes, one column per part or one for l) and kc (draws)
+    scale the values per draw; the result is then draws × len(f). A drawn choke keeps the
+    loss data of its nominal value."""
     w = 2 * math.pi * f
-    zl = losses.inductor_z(b.l, f) if b.form != "C" else None
-    zc = _cap_z(b.c, w, losses) if b.form != "L" else None
+    zl = None
+    if b.form != "C":
+        ks = [() if kl is None else (kl[:, [i]],) for i in range(max(1, len(b.parts)))]
+        zl = (sum(losses.part_z(n, a, f, *k) for (n, a), k in zip(b.parts, ks)) if b.parts
+              else losses.inductor_z(b.l, f, *ks[0]))
+    zc = _cap_z(b.c if kc is None else b.c * kc[:, None], w, losses) if b.form != "L" else None
     if b.form == "L":
         return zl
     if b.form == "C":
@@ -87,10 +101,11 @@ def branch_z(b: Branch, f: np.ndarray, losses: Losses) -> np.ndarray:
     return zl * zc / (zl + zc)
 
 
-def s21_s11(branches, f, losses: Losses, bus: Bus = Bus(), z0: float = Z0):
+def s21_s11(branches, f, losses: Losses, bus: Bus = Bus(), z0: float = Z0, scale=None):
     """S21 and S11 of the ladder between two z0 terminations, each port loaded by `bus`.
     The chain matrix is built left to right: a series z multiplies by [[1, z], [0, 1]],
-    a shunt y by [[1, 0], [y, 1]]."""
+    a shunt y by [[1, 0], [y, 1]]. `scale`, one (kl, kc) per branch (see branch_z, None for
+    unscaled), evaluates many drawn builds at once: the results are then draws × len(f)."""
     f = np.asarray(f, dtype=float)
     one, zero = np.ones_like(f, dtype=complex), np.zeros_like(f, dtype=complex)
     a, b, c, d = one, zero, zero, one
@@ -108,8 +123,8 @@ def s21_s11(branches, f, losses: Losses, bus: Bus = Bus(), z0: float = Z0):
         shunt(1j * w * bus.shunt_c)
     if bus.series_r:
         series(bus.series_r * one)
-    for br in branches:
-        z = branch_z(br, f, losses)
+    for k, br in enumerate(branches):
+        z = branch_z(br, f, losses, *(scale[k] if scale is not None else ()))
         if br.place == "series":
             series(z)
         else:
