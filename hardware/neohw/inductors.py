@@ -21,6 +21,8 @@ from dataclasses import dataclass
 from functools import lru_cache
 from pathlib import Path
 
+import numpy as np
+
 DATA = Path(__file__).resolve().parent / "data" / "inductors.json"
 CHINA_SMALL, CHINA_LARGE, IRAN = "tdk_nlv32", "tdk_nl453232", "bourns_78f"
 CHINA_LARGE_FROM_H = 1e-6          # NL453232 starts at 1 µH; below it NLV32 (CM453232 sub-µH is ±20 %)
@@ -36,6 +38,7 @@ class Row:
     f_test_hz: float
     srf_min_hz: float
     dcr_max: float
+    tol: float | None = None      # grade in percent (row `tol_pct`, else the series')
 
 
 @lru_cache(maxsize=None)
@@ -51,7 +54,8 @@ def row(series: str, henries: float) -> Row:
     for r in _series()[series]["rows"]:
         if math.isclose(r["uh"] * 1e-6, henries, rel_tol=1e-6):
             return Row(series, r["mpn"], r["uh"] * 1e-6, r["q_min"], r["f_test_mhz"] * 1e6,
-                       r["srf_min_mhz"] * 1e6, r["dcr_max_ohm"])
+                       r["srf_min_mhz"] * 1e6, r["dcr_max_ohm"],
+                       r.get("tol_pct", _series()[series].get("tol_pct")))
     raise ValueError(f"{henries * 1e6:g} µH is not in {series} ({DATA.name})")
 
 
@@ -73,3 +77,60 @@ def q_at(r: Row, f_hz: float) -> float:
 
 def c_par(r: Row) -> float:
     return 1 / ((2 * math.pi * r.srf_min_hz) ** 2 * r.henries)
+
+
+# Robust model (spec 2026-10-19 robust filter bank): one worst-case physical bound, not a fit.
+ROBUST_DERATE = 0.75            # 25 % below the guaranteed Q
+LEAD_NH_PER_MM = 1.0
+LEAD_EXTRA_MM = 1.0             # per side: body end to the board, and through it
+FILTER_LARGE, FILTER_SMALL = "tdk_bc", "bourns_78f"
+IRAN_SELECT_TOL = 0.03          # Iran: parts selected on an LCR meter
+
+
+def filter_series(henries: float) -> str:
+    """BC axial from 1 µH, Bourns 78F below."""
+    return FILTER_LARGE if henries >= 1e-6 * (1 - 1e-9) else FILTER_SMALL
+
+
+def robust_r(r: Row, f_hz):
+    """Worst-case series R: R(f_t) = 2π·f_t·L / (0.75·Q_min) up to f_t, then growing with f
+    so Q is held at 0.75·Q_min above f_t. Accepts a scalar or an array."""
+    r_t = 2 * math.pi * r.f_test_hz * r.henries / (ROBUST_DERATE * r.q_min)
+    f = np.asarray(f_hz, dtype=float)
+    out = np.where(f < r.f_test_hz, r_t, r_t * f / r.f_test_hz)
+    return float(out) if out.ndim == 0 else out
+
+
+def lead_l(series: str) -> float:
+    """Lead inductance in henries: 1 nH/mm over the free lead (pitch minus body) plus the extra."""
+    info = series_info(series)
+    return (info["pitch_mm"] - info["body_mm"][1] + 2 * LEAD_EXTRA_MM) * LEAD_NH_PER_MM * 1e-9
+
+
+def available(series: str) -> list[float]:
+    """Inductances (henries) the series has datasheet rows for, ascending."""
+    return sorted(r["uh"] * 1e-6 for r in _series()[series]["rows"])
+
+
+def nearest_row(series: str, henries: float) -> Row:
+    """The datasheet row closest to `henries` on a log scale."""
+    return row(series, min(available(series), key=lambda h: abs(math.log(h / henries))))
+
+
+def robust_z(henries: float, f_hz):
+    """Impedance of one filter choke of `henries` (any value in its series' range): the nearest
+    row's Q_min, f_t and SRF; R scales with the actual inductance; lead L added in series."""
+    series = filter_series(henries)
+    r = nearest_row(series, henries)
+    scaled = Row(r.series, r.mpn, henries, r.q_min, r.f_test_hz, r.srf_min_hz, r.dcr_max, r.tol)
+    w = 2 * math.pi * np.asarray(f_hz, dtype=float)
+    z = robust_r(scaled, f_hz) + 1j * w * (henries + lead_l(series))
+    return z / (1 + 1j * w * c_par(r) * z)
+
+
+def tolerance(r: Row, population: str) -> float:
+    """Inductance tolerance as a fraction: the row's grade for China, 3 % (selected) for Iran."""
+    if population == "iran":
+        return IRAN_SELECT_TOL
+    pct = r.tol if r.tol is not None else series_info(r.series)["tol_pct"]
+    return pct / 100

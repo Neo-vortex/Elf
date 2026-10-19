@@ -358,6 +358,11 @@
    "maker": "Bourns",
    "name": "78F",
    "package": "axial 7.11 x 2.79 mm max",
+   "body_mm": [
+    2.79,
+    7.11
+   ],
+   "pitch_mm": 10.16,
    "construction": "axial ferrite drum, conformal coated, colour coded",
    "source": "Bourns '78F Series Conformal Coated RF Choke' datasheet, bourns.com/PDFs/78f_series.pdf",
    "equivalents": [
@@ -743,6 +748,12 @@
    "maker": "TDK",
    "name": "BC B78108S (axial)",
    "package": "axial 4 x 9.2 mm max, 12.7 mm pitch",
+   "tol_pct": 5,
+   "body_mm": [
+    4.0,
+    9.2
+   ],
+   "pitch_mm": 12.7,
    "construction": "ferrite drum core, lacquered",
    "source": "TDK 'RF chokes B78108S, B78148S, BC series, 4 x 9.2 (mm)', 06/12 (tables pages 4–5, typical Q curve IND0124-C page 7)",
    "equivalents": [
@@ -998,6 +1009,146 @@
      "dcr_max_ohm": 1.7,
      "i_rated_ma": 370.0,
      "mpn": "B78108S1104J000"
+    },
+    {
+     "uh": 120.0,
+     "tol_pct": 5.0,
+     "q_min": 70.0,
+     "f_test_mhz": 0.796,
+     "srf_min_mhz": 4.5,
+     "dcr_max_ohm": 2.4,
+     "i_rated_ma": 300.0,
+     "mpn": "B78108S1124J000"
+    },
+    {
+     "uh": 150.0,
+     "tol_pct": 5.0,
+     "q_min": 70.0,
+     "f_test_mhz": 0.796,
+     "srf_min_mhz": 4.2,
+     "dcr_max_ohm": 2.8,
+     "i_rated_ma": 280.0,
+     "mpn": "B78108S1154J000"
+    },
+    {
+     "uh": 180.0,
+     "tol_pct": 5.0,
+     "q_min": 70.0,
+     "f_test_mhz": 0.796,
+     "srf_min_mhz": 3.9,
+     "dcr_max_ohm": 3.0,
+     "i_rated_ma": 270.0,
+     "mpn": "B78108S1184J000"
+    },
+    {
+     "uh": 220.0,
+     "tol_pct": 5.0,
+     "q_min": 70.0,
+     "f_test_mhz": 0.796,
+     "srf_min_mhz": 3.7,
+     "dcr_max_ohm": 3.3,
+     "i_rated_ma": 250.0,
+     "mpn": "B78108S1224J000"
+    },
+    {
+     "uh": 270.0,
+     "tol_pct": 5.0,
+     "q_min": 70.0,
+     "f_test_mhz": 0.796,
+     "srf_min_mhz": 2.8,
+     "dcr_max_ohm": 5.7,
+     "i_rated_ma": 200.0,
+     "mpn": "B78108S1274J000"
+    },
+    {
+     "uh": 330.0,
+     "tol_pct": 5.0,
+     "q_min": 70.0,
+     "f_test_mhz": 0.796,
+     "srf_min_mhz": 2.7,
+     "dcr_max_ohm": 6.4,
+     "i_rated_ma": 190.0,
+     "mpn": "B78108S1334J000"
+    },
+    {
+     "uh": 390.0,
+     "tol_pct": 5.0,
+     "q_min": 70.0,
+     "f_test_mhz": 0.796,
+     "srf_min_mhz": 2.4,
+     "dcr_max_ohm": 7.0,
+     "i_rated_ma": 180.0,
+     "mpn": "B78108S1394J000"
+    },
+    {
+     "uh": 470.0,
+     "tol_pct": 5.0,
+     "q_min": 70.0,
+     "f_test_mhz": 0.796,
+     "srf_min_mhz": 2.2,
+     "dcr_max_ohm": 7.9,
+     "i_rated_ma": 170.0,
+     "mpn": "B78108S1474J000"
+    },
+    {
+     "uh": 560.0,
+     "tol_pct": 5.0,
+     "q_min": 60.0,
+     "f_test_mhz": 0.796,
+     "srf_min_mhz": 2.0,
+     "dcr_max_ohm": 8.8,
+     "i_rated_ma": 160.0,
+     "mpn": "B78108S1564J000"
+    },
+    {
+     "uh": 680.0,
+     "tol_pct": 5.0,
+     "q_min": 55.0,
+     "f_test_mhz": 0.796,
+     "srf_min_mhz": 1.9,
+     "dcr_max_ohm": 10.0,
+     "i_rated_ma": 150.0,
+     "mpn": "B78108S1684J000"
+    },
+    {
+     "uh": 820.0,
+     "tol_pct": 5.0,
+     "q_min": 50.0,
+     "f_test_mhz": 0.796,
+     "srf_min_mhz": 1.6,
+     "dcr_max_ohm": 12.0,
+     "i_rated_ma": 140.0,
+     "mpn": "B78108S1824J000"
+    },
+    {
+     "uh": 1000.0,
+     "tol_pct": 5.0,
+     "q_min": 50.0,
+     "f_test_mhz": 0.252,
+     "srf_min_mhz": 1.6,
+     "dcr_max_ohm": 14.0,
+     "i_rated_ma": 130.0,
+     "mpn": "B78108S1105J000"
+    },
+    {
+     "uh": 1200.0,
+     "tol_pct": 5.0,
+     "q_min": 50.0,
+     "f_test_mhz": 0.252,
+     "srf_min_mhz": 1.3,
+     "dcr_max_ohm": 17.5,
+     "i_rated_ma": 115.0,
+     "mpn": "B78108S1125J000"
+    },
+    {
+     "uh": 1500.0,
+     "tol_pct": 5.0,
+     "q_min": 50.0,
+     "f_test_mhz": 0.252,
+     "srf_min_mhz": 1.25,
+     "dcr_max_ohm": 23.0,
+     "i_rated_ma": 100.0,
+     "mpn": "B78108S1155J000"
     }
    ]
   }
